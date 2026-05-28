@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>煤化工全量文献库</title>
+  <style>
+    * { box-sizing: border-box; }
+    :root {
+      --bg: #04111f;
+      --panel: rgba(7, 23, 43, .86);
+      --text: #dcefff;
+      --muted: #94b8d0;
+      --cyan: #22d3ee;
+    }
+    body {
+      margin: 0;
+      font-family: "Microsoft YaHei", "PingFang SC", Arial, sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 16% 0%, rgba(34, 211, 238, .18), transparent 30%),
+        radial-gradient(circle at 84% 12%, rgba(34, 197, 94, .12), transparent 34%),
+        linear-gradient(180deg, #07192c 0%, var(--bg) 48%, #020817 100%);
+      min-height: 100vh;
+    }
+    header {
+      min-height: 220px;
+      padding: 38px 6vw 28px;
+      display: flex;
+      align-items: end;
+      background:
+        linear-gradient(90deg, rgba(3, 12, 25, .95), rgba(8, 33, 61, .82), rgba(15, 118, 110, .25)),
+        url("assets/coal-chemical-hero.png") center/cover;
+      position: relative;
+      overflow: hidden;
+    }
+    header::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(rgba(125, 211, 252, .08) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(125, 211, 252, .08) 1px, transparent 1px);
+      background-size: 42px 42px;
+      mask-image: linear-gradient(90deg, rgba(0,0,0,.75), transparent 78%);
+      pointer-events: none;
+    }
+    .hero { max-width: 980px; position: relative; z-index: 1; }
+    .eyebrow {
+      display: inline-flex;
+      padding: 7px 12px;
+      border: 1px solid rgba(125, 211, 252, .5);
+      border-radius: 999px;
+      background: rgba(14, 116, 144, .28);
+      color: #bae6fd;
+      font-size: 14px;
+    }
+    h1 {
+      margin: 18px 0 12px;
+      font-size: clamp(34px, 5vw, 58px);
+      line-height: 1.08;
+      letter-spacing: 0;
+      text-shadow: 0 0 24px rgba(34, 211, 238, .3);
+    }
+    .lead {
+      max-width: 860px;
+      margin: 0;
+      font-size: 18px;
+      line-height: 1.75;
+      color: rgba(226, 246, 255, .9);
+    }
+    main { padding: 24px 6vw 56px; }
+    .toolbar {
+      display: grid;
+      grid-template-columns: minmax(240px, 1fr) auto;
+      gap: 14px;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+    .search {
+      width: 100%;
+      min-height: 42px;
+      padding: 10px 12px;
+      border: 1px solid rgba(125, 211, 252, .26);
+      border-radius: 8px;
+      background: rgba(3, 19, 37, .72);
+      color: #e8f8ff;
+      font: inherit;
+      outline: none;
+    }
+    .search:focus { border-color: rgba(103, 232, 249, .82); }
+    .stats,
+    .filters,
+    .keyword-list {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .stat,
+    .tag,
+    .keyword-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      min-height: 34px;
+      padding: 7px 10px;
+      border: 1px solid rgba(125, 211, 252, .24);
+      border-radius: 999px;
+      background: rgba(8, 47, 73, .56);
+      color: #c9efff;
+      font-size: 14px;
+      font-family: inherit;
+      text-decoration: none;
+    }
+    button.tag,
+    button.keyword-chip { cursor: pointer; appearance: none; }
+    .tag:hover,
+    .tag.active,
+    .keyword-chip:hover,
+    .keyword-chip.active {
+      border-color: rgba(103, 232, 249, .78);
+      background: rgba(14, 116, 144, .76);
+      color: #f0fbff;
+    }
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--color);
+      box-shadow: 0 0 12px var(--color);
+      flex: 0 0 auto;
+    }
+    .library {
+      display: grid;
+      grid-template-columns: minmax(250px, 320px) minmax(360px, 1fr) minmax(380px, 44vw);
+      gap: 16px;
+      align-items: start;
+    }
+    .panel {
+      border: 1px solid rgba(125, 211, 252, .2);
+      border-radius: 8px;
+      background: rgba(3, 19, 37, .42);
+      overflow: hidden;
+      box-shadow: 0 20px 48px rgba(2, 132, 199, .1);
+    }
+    .panel-head {
+      padding: 16px;
+      border-bottom: 1px solid rgba(125, 211, 252, .16);
+    }
+    .panel-head h2 {
+      margin: 0 0 6px;
+      font-size: 20px;
+      color: #f0fbff;
+    }
+    .panel-head p {
+      margin: 0;
+      color: #a9cce1;
+      line-height: 1.6;
+      font-size: 14px;
+    }
+    .keyword-panel,
+    .list-panel {
+      max-height: 760px;
+      overflow: auto;
+    }
+    .keyword-body,
+    .literature-list {
+      padding: 12px;
+    }
+    .keyword-row {
+      width: 100%;
+      margin: 0 0 8px;
+      padding: 10px 11px;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 10px;
+      align-items: center;
+      border: 1px solid rgba(125, 211, 252, .2);
+      border-radius: 8px;
+      background: rgba(7, 23, 43, .7);
+      color: inherit;
+      text-align: left;
+      font: inherit;
+      cursor: pointer;
+    }
+    .keyword-row:hover,
+    .keyword-row.active {
+      border-color: rgba(103, 232, 249, .72);
+      background: rgba(14, 116, 144, .44);
+    }
+    .keyword-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .keyword-count { color: #91b7d2; font-size: 13px; }
+    .literature-card {
+      margin: 0 0 10px;
+      padding: 12px;
+      border: 1px solid rgba(125, 211, 252, .22);
+      border-radius: 8px;
+      background: rgba(7, 23, 43, .72);
+    }
+    .literature-card.active,
+    .literature-card:hover {
+      border-color: rgba(103, 232, 249, .72);
+      background: rgba(14, 116, 144, .34);
+    }
+    .lit-title {
+      margin: 0 0 8px;
+      color: #e8f8ff;
+      font-size: 15px;
+      line-height: 1.55;
+    }
+    .lit-meta,
+    .path {
+      color: #91b7d2;
+      font-size: 13px;
+      line-height: 1.55;
+    }
+    .path {
+      margin-top: 8px;
+      word-break: break-all;
+    }
+    .card-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 10px;
+    }
+    .card-actions button,
+    .card-actions a,
+    .graph-link {
+      display: inline-flex;
+      align-items: center;
+      min-height: 30px;
+      padding: 5px 9px;
+      border: 1px solid rgba(103, 232, 249, .34);
+      border-radius: 8px;
+      color: #d7f5ff;
+      background: rgba(14, 116, 144, .36);
+      text-decoration: none;
+      font-size: 13px;
+      font-family: inherit;
+      cursor: pointer;
+    }
+    .card-actions button:hover,
+    .card-actions a:hover,
+    .graph-link:hover {
+      border-color: rgba(103, 232, 249, .8);
+      background: rgba(14, 116, 144, .76);
+    }
+    .viewer-panel {
+      position: sticky;
+      top: 16px;
+      min-height: 760px;
+      display: grid;
+      grid-template-rows: auto minmax(0, 1fr);
+    }
+    .viewer-toolbar {
+      padding: 12px 14px;
+      border-bottom: 1px solid rgba(125, 211, 252, .16);
+      display: grid;
+      gap: 10px;
+    }
+    .viewer-title {
+      color: #e8f8ff;
+      line-height: 1.5;
+    }
+    .viewer-hint {
+      color: #91b7d2;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+    .pdf-frame {
+      width: 100%;
+      height: 100%;
+      min-height: 680px;
+      border: 0;
+      background: #0f172a;
+    }
+    .empty {
+      padding: 18px;
+      color: #b9d8ec;
+      line-height: 1.7;
+      border: 1px solid rgba(125, 211, 252, .2);
+      border-radius: 8px;
+      background: rgba(8, 47, 73, .38);
+    }
+    @media (max-width: 1280px) {
+      .library { grid-template-columns: 280px minmax(0, 1fr); }
+      .viewer-panel { grid-column: 1 / -1; position: relative; }
+    }
+    @media (max-width: 860px) {
+      header { padding: 32px 20px 24px; }
+      main { padding: 20px; }
+      .toolbar { display: block; }
+      .filters { margin-top: 12px; }
+      .library { display: block; }
+      .panel { margin-bottom: 14px; }
+      .keyword-panel,
+      .list-panel { max-height: 430px; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="hero">
+      <span class="eyebrow">Coal Chemical Literature Library</span>
+      <h1>煤化工全量文献库</h1>
+      <p class="lead">收录四个压缩包中的全部参考文献，并按知识图谱关键词建立反向索引。点击关键词可筛选文献，也可直接回到知识图谱查看该关键词在工艺关系网中的位置。</p>
+    </div>
+  </header>
+
+  <main>
+    <div class="toolbar">
+      <input class="search" id="searchInput" type="search" placeholder="搜索论文题名、作者、关键词、来源或文件名" />
+      <div class="filters" aria-label="来源筛选">
+        <button class="tag active" type="button" data-archive="all"><span class="dot" style="--color:#0ea5e9"></span>全部</button>
+        <button class="tag" type="button" data-archive="煤化工重大项目"><span class="dot" style="--color:#22c55e"></span>重大项目</button>
+        <button class="tag" type="button" data-archive="煤气化"><span class="dot" style="--color:#38bdf8"></span>煤气化</button>
+        <button class="tag" type="button" data-archive="煤焦化"><span class="dot" style="--color:#f59e0b"></span>煤焦化</button>
+        <button class="tag" type="button" data-archive="煤液化"><span class="dot" style="--color:#a78bfa"></span>煤液化</button>
+      </div>
+    </div>
+
+    <div class="stats" id="stats"></div>
+
+    <section class="library">
+      <aside class="panel keyword-panel">
+        <div class="panel-head">
+          <h2>关联关键词索引</h2>
+          <p id="keywordHint">点击关键词筛选文献；“图谱”按钮会反向打开知识图谱并定位节点。</p>
+        </div>
+        <div class="keyword-body" id="keywordList"></div>
+      </aside>
+
+      <section class="panel list-panel">
+        <div class="panel-head">
+          <h2>参考文献</h2>
+          <p id="resultHint">正在载入文献。</p>
+        </div>
+        <div class="literature-list" id="literatureList"></div>
+      </section>
+
+      <aside class="panel viewer-panel">
+        <div class="viewer-toolbar">
+          <div class="viewer-title" id="viewerTitle">选择一篇文献进行预览</div>
+          <div class="viewer-hint" id="viewerHint">PDF 可在页内预览；CAJ 等格式请使用“新窗口打开”。</div>
+          <div class="card-actions">
+            <a id="viewerOpen" href="#" target="_blank" rel="noopener">新窗口打开</a>
+            <a class="graph-link" id="viewerGraph" href="index.html">查看图谱关系</a>
+          </div>
+        </div>
+        <iframe class="pdf-frame" id="pdfFrame" title="文献 PDF 预览"></iframe>
+      </aside>
+    </section>
+  </main>
+
+  <script src="文献收录/full-literature-data.js"></script>
+  <script>
+    const data = window.fullLiteratureData || { references: [], assignments: {} };
+    const state = { query: "", archive: "all", keyword: "all", selectedRef: "" };
+    let refs = [];
+    const keywordEntries = Object.entries(data.assignments || {})
+      .map(([name, ids]) => ({ name, count: ids.length, ids: new Set(ids) }))
+      .sort((a, b) => b.count - a.count || a.name.localeCompare(b.name, "zh-CN"));
+
+    const searchInput = document.querySelector("#searchInput");
+    const stats = document.querySelector("#stats");
+    const keywordList = document.querySelector("#keywordList");
+    const literatureList = document.querySelector("#literatureList");
+    const resultHint = document.querySelector("#resultHint");
+    const pdfFrame = document.querySelector("#pdfFrame");
+    const viewerTitle = document.querySelector("#viewerTitle");
+    const viewerHint = document.querySelector("#viewerHint");
+    const viewerOpen = document.querySelector("#viewerOpen");
+    const viewerGraph = document.querySelector("#viewerGraph");
+
+    const surnamePinyin = { "王":"Wang","李":"Li","张":"Zhang","刘":"Liu","陈":"Chen","杨":"Yang","赵":"Zhao","黄":"Huang","周":"Zhou","吴":"Wu","徐":"Xu","孙":"Sun","胡":"Hu","朱":"Zhu","高":"Gao","林":"Lin","何":"He","郭":"Guo","马":"Ma","罗":"Luo","梁":"Liang","宋":"Song","郑":"Zheng","谢":"Xie","韩":"Han","唐":"Tang","冯":"Feng","于":"Yu","董":"Dong","萧":"Xiao","程":"Cheng","曹":"Cao","袁":"Yuan","邓":"Deng","许":"Xu","傅":"Fu","沈":"Shen","曾":"Zeng","彭":"Peng","吕":"Lv","苏":"Su","卢":"Lu","蒋":"Jiang","蔡":"Cai","贾":"Jia","丁":"Ding","魏":"Wei","薛":"Xue","叶":"Ye","阎":"Yan","余":"Yu","潘":"Pan","杜":"Du","戴":"Dai","夏":"Xia","钟":"Zhong","汪":"Wang","田":"Tian","任":"Ren","姜":"Jiang","范":"Fan","方":"Fang","石":"Shi","姚":"Yao","谭":"Tan","廖":"Liao","邹":"Zou","熊":"Xiong","金":"Jin","陆":"Lu","郝":"Hao","孔":"Kong","白":"Bai","崔":"Cui","康":"Kang","毛":"Mao","邱":"Qiu","秦":"Qin","江":"Jiang","史":"Shi","顾":"Gu","侯":"Hou","邵":"Shao","孟":"Meng","龙":"Long","万":"Wan","段":"Duan","雷":"Lei","钱":"Qian","汤":"Tang","尹":"Yin","黎":"Li","易":"Yi","常":"Chang","武":"Wu","乔":"Qiao","贺":"He","赖":"Lai","龚":"Gong","文":"Wen","庞":"Pang","樊":"Fan","兰":"Lan","殷":"Yin","施":"Shi","陶":"Tao","洪":"Hong","翟":"Zhai","安":"An","颜":"Yan","倪":"Ni","严":"Yan","牛":"Niu","温":"Wen","芦":"Lu","季":"Ji","俞":"Yu","章":"Zhang","鲁":"Lu","葛":"Ge","伍":"Wu","韦":"Wei","申":"Shen","尤":"You","毕":"Bi","聂":"Nie","丛":"Cong","焦":"Jiao","向":"Xiang","柳":"Liu","邢":"Xing","路":"Lu","岳":"Yue","齐":"Qi","沿":"Yan","梅":"Mei","莫":"Mo","庄":"Zhuang","辛":"Xin","管":"Guan","祝":"Zhu","左":"Zuo","涂":"Tu","谷":"Gu","祁":"Qi","时":"Shi","舒":"Shu","耿":"Geng","牟":"Mou","卜":"Bu","路":"Lu","詹":"Zhan","关":"Guan","苗":"Miao","凌":"Ling","费":"Fei","纪":"Ji","靳":"Jin","盛":"Sheng","童":"Tong","欧阳":"Ouyang","司马":"Sima","诸葛":"Zhuge" };
+    const givenPinyin = { "一":"Yi","东":"Dong","中":"Zhong","丹":"Dan","丽":"Li","乐":"Le","云":"Yun","亚":"Ya","亮":"Liang","仁":"Ren","伟":"Wei","佳":"Jia","俊":"Jun","保":"Bao","信":"Xin","倩":"Qian","元":"Yuan","光":"Guang","全":"Quan","兰":"Lan","军":"Jun","冰":"Bing","凤":"Feng","刚":"Gang","利":"Li","力":"Li","勇":"Yong","华":"Hua","博":"Bo","卫":"Wei","友":"You","发":"Fa","君":"Jun","哲":"Zhe","国":"Guo","坤":"Kun","培":"Pei","城":"Cheng","增":"Zeng","士":"Shi","夏":"Xia","天":"Tian","奇":"Qi","奕":"Yi","姣":"Jiao","娜":"Na","娟":"Juan","子":"Zi","宁":"Ning","宇":"Yu","宏":"Hong","宝":"Bao","家":"Jia","富":"Fu","峰":"Feng","川":"Chuan","帅":"Shuai","平":"Ping","庆":"Qing","建":"Jian","开":"Kai","强":"Qiang","彦":"Yan","彬":"Bin","德":"De","忠":"Zhong","恒":"Heng","悦":"Yue","慧":"Hui","成":"Cheng","振":"Zhen","政":"Zheng","敏":"Min","文":"Wen","斌":"Bin","新":"Xin","方":"Fang","旭":"Xu","昊":"Hao","明":"Ming","星":"Xing","春":"Chun","晓":"Xiao","晶":"Jing","智":"Zhi","月":"Yue","朋":"Peng","朝":"Chao","木":"Mu","来":"Lai","杰":"Jie","松":"Song","林":"Lin","树":"Shu","格":"Ge","桂":"Gui","梅":"Mei","森":"Sen","楠":"Nan","欣":"Xin","正":"Zheng","武":"Wu","民":"Min","永":"Yong","江":"Jiang","波":"Bo","泽":"Ze","洁":"Jie","浩":"Hao","海":"Hai","涛":"Tao","润":"Run","淼":"Miao","清":"Qing","源":"Yuan","然":"Ran","燕":"Yan","玉":"Yu","玮":"Wei","玲":"Ling","琛":"Chen","瑞":"Rui","瑶":"Yao","生":"Sheng","田":"Tian","皓":"Hao","益":"Yi","睿":"Rui","磊":"Lei","祥":"Xiang","福":"Fu","立":"Li","红":"Hong","维":"Wei","美":"Mei","群":"Qun","翔":"Xiang","胜":"Sheng","良":"Liang","艳":"Yan","芳":"Fang","若":"Ruo","荣":"Rong","莲":"Lian","营":"Ying","虎":"Hu","衡":"Heng","贤":"Xian","超":"Chao","辉":"Hui","远":"Yuan","迪":"Di","通":"Tong","道":"Dao","金":"Jin","鑫":"Xin","钢":"Gang","铭":"Ming","锋":"Feng","锦":"Jin","阳":"Yang","雅":"Ya","雪":"Xue","雯":"Wen","青":"Qing","静":"Jing","飞":"Fei","骏":"Jun","鹏":"Peng","龙":"Long" };
+
+    function hasChinese(text) {
+      return /[\u4e00-\u9fff]/.test(text);
+    }
+
+    function latinDominant(text) {
+      const latin = (text.match(/[A-Za-z]/g) || []).length;
+      const chinese = (text.match(/[\u4e00-\u9fff]/g) || []).length;
+      return latin > chinese * 2;
+    }
+
+    function chineseNameToPinyin(name) {
+      const clean = name.replace(/[^\u4e00-\u9fff]/g, "");
+      const two = clean.slice(0, 2);
+      const surname = surnamePinyin[two] || surnamePinyin[clean[0]] || clean[0];
+      const given = surnamePinyin[two] ? clean.slice(2) : clean.slice(1);
+      const givenName = [...given].map(char => givenPinyin[char] || char).join("");
+      return givenName ? `${givenName} ${surname}` : surname;
+    }
+
+    function normalizeAuthors(authorText, usePinyin = false) {
+      return authorText
+        .replace(/[()（）]\d+[()（）]?$/g, "")
+        .split(/_+|、|，|,|;|；|和|及/)
+        .map(item => item.trim())
+        .filter(Boolean)
+        .filter(item => !/(记者|报道|整理|证券时报|新疆日报|石榴云|全国人大|讲述人|本报)/.test(item))
+        .map(item => usePinyin && /^[\u4e00-\u9fff·]{2,6}$/.test(item) ? chineseNameToPinyin(item) : item)
+        .join("，");
+    }
+
+    function cleanForeignTitle(value) {
+      return value
+        .replace(/[_-]?(19|20)\d{2}[_-].*$/i, "")
+        .replace(/[_-]+/g, " ")
+        .replace(/\s+/g, " ")
+        .trim();
+    }
+
+    function trustedDisplayTitle(ref) {
+      const text = String(ref.displayTitle || "").replace(/\s+/g, " ").trim();
+      const badMeta = /(Microsoft\s+Word|DSI\s+Equation\s+Image|cite_this_logo|src\.eps|\.eps\b|\.docx\b|^tx\d*\b)/i;
+      const signal = (text.match(/[A-Za-z\u4e00-\u9fff]/g) || []).length;
+      if (!text || text.length < 10 || text.length > 260) return "";
+      if (/[\x00-\x08\x0B\x0C\x0E-\x1F]/.test(text) || badMeta.test(text)) return "";
+      return signal >= Math.max(8, Math.floor(text.length * 0.35)) ? text : "";
+    }
+
+    function formatReferenceTitle(ref) {
+      const metadataTitle = trustedDisplayTitle(ref);
+      if (metadataTitle) return metadataTitle;
+      const base = ref.file.replace(/\.(pdf|caj)$/i, "").replace(/\s*[（(]\d+[）)]$/g, "").trim();
+      const match = base.match(/^(.*)(?:_+)([\u4e00-\u9fff（）()·\s]{2,14}(?:_+[\u4e00-\u9fff（）()·\s]{2,14})*)$/);
+      if (!match) return hasChinese(base) ? base : cleanForeignTitle(base);
+      const title = match[1]
+        .replace(/_+$/g, "")
+        .replace(/_*(本报记者|记者|整理|讲述人|证券时报记者|新疆日报记者)_*$/g, "");
+      const authors = normalizeAuthors(match[2], latinDominant(title));
+      const cleanTitle = hasChinese(title) ? title : cleanForeignTitle(title);
+      return authors ? `${cleanTitle} ${authors}` : cleanTitle;
+    }
+
+    function escapeHtml(value) {
+      return String(value ?? "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    function graphHref(keyword) {
+      return `index.html?node=${encodeURIComponent(keyword)}`;
+    }
+
+    function docHref(ref) {
+      return encodeURI(ref.url || ref.localPath || "");
+    }
+
+    function matches(ref) {
+      const query = state.query.trim().toLowerCase();
+      const keywordIds = state.keyword === "all" ? null : new Set((data.assignments[state.keyword] || []));
+      const archiveOk = state.archive === "all" || ref.archive === state.archive;
+      const keywordOk = !keywordIds || keywordIds.has(ref.id);
+      if (!archiveOk || !keywordOk) return false;
+      if (!query) return true;
+      const text = [
+        ref.id,
+        ref.displayTitle,
+        ref.file,
+        ref.archive,
+        ref.topic,
+        ...(ref.keywords || [])
+      ].join(" ").toLowerCase();
+      return text.includes(query);
+    }
+
+    function renderStats(list) {
+      const archiveCounts = refs.reduce((acc, ref) => {
+        acc[ref.archive] = (acc[ref.archive] || 0) + 1;
+        return acc;
+      }, {});
+      stats.innerHTML = [
+        `<span class="stat">总收录：${refs.length} 篇</span>`,
+        `<span class="stat">当前结果：${list.length} 篇</span>`,
+        ...Object.entries(archiveCounts).map(([name, count]) => `<span class="stat">${escapeHtml(name)}：${count} 篇</span>`),
+        `<a class="graph-link" href="${graphHref(state.keyword === "all" ? "煤化工" : state.keyword)}" target="_blank" rel="noopener">查看当前关键词图谱</a>`
+      ].join("");
+    }
+
+    function renderKeywords() {
+      keywordList.innerHTML = [
+        `<button class="keyword-row ${state.keyword === "all" ? "active" : ""}" type="button" data-keyword="all"><span class="keyword-name">全部关键词</span><span class="keyword-count">${refs.length}</span></button>`,
+        ...keywordEntries.map(item => `
+          <button class="keyword-row ${state.keyword === item.name ? "active" : ""}" type="button" data-keyword="${escapeHtml(item.name)}">
+            <span class="keyword-name">${escapeHtml(item.name)}</span>
+            <span class="keyword-count">${item.count}</span>
+          </button>
+        `)
+      ].join("");
+    }
+
+    function renderList() {
+      const list = refs.filter(matches);
+      resultHint.textContent = state.keyword === "all"
+        ? `当前显示全部关键词下的 ${list.length} 篇文献。`
+        : `当前关键词：${state.keyword}，匹配 ${list.length} 篇文献。`;
+      renderStats(list);
+      renderKeywords();
+      if (!list.length) {
+        literatureList.innerHTML = `<div class="empty">没有找到匹配文献。可以清空搜索词或切换来源/关键词。</div>`;
+        return;
+      }
+      literatureList.innerHTML = list.map(ref => `
+        <article class="literature-card ${state.selectedRef === ref.id ? "active" : ""}" data-ref-card="${ref.id}">
+          <p class="lit-title">${escapeHtml(ref.displayTitle)}</p>
+          <div class="lit-meta">${escapeHtml(ref.archive)} · ${escapeHtml(ref.topic)}</div>
+          <div class="keyword-list">
+            ${(ref.keywords || []).map(keyword => `<a class="keyword-chip" href="${graphHref(keyword)}" target="_blank" rel="noopener">${escapeHtml(keyword)}</a>`).join("")}
+          </div>
+          <div class="path">${escapeHtml(ref.path)}</div>
+          <div class="card-actions">
+            <button type="button" data-preview="${ref.id}">页内预览</button>
+            <a href="${docHref(ref)}" target="_blank" rel="noopener">新窗口打开</a>
+            ${(ref.keywords || []).slice(0, 1).map(keyword => `<a href="${graphHref(keyword)}" target="_blank" rel="noopener">查看图谱关系</a>`).join("")}
+          </div>
+        </article>
+      `).join("");
+      if (!state.selectedRef || !list.some(ref => ref.id === state.selectedRef)) {
+        showReference(list[0].id, false);
+      }
+    }
+
+    function showReference(id, scrollIntoView = true) {
+      const ref = refs.find(item => item.id === id);
+      if (!ref) return;
+      state.selectedRef = id;
+      viewerOpen.href = docHref(ref);
+      const firstKeyword = (ref.keywords || [])[0] || "煤化工";
+      viewerGraph.href = graphHref(firstKeyword);
+      if (ref.ext && ref.ext !== "pdf") {
+        pdfFrame.removeAttribute("src");
+        viewerTitle.textContent = `${ref.archive} · ${ref.displayTitle}`;
+        viewerHint.textContent = `${ref.ext.toUpperCase()} 文件不支持页内预览，请使用“新窗口打开”。`;
+      } else {
+        pdfFrame.src = docHref(ref);
+        viewerTitle.textContent = `${ref.archive} · ${ref.displayTitle}`;
+        viewerHint.textContent = `关联关键词：${(ref.keywords || []).join("，") || "未标注"}`;
+      }
+      document.querySelectorAll("[data-ref-card]").forEach(card => card.classList.toggle("active", card.dataset.refCard === id));
+      if (scrollIntoView) {
+        document.querySelector(".viewer-panel").scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+    }
+
+    function selectKeyword(keyword) {
+      state.keyword = keyword;
+      renderList();
+    }
+
+    searchInput.addEventListener("input", event => {
+      state.query = event.target.value;
+      renderList();
+    });
+
+    document.querySelector(".filters").addEventListener("click", event => {
+      const button = event.target.closest("[data-archive]");
+      if (!button) return;
+      state.archive = button.dataset.archive;
+      document.querySelectorAll("[data-archive]").forEach(item => item.classList.toggle("active", item === button));
+      renderList();
+    });
+
+    keywordList.addEventListener("click", event => {
+      const button = event.target.closest("[data-keyword]");
+      if (!button) return;
+      selectKeyword(button.dataset.keyword);
+    });
+
+    literatureList.addEventListener("click", event => {
+      const preview = event.target.closest("[data-preview]");
+      if (preview) {
+        showReference(preview.dataset.preview);
+        renderList();
+        return;
+      }
+      const keyword = event.target.closest("[data-keyword]");
+      if (keyword) {
+        selectKeyword(keyword.dataset.keyword);
+      }
+    });
+
+    refs = data.references.map(item => ({ ...item, displayTitle: formatReferenceTitle(item) }));
+
+    const requestedKeyword = new URLSearchParams(location.search).get("keyword") || "all";
+    if (requestedKeyword !== "all" && data.assignments[requestedKeyword]) state.keyword = requestedKeyword;
+    renderList();
+  </script>
+</body>
+</html>

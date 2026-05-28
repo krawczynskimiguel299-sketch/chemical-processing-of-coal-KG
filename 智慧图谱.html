@@ -1,0 +1,1580 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>智慧煤化工知识图谱</title>
+  <style>
+    * { box-sizing: border-box; }
+    :root {
+      --bg: #04111f;
+      --panel: rgba(7, 23, 43, .86);
+      --panel-strong: rgba(9, 31, 59, .94);
+      --text: #dcefff;
+      --muted: #94b8d0;
+      --cyan: #22d3ee;
+      --green: #22c55e;
+      --amber: #f59e0b;
+      --red: #ef4444;
+    }
+    body {
+      margin: 0;
+      font-family: "Microsoft YaHei", "PingFang SC", Arial, sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 16% 0%, rgba(34, 211, 238, .18), transparent 30%),
+        radial-gradient(circle at 84% 12%, rgba(34, 197, 94, .12), transparent 34%),
+        linear-gradient(180deg, #07192c 0%, var(--bg) 48%, #020817 100%);
+      min-height: 100vh;
+    }
+    header {
+      min-height: 245px;
+      padding: 40px 6vw 28px;
+      color: #fff;
+      background:
+        linear-gradient(90deg, rgba(3, 12, 25, .95), rgba(8, 33, 61, .8), rgba(15, 118, 110, .25)),
+        url("assets/coal-chemical-hero.png") center/cover;
+      display: flex;
+      align-items: end;
+      position: relative;
+      overflow: hidden;
+    }
+    header::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(rgba(125, 211, 252, .08) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(125, 211, 252, .08) 1px, transparent 1px);
+      background-size: 42px 42px;
+      mask-image: linear-gradient(90deg, rgba(0,0,0,.75), transparent 78%);
+      pointer-events: none;
+    }
+    .hero {
+      max-width: 980px;
+      position: relative;
+      z-index: 1;
+    }
+    .eyebrow {
+      display: inline-flex;
+      padding: 7px 12px;
+      border: 1px solid rgba(125, 211, 252, .5);
+      border-radius: 999px;
+      background: rgba(14, 116, 144, .28);
+      color: #bae6fd;
+      font-size: 14px;
+      letter-spacing: 0;
+    }
+    h1 {
+      margin: 18px 0 12px;
+      font-size: clamp(34px, 5.4vw, 62px);
+      line-height: 1.08;
+      letter-spacing: 0;
+      text-shadow: 0 0 24px rgba(34, 211, 238, .3);
+    }
+    .lead {
+      max-width: 860px;
+      margin: 0;
+      font-size: 18px;
+      line-height: 1.75;
+      color: rgba(226, 246, 255, .9);
+    }
+    main { padding: 24px 0 58px; }
+    .toolbar {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      align-items: center;
+      margin: 0 6vw 16px;
+      color: var(--muted);
+      line-height: 1.65;
+    }
+    .stats {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      font-size: 14px;
+    }
+    .stat {
+      border: 1px solid rgba(125, 211, 252, .2);
+      border-radius: 8px;
+      padding: 7px 10px;
+      background: rgba(8, 47, 73, .42);
+      color: #ccecff;
+      text-decoration: none;
+    }
+    .legend {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      min-height: 34px;
+      padding: 7px 10px;
+      border: 1px solid rgba(125, 211, 252, .24);
+      border-radius: 999px;
+      background: rgba(8, 47, 73, .56);
+      color: #c9efff;
+      font-size: 14px;
+      font-family: inherit;
+      cursor: pointer;
+    }
+    button.tag { appearance: none; }
+    .tag:hover,
+    .tag.active {
+      border-color: rgba(103, 232, 249, .78);
+      background: rgba(14, 116, 144, .76);
+      color: #f0fbff;
+    }
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--color);
+      box-shadow: 0 0 12px var(--color);
+      flex: 0 0 auto;
+    }
+    .workspace {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(360px, 420px);
+      gap: 18px;
+      align-items: start;
+      margin: 0 6vw;
+    }
+    .network-panel {
+      width: 100%;
+      min-height: 780px;
+      overflow: visible;
+      position: relative;
+      border: 1px solid rgba(125, 211, 252, .18);
+      border-radius: 8px;
+      background: rgba(3, 19, 37, .32);
+    }
+    .network-panel::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(120deg, transparent 0%, rgba(56, 189, 248, .08) 45%, transparent 70%);
+      transform: translateX(-70%);
+      animation: scan 7s linear infinite;
+      pointer-events: none;
+      z-index: 1;
+    }
+    @keyframes scan { to { transform: translateX(70%); } }
+    svg {
+      display: block;
+      width: 100%;
+      height: 780px;
+      border-radius: 8px;
+      background:
+        radial-gradient(circle at 50% 48%, rgba(14, 165, 233, .22), transparent 22%),
+        radial-gradient(circle at 50% 48%, rgba(34, 197, 94, .12), transparent 48%),
+        linear-gradient(rgba(56, 189, 248, .08) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(56, 189, 248, .08) 1px, transparent 1px),
+        #06182c;
+      background-size: auto, auto, 38px 38px, 38px 38px, auto;
+    }
+    .link {
+      stroke: rgba(125, 211, 252, .46);
+      stroke-width: 1.6;
+      stroke-linecap: round;
+      opacity: .58;
+    }
+    .link.strong {
+      stroke: #22d3ee;
+      stroke-width: 2.7;
+      opacity: .86;
+    }
+    .link.cross {
+      stroke: rgba(34, 197, 94, .68);
+      stroke-dasharray: 8 7;
+    }
+    .link.focused {
+      stroke: #67e8f9;
+      stroke-width: 3;
+      opacity: .96;
+      filter: drop-shadow(0 0 7px rgba(103, 232, 249, .72));
+    }
+    .link.muted { opacity: .14; stroke-width: 1.1; }
+    .link-label {
+      fill: #aeeaff;
+      stroke: #06182c;
+      stroke-width: 3px;
+      paint-order: stroke;
+      font-size: 11px;
+      text-anchor: middle;
+      dominant-baseline: middle;
+      opacity: .66;
+      pointer-events: none;
+      letter-spacing: 0;
+    }
+    .link-label.strong { fill: #67e8f9; opacity: .86; }
+    .link-label.cross { fill: #86efac; }
+    .link-label.focused { opacity: .98; font-weight: 700; }
+    .link-label.muted { opacity: .12; }
+    .node { cursor: pointer; }
+    .node-body {
+      transition: transform .18s ease, opacity .18s ease, filter .18s ease;
+      transform-box: fill-box;
+      transform-origin: center;
+    }
+    .node rect {
+      fill: var(--fill);
+      stroke: rgba(226, 246, 255, .88);
+      stroke-width: 1.75;
+      filter: drop-shadow(0 0 12px rgba(56, 189, 248, .22));
+    }
+    .node text {
+      pointer-events: none;
+      fill: #eaf8ff;
+      font-weight: 700;
+      text-anchor: middle;
+      dominant-baseline: middle;
+      font-size: 13px;
+      letter-spacing: 0;
+    }
+    .node.core text { font-size: 18px; }
+    .node.branch text { font-size: 15px; }
+    .node.dim .node-body { opacity: .34; }
+    .node.active .node-body,
+    .node:hover .node-body {
+      transform: scale(1.08);
+      opacity: 1;
+      filter: drop-shadow(0 0 16px rgba(34, 211, 238, .62));
+    }
+    .node.active rect {
+      stroke: #e0f7ff;
+      stroke-width: 2.6;
+    }
+    .detail-panel {
+      position: sticky;
+      top: 18px;
+      z-index: 2;
+      width: 100%;
+      max-height: 780px;
+      overflow: auto;
+      padding: 22px;
+      border: 1px solid rgba(125, 211, 252, .22);
+      border-radius: 8px;
+      background: rgba(9, 31, 59, .72);
+      box-shadow: 0 20px 48px rgba(2, 132, 199, .16), inset 0 1px 0 rgba(255,255,255,.05);
+      backdrop-filter: blur(12px);
+    }
+    .detail-panel h2 {
+      margin: 0 0 8px;
+      font-size: 28px;
+      line-height: 1.22;
+      color: #f0fbff;
+    }
+    .type {
+      display: inline-flex;
+      margin-bottom: 15px;
+      padding: 6px 10px;
+      border: 1px solid color-mix(in srgb, var(--type-color) 70%, white 10%);
+      border-radius: 999px;
+      background: color-mix(in srgb, var(--type-color) 22%, transparent);
+      color: #dff8ff;
+      font-size: 14px;
+    }
+    .detail-panel p {
+      margin: 0 0 16px;
+      color: #bddbef;
+      line-height: 1.82;
+    }
+    .detail-panel h3 {
+      margin: 22px 0 10px;
+      font-size: 18px;
+      color: #e7f8ff;
+    }
+    .detail-panel ul {
+      margin: 0;
+      padding-left: 20px;
+      color: #bddbef;
+      line-height: 1.86;
+    }
+    .relation-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 8px 0 4px;
+    }
+    .relation-chip {
+      border: 1px solid rgba(125, 211, 252, .32);
+      background: rgba(8, 47, 73, .75);
+      color: #d7f5ff;
+      padding: 7px 9px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 14px;
+      font-family: inherit;
+      transition: transform .16s ease, border-color .16s ease, background .16s ease;
+    }
+    .relation-chip:hover {
+      transform: translateY(-1px);
+      border-color: rgba(103, 232, 249, .76);
+      background: rgba(14, 116, 144, .82);
+    }
+    .reference-list {
+      display: grid;
+      gap: 10px;
+      margin-top: 8px;
+    }
+    .reference-card {
+      padding: 11px 12px;
+      border: 1px solid rgba(125, 211, 252, .24);
+      border-radius: 8px;
+      background: rgba(3, 19, 37, .52);
+    }
+    .reference-title {
+      margin: 0 0 6px;
+      color: #e8f8ff;
+      font-size: 14px;
+      line-height: 1.55;
+    }
+    .reference-meta {
+      color: #91b7d2;
+      font-size: 13px;
+      line-height: 1.55;
+    }
+    .reference-path {
+      margin-top: 7px;
+      color: #7fb0ca;
+      font-size: 12px;
+      line-height: 1.5;
+      word-break: break-all;
+    }
+    .reference-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 10px;
+    }
+    .reference-actions a,
+    .reference-actions button {
+      display: inline-flex;
+      align-items: center;
+      min-height: 30px;
+      padding: 5px 9px;
+      border: 1px solid rgba(103, 232, 249, .34);
+      border-radius: 8px;
+      color: #d7f5ff;
+      background: rgba(14, 116, 144, .36);
+      text-decoration: none;
+      font-size: 13px;
+      font-family: inherit;
+      cursor: pointer;
+    }
+    .reference-actions a:hover,
+    .reference-actions button:hover {
+      border-color: rgba(103, 232, 249, .8);
+      background: rgba(14, 116, 144, .76);
+    }
+    .collection {
+      margin: 28px 6vw 0;
+      border: 1px solid rgba(125, 211, 252, .18);
+      border-radius: 8px;
+      background: rgba(3, 19, 37, .38);
+      overflow: hidden;
+    }
+    .section-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      align-items: end;
+      padding: 20px 22px 14px;
+      border-bottom: 1px solid rgba(125, 211, 252, .16);
+    }
+    .section-head h2 {
+      margin: 0 0 6px;
+      font-size: 24px;
+      color: #f0fbff;
+    }
+    .section-head p {
+      margin: 0;
+      color: #a9cce1;
+      line-height: 1.65;
+    }
+    .collection-layout {
+      display: grid;
+      grid-template-columns: minmax(310px, 420px) minmax(0, 1fr);
+      min-height: 620px;
+    }
+    .collection-list {
+      max-height: 680px;
+      overflow: auto;
+      padding: 14px;
+      border-right: 1px solid rgba(125, 211, 252, .16);
+    }
+    .collection-card {
+      width: 100%;
+      margin: 0 0 10px;
+      padding: 12px;
+      border: 1px solid rgba(125, 211, 252, .22);
+      border-radius: 8px;
+      background: rgba(7, 23, 43, .72);
+      color: inherit;
+      text-align: left;
+      cursor: pointer;
+      font-family: inherit;
+    }
+    .collection-card:hover,
+    .collection-card.active {
+      border-color: rgba(103, 232, 249, .72);
+      background: rgba(14, 116, 144, .44);
+    }
+    .collection-title {
+      margin: 0 0 8px;
+      color: #e8f8ff;
+      font-size: 14px;
+      line-height: 1.55;
+    }
+    .collection-meta {
+      color: #91b7d2;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+    .viewer-panel {
+      min-height: 680px;
+      display: grid;
+      grid-template-rows: auto minmax(0, 1fr);
+      background: rgba(2, 8, 23, .48);
+    }
+    .viewer-toolbar {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: center;
+      padding: 12px 14px;
+      border-bottom: 1px solid rgba(125, 211, 252, .16);
+    }
+    .viewer-title {
+      min-width: 0;
+      color: #e8f8ff;
+      line-height: 1.45;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .pdf-frame {
+      width: 100%;
+      height: 100%;
+      min-height: 620px;
+      border: 0;
+      background: #0f172a;
+    }
+    .notice {
+      margin-top: 18px;
+      padding: 12px 14px;
+      border-left: 4px solid #22d3ee;
+      background: rgba(8, 47, 73, .55);
+      color: #cdefff;
+      line-height: 1.7;
+    }
+    footer {
+      padding: 24px 6vw;
+      background: #020817;
+      color: #9bc5df;
+      line-height: 1.75;
+      border-top: 1px solid rgba(125, 211, 252, .16);
+    }
+    @media (max-width: 1080px) {
+      header { min-height: 230px; padding: 34px 22px 28px; }
+      main { padding: 22px 0 44px; }
+      .toolbar { display: block; margin: 0 18px 14px; }
+      .legend { justify-content: flex-start; margin-top: 12px; }
+      .workspace { display: block; margin: 0 18px; }
+      .network-panel { min-height: 720px; margin-bottom: 16px; }
+      svg { height: 720px; }
+      .detail-panel {
+        position: relative;
+        top: auto;
+        width: auto;
+        max-height: none;
+        margin: 0;
+      }
+      .collection { margin: 22px 18px 0; }
+      .section-head { display: block; }
+      .section-head .legend { margin-top: 12px; }
+      .collection-layout { display: block; }
+      .collection-list { max-height: 360px; border-right: 0; border-bottom: 1px solid rgba(125, 211, 252, .16); }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="hero">
+      <span class="eyebrow">Coal Chemical Industry Knowledge Graph</span>
+      <h1>智慧煤化工知识图谱</h1>
+      <p class="lead">以煤化工为总纲，将煤化工重大项目、煤焦化、煤气化、煤液化并列纳入“煤化工包含内容”；并依据四个压缩包文献题名检索，补入废水零排放、绿氢耦合、VOCs、细渣资源化、胶质体、直接液化、供氢溶剂、沥青基材料等遗漏关键词。</p>
+    </div>
+  </header>
+
+  <main>
+    <div class="toolbar">
+      <div class="stats" aria-label="文献来源统计">
+        <span class="stat">煤化工重大项目：90 篇</span>
+        <span class="stat">煤焦化：88 篇</span>
+        <span class="stat">煤气化：109 篇</span>
+        <span class="stat">煤液化：102 篇</span>
+        <a class="stat" href="literature.html" target="_blank" rel="noopener">打开全量文献库</a>
+      </div>
+      <div class="legend" aria-label="节点类型筛选">
+        <button class="tag" type="button" data-filter="all"><span class="dot" style="--color:#0ea5e9"></span>全部</button>
+        <button class="tag" type="button" data-filter="重大项目"><span class="dot" style="--color:#22c55e"></span>重大项目</button>
+        <button class="tag" type="button" data-filter="煤气化"><span class="dot" style="--color:#38bdf8"></span>煤气化</button>
+        <button class="tag" type="button" data-filter="煤焦化"><span class="dot" style="--color:#f59e0b"></span>煤焦化</button>
+        <button class="tag" type="button" data-filter="煤液化"><span class="dot" style="--color:#a78bfa"></span>煤液化</button>
+        <button class="tag" type="button" data-filter="共性支撑"><span class="dot" style="--color:#ef4444"></span>共性支撑</button>
+      </div>
+    </div>
+
+    <section class="workspace">
+      <div class="network-panel">
+        <svg viewBox="0 0 1500 860" role="img" aria-label="智慧煤化工知识图谱">
+          <g id="links"></g>
+          <g id="nodes"></g>
+        </svg>
+      </div>
+
+      <aside class="detail-panel" id="detail"></aside>
+    </section>
+
+    <section class="collection" id="literature">
+      <div class="section-head">
+        <div>
+          <h2>文献收录与网页预览</h2>
+          <p id="collectionHint">点击关键词后，这里只展示与当前关键词相关的 PDF 文献；可在右侧直接预览，也可新窗口打开原文。</p>
+        </div>
+        <div class="legend" aria-label="文献收录筛选">
+          <button class="tag active" type="button" data-ref-filter="all"><span class="dot" style="--color:#0ea5e9"></span>全部</button>
+          <button class="tag" type="button" data-ref-filter="煤化工重大项目"><span class="dot" style="--color:#22c55e"></span>重大项目</button>
+          <button class="tag" type="button" data-ref-filter="煤气化"><span class="dot" style="--color:#38bdf8"></span>煤气化</button>
+          <button class="tag" type="button" data-ref-filter="煤焦化"><span class="dot" style="--color:#f59e0b"></span>煤焦化</button>
+          <button class="tag" type="button" data-ref-filter="煤液化"><span class="dot" style="--color:#a78bfa"></span>煤液化</button>
+        </div>
+      </div>
+      <div class="collection-layout">
+        <div class="collection-list" id="collectionList"></div>
+        <div class="viewer-panel">
+          <div class="viewer-toolbar">
+            <div class="viewer-title" id="viewerTitle">选择一篇文献进行预览</div>
+            <div class="reference-actions">
+              <a id="viewerOpen" href="#" target="_blank" rel="noopener">新窗口打开</a>
+            </div>
+          </div>
+          <iframe class="pdf-frame" id="pdfFrame" title="文献 PDF 预览"></iframe>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="文献收录/full-literature-data.js"></script>
+  <script>
+    const archiveSources = {
+      "煤化工重大项目": "煤化工重大项目文献包",
+      "煤焦化": "煤焦化文献包",
+      "煤气化": "煤气化文献包",
+      "煤液化": "煤液化文献包"
+    };
+
+    const typeColors = {
+      "核心": "#0ea5e9",
+      "重大项目": "#22c55e",
+      "煤气化": "#38bdf8",
+      "煤焦化": "#f59e0b",
+      "煤液化": "#a78bfa",
+      "共性支撑": "#ef4444"
+    };
+
+    const references = {
+      P01: ref("“十五五”我国煤化工产业发展趋势_朱彬彬.pdf", "煤化工重大项目", "产业趋势"),
+      P02: ref("M公司煤化工项目绿色低碳发展影响因素研究_康秦宝.pdf", "煤化工重大项目", "项目低碳"),
+      P03: ref("构建新疆煤炭煤电煤化工产业集群高质量发展新模式的思考_高金晶.pdf", "煤化工重大项目", "产业集群"),
+      P04: ref("黄河几字弯区现代煤化工产业适水发展路径研究_杨玉峰.pdf", "煤化工重大项目", "适水发展"),
+      P05: ref("煤化工废水零排放系统碳足迹特征分析_吴迪.pdf", "煤化工重大项目", "废水零排放"),
+      P06: ref("现代煤化工反渗透浓盐水的治理研究：集中处理优势及技术挑战_张伟星.pdf", "煤化工重大项目", "浓盐水治理"),
+      P07: ref("LDAR在煤化工企业VOCs管控中的应用_王斌.pdf", "煤化工重大项目", "VOCs/LDAR"),
+      P08: ref("煤化工产业火灾风险特点及事故预防对策分析_李淼城.pdf", "煤化工重大项目", "安全风险"),
+      P09: ref("煤化工企业MES建设实践_吴海鹏.pdf", "煤化工重大项目", "MES"),
+      P10: ref("分布式控制系统在大型煤化工工厂中的应用与实践_方彪.pdf", "煤化工重大项目", "DCS"),
+      P11: ref("煤化工空分深冷装置降本增效关键技术及经济效益分析_颜廷忠.pdf", "煤化工重大项目", "空分装置"),
+      P12: ref("煤化工项目甲醇合成装置空冷器的布置及管线优化设计_朱彦儒.pdf", "煤化工重大项目", "甲醇装置"),
+      P13: ref("绿氢耦合现代煤化工发展路径分析_王海玲.pdf", "煤化工重大项目", "绿氢耦合"),
+
+      G01: ref("现代煤气化技术发展趋势及应用综述_汪寿建.pdf", "煤气化", "技术综述"),
+      G02: ref("煤气化技术在中国_回顾与展望_王辅臣.pdf", "煤气化", "中国煤气化"),
+      G03: ref("Shell粉煤气化装置气力输送系统运行问题及优化改进_刘龙刚.pdf", "煤气化", "Shell粉煤气化"),
+      G04: ref("Shell煤气化装置典型事故案例分析与对策_杨青哲.pdf", "煤气化", "Shell安全"),
+      G05: ref("水煤浆气化技术研究进展与展望_窦睿然.pdf", "煤气化", "水煤浆气化"),
+      G06: ref("晋华炉煤气化技术的创新发展及产业化应用思考_李广民.pdf", "煤气化", "气化炉"),
+      G07: ref("煤气化过程中炉温对产物分布的影响规律_丁海峰.pdf", "煤气化", "炉温控制"),
+      G08: ref("煤气化结渣性能的测定分析与经济价值初探_姜阳阳.pdf", "煤气化", "结渣性能"),
+      G09: ref("气流床煤气化烧嘴关键材料对比研究_成富宁.pdf", "煤气化", "烧嘴材料"),
+      G10: ref("粉煤气化装置黑水闪蒸系统设备布置探讨_康莉.pdf", "煤气化", "黑水系统"),
+      G11: ref("煤气化灰渣的高效资源化利用_秦硕.pdf", "煤气化", "灰渣资源化"),
+      G12: ref("不同煤气化细渣的基础性质研究—以内蒙古中西部地区为例_李飞.pdf", "煤气化", "细渣性质"),
+      G13: ref("煤气化制甲醇的碳排放特征与低碳化路径研究_史博儒.pdf", "煤气化", "煤制甲醇低碳"),
+      G14: ref("CO_2-煤气化耦合绿氢制备甲醇系统集成_郑雅文.pdf", "煤气化", "CO2/绿氢制甲醇"),
+      G15: ref("气化炉机理模型+APC+RTO优化控制系统在煤气化和合成氨装置上的应用_袁伦勇.pdf", "煤气化", "智能控制"),
+
+      C01: ref("A comprehensive study on the transformation of chemical structures in the plastic layers during coking of Australian coals.pdf", "煤焦化", "塑性层结构"),
+      C02: ref("Mechanistic study of plastic layer permeability during coking of Australian metallurgical coals.pdf", "煤焦化", "塑性层渗透性"),
+      C03: ref("Effects-of-coal-interactions-during-cokemaking-on-coke-pr_2020_Fuel-Processi.pdf", "煤焦化", "配煤炼焦"),
+      C04: ref("Insight into the relationship between carbon structure and coke performance during coal blending coking.pdf", "煤焦化", "焦炭性能"),
+      C05: ref("Evolution of carbon structure and cross-linking structure during coking process of coking coal.pdf", "煤焦化", "碳结构演化"),
+      C06: ref("Changes in the free radical concentration and carbon structure of coke during the coal coking process.pdf", "煤焦化", "自由基/碳结构"),
+      C07: ref("煤焦化过程中胶质体阶段自由基与碳结构变化的实验研究_许恒光.pdf", "煤焦化", "胶质体"),
+      C08: ref("煤焦化企业焦炉煤气净化与分离工艺改进研究_宁尚儒.pdf", "煤焦化", "焦炉煤气净化"),
+      C09: ref("煤焦化煤气净化系统硫泡沫制粉微孔过滤工艺技术改造_许坤.pdf", "煤焦化", "硫泡沫制粉"),
+      C10: ref("煤焦化储罐呼吸逸散废气减量收集及其净化技术研究_郭涛.pdf", "煤焦化", "废气治理"),
+      C11: ref("AB系列PLC在马钢煤焦化新区出焦除尘中的应用_余素萍.pdf", "煤焦化", "出焦除尘"),
+      C12: ref("SM系统在马钢煤焦化公司苯加氢系统上的应用_方超.pdf", "煤焦化", "苯加氢"),
+      C13: ref("安全诊断在煤焦化安全管理中的应用_刘晨.pdf", "煤焦化", "焦化安全"),
+
+      L01: ref("煤直接液化技术发展方向及建议_李文博.pdf", "煤液化", "直接液化"),
+      L02: ref("煤直接液化技术换代的化学反应问题_王元哲.pdf", "煤液化", "反应机理"),
+      L03: ref("富油煤溶剂萃取和直接液化技术研究进展_刘道燃.pdf", "煤液化", "溶剂萃取/直接液化"),
+      L04: ref("煤直接液化中供氢溶剂脱氢行为的研究_林霖.pdf", "煤液化", "供氢溶剂"),
+      L05: ref("不同氢源作用下煤直接液化过程的自由基反应行为研究_田佳欣.pdf", "煤液化", "氢源/自由基"),
+      L06: ref("钼基催化剂的制备及其煤液化催化加氢性能研究_李志辉.pdf", "煤液化", "钼基催化剂"),
+      L07: ref("煤直接液化油加氢精制催化剂结构调控研究进展_邓开鑫.pdf", "煤液化", "加氢精制"),
+      L08: ref("煤液化残渣与石油沥青相容性的影响因素研究_杨泽华.pdf", "煤液化", "液化残渣"),
+      L09: ref("煤直接液化残渣制备高导电炭黑及其电化学性能研究_孟倩.pdf", "煤液化", "残渣高值化"),
+      L10: ref("煤液化沥青制备高端碳材料的研究与技术路径优化应用价值_刘红.pdf", "煤液化", "沥青基材料"),
+      L11: ref("煤液化沥青基可纺中间相沥青的制备及性能研究_冯晓慧.pdf", "煤液化", "中间相沥青"),
+      L12: ref("煤液化减三线油浆超临界萃取组分的性能及分布规律研究_孙鹏飞.pdf", "煤液化", "油浆萃取"),
+      L13: ref("煤液化减压塔运行波动分析_邢波.pdf", "煤液化", "分馏/减压塔"),
+      L14: ref("ORBIT轨道球阀在煤直接液化工艺的应用及失效分析_韩云亮.pdf", "煤液化", "阀门失效"),
+      L15: ref("煤直接液化生产高压屏蔽泵密封油的探索与工业实践_逯波.pdf", "煤液化", "屏蔽泵")
+    };
+
+    function ref(file, archive, topic) {
+      return {
+        file,
+        archive,
+        topic,
+        path: `${archiveSources[archive] || archive} / ${file}`
+      };
+    }
+
+    const nodes = [
+      node("煤化工", "核心", 750, 410, "煤化工以煤为原料，通过热转化、气化、液化、焦化及后续合成加工获得燃料、化学品和材料。当前图谱把“煤化工重大项目”与煤焦化、煤气化、煤液化并列为煤化工的包含内容。", ["总包含关系：煤化工包含煤化工重大项目、煤焦化、煤气化、煤液化。", "重大项目节点承接煤化工压缩包中的产业政策、园区集群、绿色低碳、废水治理、智能化和安全管理文献。", "共性支撑节点用于连接多个方向反复出现的关键词。"], ["P01","P02","G01","C03","L01"]),
+
+      node("煤化工重大项目", "重大项目", 750, 180, "对应煤化工.zip中的90篇文献，重点集中在现代煤化工产业趋势、项目低碳化、适水发展、园区集群、废水治理、VOCs、安全风险和智能控制。", ["它不是煤气化、煤液化或煤焦化的上位节点，而是与三者并列的煤化工包含内容。", "从题名高频检索看，废水、零排放、VOCs、绿氢、产业集群、甲醇、空分、MES/DCS应补入图谱。"], ["P01","P02","P03","P04","P13"]),
+      node("煤气化", "煤气化", 1090, 300, "煤气化将煤在氧气、水蒸气或二氧化碳参与下转化为合成气，是现代煤化工制甲醇、制氢、多联产和低碳耦合的重要入口。", ["文献包中新增高频词包括Shell粉煤气化、水煤浆气化、黑水灰水、细渣灰渣、炉温、结渣、烧嘴、CO2/绿氢制甲醇。", "煤气化与煤化工重大项目共享绿氢、低碳、甲醇、安全和智能控制主题。"], ["G01","G02","G03","G05","G14"]),
+      node("煤焦化", "煤焦化", 410, 300, "煤焦化围绕炼焦煤热解、胶质体和塑性层演化、焦炭结构性能、焦炉煤气净化、焦油沥青和除尘安全等主题展开。", ["文献包中英文题名较多，塑性层、焦化压力、焦炭微结构、自由基、碳结构、配煤炼焦是需要补入的关键词。", "工程类文献还提示焦炉煤气净化、出焦除尘、苯加氢、储罐废气和安全诊断。"], ["C01","C03","C04","C08","C13"]),
+      node("煤液化", "煤液化", 750, 640, "煤液化围绕直接液化、溶剂萃取、供氢溶剂、催化加氢、油品分馏以及液化残渣和沥青基材料高值化展开。", ["题名检索中直接液化出现最集中，沥青、残渣、催化剂、加氢、油浆、萃取、分馏、球阀、屏蔽泵是新增关键词。", "液化残渣与焦化、沥青材料方向存在交叉，可作为资源化节点连接。"], ["L01","L03","L04","L06","L10"]),
+
+      node("产业集群/化工园区", "重大项目", 595, 90, "煤化工重大项目往往依托煤炭煤电煤化工一体化基地和化工园区承载，关注产业链耦合、区域布局、协同发展与资源约束。", ["压缩包题名出现“产业集群”“化工园区”“能源金三角”“新疆基地”等线索。"], ["P03","P04"]),
+      node("绿色低碳/绿氢耦合", "共性支撑", 910, 90, "绿氢、CO2利用、碳排放核算和减污降碳协同是现代煤化工与煤气化制甲醇方向的共同关键词。", ["从煤化工与煤气化包共同检索到绿氢、低碳、碳排放、甲醇等关键词。"], ["P02","P13","G13","G14"]),
+      node("煤化工废水/零排放", "重大项目", 1120, 150, "煤化工压缩包中废水相关题名最多，覆盖含酚、含盐、高毒、高氨氮、深度除氟、纳滤分盐、反渗透浓盐水、零排放和碳足迹。", ["废水是煤化工重大项目的高频遗漏词，也是气化黑水灰水和液化废水的交叉治理主题。"], ["P05","P06"]),
+      node("VOCs/LDAR", "重大项目", 1015, 705, "VOCs治理和LDAR泄漏检测修复属于煤化工企业环境管理的重要补充词，题名中涉及甲醇罐区、污水处理和储罐呼吸废气。", ["与煤焦化储罐废气和煤化工企业VOCs管控形成交叉。"], ["P07","C10"]),
+      node("安全风险/定量评价", "共性支撑", 500, 705, "煤化工、煤气化、煤焦化、煤液化文献均出现安全、风险、事故、失效分析等主题，应作为共性支撑节点。", ["重点场景包括火灾爆炸、Shell气化事故、焦化安全诊断、液化阀泵失效和高温高压装置风险。"], ["P08","G04","C13","L14","L15"]),
+      node("智能控制/MES/DCS", "共性支撑", 300, 565, "智能化控制、MES、DCS、APC、RTO、数字孪生是重大项目和煤气化包中共同出现的运维与控制关键词。", ["它连接企业经营、工厂控制、气化炉优化和焦化作业车辆目标检测。"], ["P09","P10","G15"]),
+      node("空分/甲醇装置", "重大项目", 1250, 300, "空分制氧、甲醇合成、空冷器布置和管线优化是煤化工项目工程设计中的高频装置主题。", ["煤气化制甲醇与重大项目中的甲醇装置、空分装置形成前后工序关联。"], ["P11","P12","G13"]),
+
+      node("Shell粉煤气化", "煤气化", 1270, 410, "Shell粉煤气化在煤气化包中多次出现，文献覆盖气力输送、事故案例、原煤转化效率、渣池积渣和优化改进。", ["适合连接干粉输送、气化炉、结渣安全和装置优化。"], ["G03","G04"]),
+      node("水煤浆气化", "煤气化", 1215, 540, "水煤浆气化关注制浆、烘炉、成浆性、废水回用制浆和炉内反应稳定性。", ["液化废水回用制水煤浆题名提示液化与气化之间的水系统交叉。"], ["G05"]),
+      node("黑水灰水", "煤气化", 1030, 610, "黑水闪蒸、灰水处理和除硬是煤气化装置水系统中的高频工程问题。", ["与煤化工废水零排放节点相连。"], ["G10"]),
+      node("细渣/灰渣资源化", "煤气化", 890, 720, "煤气化细渣和灰渣文献覆盖基础性质、吸附、分子筛、土壤含水层、锅炉掺烧和全资源化利用。", ["资源化利用是煤气化与煤基固废低碳利用的新增关键词。"], ["G11","G12"]),
+      node("炉温/结渣/烧嘴", "煤气化", 1335, 625, "炉温影响产物分布，结渣性能和烧嘴材料决定气化炉稳定运行、寿命和安全边界。", ["该节点补足了工况、材料和故障诊断维度。"], ["G07","G08","G09"]),
+      node("合成气/变换", "煤气化", 1375, 220, "合成气经变换、净化和甲醇合成等下游步骤进入现代煤化工产品链。", ["与绿氢耦合、CO2制甲醇和空分甲醇装置存在强关联。"], ["G13","G14"]),
+
+      node("配煤炼焦", "煤焦化", 230, 410, "配煤炼焦关注不同煤种相互作用、焦炭性能、焦化压力和焦炭质量预测。", ["英文题名中的coal blending coking和cokemaking提示需补入配煤炼焦关键词。"], ["C03","C04"]),
+      node("胶质体/塑性层", "煤焦化", 210, 220, "胶质体和塑性层是炼焦过程中的关键阶段，决定煤粒软化、挥发分析出、渗透性和焦炭结构演化。", ["塑性层结构、渗透性、自由基和碳结构变化是煤焦化文献中的核心主题。"], ["C01","C02","C07"]),
+      node("焦炭强度/微结构", "煤焦化", 120, 540, "焦炭强度、光学组织、碳结构和交联结构决定高炉焦质量和反应后强度。", ["与配煤炼焦、胶质体演化共同构成煤焦化机理层。"], ["C04","C05","C06"]),
+      node("焦炉煤气净化", "煤焦化", 350, 650, "焦炉煤气净化与分离涉及硫泡沫、微孔过滤、尾气吸收和下游苯加氢系统。", ["该节点补入焦化企业工程治理关键词。"], ["C08","C09","C12"]),
+      node("出焦除尘/废气治理", "煤焦化", 85, 305, "出焦除尘、储罐呼吸废气收集和废气净化是煤焦化绿色转型和安全生产的工程重点。", ["与VOCs/LDAR和煤化工企业废气治理形成交叉。"], ["C10","C11"]),
+      node("焦油/沥青", "煤焦化", 330, 120, "焦油和沥青既是焦化副产物，也与煤液化沥青、高端碳材料、针状焦等方向发生材料化交叉。", ["焦化包和液化包都出现pitch/沥青相关题名。"], ["C12","L10","L11"]),
+
+      node("直接液化", "煤液化", 705, 760, "直接液化是煤液化包中最集中的主题，题名涉及技术发展、反应问题、柴油性质、装置氯平衡、注硫系统和加氢装置节能。", ["应作为煤液化分支下的核心关键词。"], ["L01","L02"]),
+      node("供氢溶剂", "煤液化", 555, 805, "供氢溶剂影响煤直接液化中的自由基稳定、氢转移、油收率和循环溶剂自身反应。", ["不同氢源与供氢溶剂共同构成液化反应机理节点。"], ["L04","L05"]),
+      node("液化催化剂/加氢精制", "煤液化", 930, 805, "钼基、Fe/Co/Ni等催化剂及加氢精制催化剂决定煤液化油品改质和重质组分转化效果。", ["题名检索显示催化剂、加氢、加氢改质和加氢精制均应补入。"], ["L06","L07"]),
+      node("煤液化残渣", "煤液化", 1050, 710, "煤液化残渣可用于炭黑、炭纤维、泡沫炭、多孔炭、路面材料和焦化配煤，是液化副产物高值化核心节点。", ["它与煤焦化中的液化残渣参与配煤炼焦存在交叉。"], ["L08","L09"]),
+      node("液化沥青/碳材料", "煤液化", 625, 555, "液化沥青可制备中间相沥青、碳纤维、泡沫炭、碳量子点和预焙阳极，是煤液化材料化方向的高频关键词。", ["与焦油/沥青节点形成焦化-液化交叉。"], ["L10","L11"]),
+      node("油浆萃取/分馏", "煤液化", 930, 555, "油浆超临界萃取、减压塔运行和轻重馏分分布决定液化产品分离、循环和后续加工。", ["题名检索补入萃取、油浆、分馏、减压塔等词。"], ["L03","L12","L13"]),
+
+      node("原煤接收与储运", "共性支撑", 90, 80, "原煤接收、翻车、堆取、封闭储煤和计量输送是三条煤化工路线共同的入口，决定后续供煤连续性和粉尘控制水平。", ["连接煤焦化备煤、煤气化磨煤制粉和煤液化煤浆制备。", "重点控制煤种分仓、含水率、杂物清除、皮带联锁和煤尘防爆。"], ["P03","P08","G15"]),
+      node("煤质分析/在线采样", "共性支撑", 235, 70, "煤质分析覆盖水分、灰分、挥发分、硫分、灰熔融性、粒度和反应性，是配煤、气化炉选型和液化反应条件设定的基础。", ["上接原煤储运，下接破碎筛分、配煤炼焦、煤浆制备和气化炉负荷设定。"], ["G02","G15","C03","L01"]),
+      node("破碎筛分", "共性支撑", 385, 55, "破碎筛分把来煤处理到满足炼焦装煤、磨煤制粉或液化制浆要求的粒度范围，并清除大块异物。", ["粒度过粗会影响传热传质，粒度过细会增加粉尘、能耗和输送风险。"], ["P08","G15","C03"]),
+      node("干燥脱水", "共性支撑", 540, 45, "干燥脱水降低无效热耗，提高粉煤输送稳定性、炼焦装煤密度和液化煤浆浓度。", ["与磨煤制粉、粉煤气化、焦化装煤和液化煤浆制备相连。"], ["G03","G15","L03"]),
+      node("磨煤制粉", "煤气化", 690, 45, "磨煤制粉为干粉气化提供粒度合格、含水率可控的煤粉，通常与惰化、收粉、锁斗和气力输送系统配套。", ["Shell粉煤气化与干粉气化路线对磨煤、干燥、氮气惰化和粉煤输送要求较高。"], ["G03","G15"]),
+      node("水煤浆制备", "煤气化", 840, 45, "水煤浆制备将煤粉、水和添加剂调制成稳定浆体，是水煤浆气化的前置工序。", ["关键指标包括浓度、黏度、稳定性、粒度级配和废水回用对成浆性的影响。"], ["G05","P05"]),
+      node("公辅工程/蒸汽电水", "重大项目", 990, 45, "公辅工程提供蒸汽、电力、循环水、脱盐水、氮气、仪表空气和火炬系统，是煤化工全流程连续运行的支撑。", ["它把煤化工重大项目中的园区、空分、环保、安全和智能调度串起来。"], ["P03","P10","P11"]),
+      node("氧气/蒸汽供应", "煤气化", 1140, 55, "氧气和蒸汽是气化反应的关键气化剂，氧煤比、蒸汽煤比和供给稳定性直接影响炉温、合成气组成和安全边界。", ["上游连接空分装置，下游连接气化炉反应和氧气管线安全。"], ["P11","G01","G04"]),
+      node("煤气化进料系统", "煤气化", 1285, 80, "煤气化进料系统包括干粉锁斗、煤粉气力输送、水煤浆泵送、氧煤喷嘴和联锁切断，是稳定入炉的关键。", ["干粉路线关注锁斗压差和气力输送；水煤浆路线关注浆泵、管线和喷嘴磨损。"], ["G03","G05","G09"]),
+
+      node("气化炉反应区", "煤气化", 1410, 365, "气化炉反应区内并行发生部分氧化、燃烧放热、水煤气反应、Boudouard反应、变换反应和熔渣形成。", ["炉型、煤质、氧煤比、蒸汽煤比、停留时间共同决定碳转化率和有效气含量。"], ["G01","G02","G07"]),
+      node("激冷/废锅回收", "煤气化", 1415, 480, "激冷或废锅回收用于快速冷却粗合成气并回收热量，影响后续洗涤、黑水系统和能效。", ["激冷流程水系统负荷高；废锅流程更重视换热面结垢、腐蚀和热回收。"], ["G01","G10"]),
+      node("合成气洗涤除尘", "煤气化", 1370, 585, "合成气洗涤除尘通过文丘里、洗涤塔或旋风分离去除飞灰、细渣和可溶污染物。", ["它是粗合成气进入变换、酸脱和甲醇合成前的净化入口。"], ["G10","G11","G12"]),
+      node("渣水分离/锁斗", "煤气化", 1235, 675, "渣水分离、锁斗排渣和渣池管理负责把熔渣或细渣从高压系统安全排出。", ["与结渣、灰渣资源化、黑水灰水和安全联锁关系密切。"], ["G08","G11","G12"]),
+      node("变换冷却", "煤气化", 1265, 195, "变换冷却通过水煤气变换调节H2/CO比，并分级回收热量、冷凝水和余热。", ["制氢、合成氨和甲醇路线对变换深度要求不同。"], ["G13","G14","P12"]),
+      node("酸性气体脱除", "煤气化", 1395, 115, "酸性气体脱除去除H2S、COS和CO2，保护下游催化剂并降低排放。", ["常与COS水解、低温甲醇洗、硫回收和CO2捕集连成净化链。"], ["G01","G13","G14"]),
+      node("COS水解/脱硫", "煤气化", 1335, 25, "COS水解和脱硫把有机硫转化并脱除，避免甲醇合成、氨合成和燃料气系统催化剂中毒。", ["与酸性气体脱除、硫回收和安全环保排放相连。"], ["G01","G13"]),
+      node("硫回收/尾气处理", "共性支撑", 1210, 20, "硫回收和尾气处理把酸性气中的硫转化为硫磺或硫酸盐，并控制SO2、H2S等排放。", ["煤气化净化和焦炉煤气脱硫都需要这个环保支撑环节。"], ["C09","G13"]),
+      node("CO2捕集与利用", "共性支撑", 1060, 115, "CO2捕集与利用连接低碳改造、绿氢耦合、甲醇合成和碳排放核算，是现代煤化工降碳关键环节。", ["可与绿氢共同进入甲醇路线，也可纳入园区碳管理。"], ["P02","P13","G13","G14"]),
+      node("甲醇合成", "重大项目", 1165, 285, "甲醇合成将净化合成气在催化剂上转化为粗甲醇，是煤气化下游最典型的煤化工产品路线之一。", ["上接变换、酸脱、CO2/绿氢调碳氢比，下接精馏、MTO或化学品链。"], ["P12","G13","G14"]),
+      node("甲醇精馏/MTO", "重大项目", 1065, 410, "甲醇精馏获得合格甲醇，进一步可进入MTO/MTP、烯烃、芳烃或燃料添加剂产品链。", ["它把煤气化合成气路线与现代煤化工产品结构联系起来。"], ["P12","G13"]),
+      node("氢气/合成氨", "重大项目", 1210, 405, "煤气化合成气经变换、净化和氮氢比调节后可进入制氢或合成氨路线。", ["与空分制氮、变换冷却、酸脱和APC优化控制相连。"], ["G15","G14"]),
+
+      node("备煤与配煤槽", "煤焦化", 70, 185, "备煤与配煤槽按煤种、挥发分、黏结性和灰硫指标进行均化配比，是炼焦质量稳定的第一环节。", ["上接煤质分析和破碎筛分，下接粉碎、装煤和焦炉炭化。"], ["C03","C04"]),
+      node("粉碎/装煤", "煤焦化", 80, 420, "粉碎和装煤决定装炉煤粒度、堆密度、偏析和装煤烟尘控制，对焦炉操作和焦炭强度有直接影响。", ["与出焦除尘、装煤除尘、焦化压力和焦炉热制度联动。"], ["C03","C11"]),
+      node("焦炉炭化室", "煤焦化", 165, 145, "焦炉炭化室中煤料经历干燥、热解、软化、胶质体形成、半焦固化和焦炭成熟。", ["这是煤焦化主反应器，连接胶质体/塑性层、焦炭微结构和荒煤气导出。"], ["C01","C02","C05"]),
+      node("荒煤气导出", "煤焦化", 240, 250, "荒煤气导出系统收集焦炉煤气、焦油雾、氨水、苯族烃、硫化物和粉尘。", ["它把焦炉炭化和后续煤气净化、焦油氨水分离串起来。"], ["C08","C12"]),
+      node("推焦/熄焦", "煤焦化", 70, 665, "推焦、拦焦、装焦和熄焦负责焦炭从炭化室出炉并快速降温，是粉尘、烟气和安全风险集中点。", ["可采用湿熄焦或干熄焦，影响余热回收、焦炭强度和环境排放。"], ["C11","C13"]),
+      node("干熄焦/CDQ", "煤焦化", 185, 750, "干熄焦利用惰性气体冷却焦炭并回收显热发电，降低水耗和粉尘，是焦化绿色升级环节。", ["连接推焦熄焦、焦炭分级和公辅工程。"], ["C11","C13"]),
+      node("筛焦/焦炭分级", "煤焦化", 315, 760, "筛焦和焦炭分级按粒度、强度和用途分配冶金焦、铸造焦或小粒焦。", ["下接焦炭质量检测和外供钢铁流程。"], ["C04","C06"]),
+      node("焦油氨水分离", "煤焦化", 455, 745, "焦油氨水分离把荒煤气冷凝液分为焦油、氨水和轻油等组分，是煤气净化和副产品回收的开端。", ["下接脱氨、脱硫脱氰、粗苯回收和焦油深加工。"], ["C08","C12"]),
+      node("脱硫脱氰/硫泡沫", "煤焦化", 500, 620, "脱硫脱氰去除焦炉煤气中的硫化氢、氰化物等污染物，硫泡沫处理决定副盐和尾气治理负荷。", ["与焦炉煤气净化、硫回收和环保排放相连。"], ["C08","C09"]),
+      node("脱氨/硫铵", "煤焦化", 520, 500, "脱氨或硫铵工序回收氨并降低后续水处理负荷，是焦化煤气净化的典型副产环节。", ["与焦油氨水分离、粗苯回收和废水处理相连。"], ["C08","C09"]),
+      node("粗苯回收/苯加氢", "煤焦化", 520, 370, "粗苯回收和苯加氢将焦炉煤气中的苯族烃转化为更高价值的苯类产品。", ["与焦炉煤气净化、焦油沥青和VOCs治理相连。"], ["C12","C10"]),
+      node("焦油深加工", "煤焦化", 465, 230, "焦油深加工通过蒸馏、洗涤、加氢或沥青调制生产轻油、酚油、萘油、蒽油和沥青等产品。", ["与焦油/沥青、液化沥青和碳材料路线交叉。"], ["C12","L10"]),
+      node("焦炭质量检测", "煤焦化", 285, 40, "焦炭质量检测关注M40、M10、CRI、CSR、灰硫、气孔结构和显微组织。", ["反馈配煤方案、炭化制度和熄焦方式。"], ["C04","C05","C06"]),
+
+      node("液化煤浆制备", "煤液化", 575, 705, "液化煤浆制备将煤粉与循环溶剂、催化剂或助剂混合成可泵送浆体，是直接液化反应的入料基础。", ["上接破碎、干燥和煤质分析，下接预热与液化反应器。"], ["L03","L04"]),
+      node("催化剂加入", "煤液化", 445, 805, "催化剂加入影响氢转移、自由基稳定、重质组分裂化和油收率，常见体系包括铁系、钼系和油溶性过渡金属催化剂。", ["与供氢溶剂、液化反应器和加氢精制相连。"], ["L06","L07"]),
+      node("预热/升压", "煤液化", 710, 815, "预热和升压把煤浆送入高温高压反应区，要求换热、泵送、阀门和管线耐磨耐压。", ["与屏蔽泵、球阀失效和安全联锁关系密切。"], ["L14","L15"]),
+      node("液化反应器", "煤液化", 845, 735, "液化反应器中煤大分子在供氢溶剂和催化剂作用下发生裂解、加氢、缩聚竞争反应。", ["关键控制温度、氢分压、停留时间、煤浆浓度和催化剂分散性。"], ["L01","L02","L04","L06"]),
+      node("高压分离", "煤液化", 1010, 825, "高压分离把反应产物分为循环氢、气相轻组分和液固混合物，决定氢气回收和后续稳定操作。", ["下接固液分离、溶剂回收和尾气处理。"], ["L01","L13","L15"]),
+      node("固液分离", "煤液化", 1170, 770, "固液分离去除未转化煤、矿物质、催化剂残留和重质残渣，是液化油稳定分馏的前提。", ["与煤液化残渣、油浆萃取和残渣高值化相连。"], ["L08","L09","L12"]),
+      node("溶剂回收循环", "煤液化", 1085, 610, "溶剂回收循环通过蒸馏、加氢和组分调配维持供氢溶剂质量。", ["供氢溶剂自身反应和脱氢行为会反向影响液化效率。"], ["L04","L13"]),
+      node("液化油加氢改质", "煤液化", 790, 515, "液化油加氢改质降低硫氮氧和不饱和组分，改善柴油、石脑油和重整原料性质。", ["与加氢精制催化剂、油品调和和项目节能优化相连。"], ["L07","L06"]),
+      node("液化油品调和", "煤液化", 655, 465, "液化油品调和根据馏程、十六烷值、芳烃、硫氮和稳定性要求形成柴油、石脑油或化工原料。", ["上接分馏和加氢改质，下接产品储运和质量检测。"], ["L01","L07"]),
+      node("残渣萃取/脱灰", "煤液化", 1180, 520, "残渣萃取和脱灰用于回收可利用重质油、沥青组分并降低灰分，为高值碳材料制备创造条件。", ["与煤液化残渣、油浆萃取和沥青基材料相连。"], ["L08","L10","L12"]),
+      node("阀泵密封与耐磨", "煤液化", 1010, 455, "高温高压煤浆、油渣和含固物料对球阀、柱塞阀、屏蔽泵和密封油系统提出耐磨、耐堵和可靠联锁要求。", ["液化包中球阀、五通阀、屏蔽泵等题名提示该设备环节不可省略。"], ["L14","L15"]),
+
+      node("废水预处理", "共性支撑", 1285, 760, "废水预处理面向含酚、含氨氮、含油、含盐和高毒废水，通常包括隔油、气浮、混凝、萃取、汽提和调节均质。", ["上接气化黑水、焦化氨水和液化酸性水，下接生化处理。"], ["P05","P06"]),
+      node("生化处理/SBR", "共性支撑", 1405, 735, "生化处理/SBR用于降解可生化有机物和氨氮，但会受酚、喹啉、高盐和毒性冲击影响。", ["与深度氧化、膜分盐和零排放系统串联。"], ["P05","P06"]),
+      node("臭氧/催化氧化", "共性支撑", 1425, 640, "臭氧、催化臭氧、湿式氧化和微波辅助氧化用于深度降解难降解有机物。", ["压缩包中白云石、稀土改性催化、喹啉等题名集中指向该环节。"], ["P05","P06"]),
+      node("膜分离/纳滤反渗透", "共性支撑", 1430, 545, "膜分离、纳滤和反渗透承担浓缩、分盐、回用和近零排放前端浓缩。", ["与反渗透浓盐水、蒸发结晶和产品盐纯度相关。"], ["P05","P06"]),
+      node("蒸发结晶/产品盐", "共性支撑", 1370, 455, "蒸发结晶将浓盐水转化为结晶盐或杂盐，是煤化工废水零排放末端环节。", ["产品盐纯度、氯化钠/硫酸钠分盐和碳足迹是项目评价重点。"], ["P05","P06"]),
+      node("火炬/放空系统", "共性支撑", 585, 815, "火炬和放空系统处理开停车、联锁切断、超压泄放和事故工况下的可燃有毒气体。", ["与安全联锁、CO/H2风险、VOCs和焦炉煤气系统相连。"], ["P08","G04","C13"]),
+      node("ESD/SIS联锁", "共性支撑", 420, 710, "ESD/SIS联锁通过检测、逻辑和执行机构实现紧急停车、切断、泄压和隔离。", ["覆盖氧气系统、气化炉、焦炉煤气、液化高压反应和火炬放空。"], ["P08","G04","L14","L15"]),
+      node("腐蚀防护/选材", "共性支撑", 250, 815, "腐蚀防护和选材面向湿硫化氢、氯离子、酸性水、高温灰渣和含固油浆等工况。", ["与煤气化黑水管道、煤化工氢气管道和液化阀泵密封相连。"], ["P08","G04","L14"]),
+      node("在线分析/APC优化", "共性支撑", 145, 775, "在线分析、APC、RTO和数字孪生用于稳定煤质、炉温、合成气组成、装置能耗和排放指标。", ["把MES/DCS与气化炉、甲醇、焦化、液化过程控制连接起来。"], ["P09","P10","G15"])
+    ];
+
+    const links = [
+      link("煤化工", "煤化工重大项目", true),
+      link("煤化工", "煤气化", true),
+      link("煤化工", "煤焦化", true),
+      link("煤化工", "煤液化", true),
+      link("煤化工重大项目", "产业集群/化工园区"),
+      link("煤化工重大项目", "绿色低碳/绿氢耦合"),
+      link("煤化工重大项目", "煤化工废水/零排放"),
+      link("煤化工重大项目", "VOCs/LDAR"),
+      link("煤化工重大项目", "安全风险/定量评价"),
+      link("煤化工重大项目", "智能控制/MES/DCS"),
+      link("煤化工重大项目", "空分/甲醇装置"),
+      link("煤气化", "Shell粉煤气化"),
+      link("煤气化", "水煤浆气化"),
+      link("煤气化", "黑水灰水"),
+      link("煤气化", "细渣/灰渣资源化"),
+      link("煤气化", "炉温/结渣/烧嘴"),
+      link("煤气化", "合成气/变换"),
+      link("煤焦化", "配煤炼焦"),
+      link("煤焦化", "胶质体/塑性层"),
+      link("煤焦化", "焦炭强度/微结构"),
+      link("煤焦化", "焦炉煤气净化"),
+      link("煤焦化", "出焦除尘/废气治理"),
+      link("煤焦化", "焦油/沥青"),
+      link("煤液化", "直接液化"),
+      link("煤液化", "供氢溶剂"),
+      link("煤液化", "液化催化剂/加氢精制"),
+      link("煤液化", "煤液化残渣"),
+      link("煤液化", "液化沥青/碳材料"),
+      link("煤液化", "油浆萃取/分馏"),
+      link("绿色低碳/绿氢耦合", "合成气/变换", false, true),
+      link("绿色低碳/绿氢耦合", "空分/甲醇装置", false, true),
+      link("煤化工废水/零排放", "黑水灰水", false, true),
+      link("煤化工废水/零排放", "水煤浆气化", false, true),
+      link("VOCs/LDAR", "出焦除尘/废气治理", false, true),
+      link("安全风险/定量评价", "Shell粉煤气化", false, true),
+      link("安全风险/定量评价", "炉温/结渣/烧嘴", false, true),
+      link("安全风险/定量评价", "焦炉煤气净化", false, true),
+      link("安全风险/定量评价", "液化催化剂/加氢精制", false, true),
+      link("智能控制/MES/DCS", "合成气/变换", false, true),
+      link("焦油/沥青", "液化沥青/碳材料", false, true),
+      link("煤液化残渣", "配煤炼焦", false, true),
+      link("煤液化残渣", "细渣/灰渣资源化", false, true),
+
+      link("煤化工", "原煤接收与储运", true),
+      link("煤化工", "公辅工程/蒸汽电水", true),
+      link("煤化工", "废水预处理", true),
+      link("原煤接收与储运", "煤质分析/在线采样"),
+      link("煤质分析/在线采样", "破碎筛分"),
+      link("破碎筛分", "干燥脱水"),
+      link("干燥脱水", "磨煤制粉"),
+      link("干燥脱水", "备煤与配煤槽"),
+      link("干燥脱水", "液化煤浆制备"),
+      link("破碎筛分", "水煤浆制备"),
+      link("公辅工程/蒸汽电水", "空分/甲醇装置"),
+      link("空分/甲醇装置", "氧气/蒸汽供应"),
+      link("氧气/蒸汽供应", "煤气化进料系统"),
+      link("磨煤制粉", "Shell粉煤气化"),
+      link("磨煤制粉", "煤气化进料系统"),
+      link("水煤浆制备", "水煤浆气化"),
+      link("水煤浆制备", "煤气化进料系统"),
+      link("煤气化进料系统", "气化炉反应区"),
+      link("Shell粉煤气化", "气化炉反应区"),
+      link("水煤浆气化", "气化炉反应区"),
+      link("气化炉反应区", "炉温/结渣/烧嘴"),
+      link("气化炉反应区", "激冷/废锅回收"),
+      link("激冷/废锅回收", "合成气洗涤除尘"),
+      link("合成气洗涤除尘", "黑水灰水"),
+      link("黑水灰水", "渣水分离/锁斗"),
+      link("渣水分离/锁斗", "细渣/灰渣资源化"),
+      link("合成气洗涤除尘", "变换冷却"),
+      link("变换冷却", "合成气/变换"),
+      link("变换冷却", "酸性气体脱除"),
+      link("酸性气体脱除", "COS水解/脱硫"),
+      link("COS水解/脱硫", "硫回收/尾气处理"),
+      link("酸性气体脱除", "CO2捕集与利用"),
+      link("CO2捕集与利用", "绿色低碳/绿氢耦合"),
+      link("合成气/变换", "甲醇合成"),
+      link("CO2捕集与利用", "甲醇合成"),
+      link("甲醇合成", "甲醇精馏/MTO"),
+      link("合成气/变换", "氢气/合成氨"),
+      link("氢气/合成氨", "公辅工程/蒸汽电水"),
+
+      link("煤质分析/在线采样", "备煤与配煤槽"),
+      link("备煤与配煤槽", "配煤炼焦"),
+      link("配煤炼焦", "粉碎/装煤"),
+      link("粉碎/装煤", "焦炉炭化室"),
+      link("焦炉炭化室", "胶质体/塑性层"),
+      link("胶质体/塑性层", "焦炭强度/微结构"),
+      link("焦炉炭化室", "荒煤气导出"),
+      link("焦炉炭化室", "推焦/熄焦"),
+      link("推焦/熄焦", "干熄焦/CDQ"),
+      link("推焦/熄焦", "出焦除尘/废气治理"),
+      link("干熄焦/CDQ", "筛焦/焦炭分级"),
+      link("筛焦/焦炭分级", "焦炭质量检测"),
+      link("焦炭质量检测", "配煤炼焦"),
+      link("荒煤气导出", "焦炉煤气净化"),
+      link("荒煤气导出", "焦油氨水分离"),
+      link("焦油氨水分离", "脱硫脱氰/硫泡沫"),
+      link("脱硫脱氰/硫泡沫", "焦炉煤气净化"),
+      link("脱硫脱氰/硫泡沫", "硫回收/尾气处理", false, true),
+      link("焦油氨水分离", "脱氨/硫铵"),
+      link("脱氨/硫铵", "粗苯回收/苯加氢"),
+      link("粗苯回收/苯加氢", "焦炉煤气净化"),
+      link("焦油氨水分离", "焦油深加工"),
+      link("焦油深加工", "焦油/沥青"),
+      link("焦油/沥青", "液化沥青/碳材料", false, true),
+
+      link("煤质分析/在线采样", "液化煤浆制备"),
+      link("液化煤浆制备", "直接液化"),
+      link("液化煤浆制备", "催化剂加入"),
+      link("催化剂加入", "液化催化剂/加氢精制"),
+      link("供氢溶剂", "液化煤浆制备"),
+      link("液化煤浆制备", "预热/升压"),
+      link("预热/升压", "液化反应器"),
+      link("液化反应器", "直接液化"),
+      link("液化反应器", "高压分离"),
+      link("高压分离", "固液分离"),
+      link("固液分离", "煤液化残渣"),
+      link("固液分离", "油浆萃取/分馏"),
+      link("油浆萃取/分馏", "溶剂回收循环"),
+      link("溶剂回收循环", "供氢溶剂"),
+      link("油浆萃取/分馏", "液化油加氢改质"),
+      link("液化催化剂/加氢精制", "液化油加氢改质"),
+      link("液化油加氢改质", "液化油品调和"),
+      link("煤液化残渣", "残渣萃取/脱灰"),
+      link("残渣萃取/脱灰", "液化沥青/碳材料"),
+      link("残渣萃取/脱灰", "油浆萃取/分馏"),
+      link("预热/升压", "阀泵密封与耐磨"),
+      link("阀泵密封与耐磨", "安全风险/定量评价"),
+      link("阀泵密封与耐磨", "腐蚀防护/选材"),
+
+      link("黑水灰水", "废水预处理", false, true),
+      link("焦油氨水分离", "废水预处理", false, true),
+      link("高压分离", "废水预处理", false, true),
+      link("废水预处理", "煤化工废水/零排放"),
+      link("废水预处理", "生化处理/SBR"),
+      link("生化处理/SBR", "臭氧/催化氧化"),
+      link("臭氧/催化氧化", "膜分离/纳滤反渗透"),
+      link("膜分离/纳滤反渗透", "蒸发结晶/产品盐"),
+      link("蒸发结晶/产品盐", "煤化工废水/零排放"),
+      link("VOCs/LDAR", "火炬/放空系统"),
+      link("火炬/放空系统", "安全风险/定量评价"),
+      link("ESD/SIS联锁", "安全风险/定量评价"),
+      link("ESD/SIS联锁", "氧气/蒸汽供应"),
+      link("ESD/SIS联锁", "气化炉反应区"),
+      link("ESD/SIS联锁", "液化反应器"),
+      link("ESD/SIS联锁", "焦炉煤气净化"),
+      link("腐蚀防护/选材", "黑水灰水"),
+      link("腐蚀防护/选材", "酸性气体脱除"),
+      link("在线分析/APC优化", "智能控制/MES/DCS"),
+      link("在线分析/APC优化", "气化炉反应区"),
+      link("在线分析/APC优化", "甲醇合成"),
+      link("在线分析/APC优化", "液化反应器"),
+      link("在线分析/APC优化", "配煤炼焦")
+    ];
+
+    function node(id, type, x, y, desc, points, refs) {
+      return { id, type, x, y, desc, points, refs, color: typeColors[type] };
+    }
+
+    function link(source, target, strong = false, cross = false, label = "") {
+      return { source, target, strong, cross, label };
+    }
+
+    let allReferences = [];
+
+    function mergeFullLiteratureData() {
+      const data = window.fullLiteratureData;
+      if (!data) return;
+
+      data.references.forEach(item => {
+        references[item.id] = {
+          file: item.file,
+          archive: item.archive,
+          topic: item.topic,
+          path: item.path,
+          localPath: item.localPath,
+          ext: item.ext,
+          keywords: item.keywords || []
+        };
+      });
+
+      const existingNodeIds = new Set(nodes.map(item => item.id));
+      (data.generatedNodes || []).forEach(item => {
+        if (existingNodeIds.has(item.id)) return;
+        nodes.push(node(item.id, item.type, item.x, item.y, item.desc, item.points, item.refs || []));
+        existingNodeIds.add(item.id);
+      });
+
+      const linkKeys = new Set(links.map(item => `${item.source}__${item.target}`));
+      (data.generatedLinks || []).forEach(item => {
+        const key = `${item.source}__${item.target}`;
+        const reverseKey = `${item.target}__${item.source}`;
+        if (!existingNodeIds.has(item.source) || !existingNodeIds.has(item.target) || linkKeys.has(key) || linkKeys.has(reverseKey)) return;
+        links.push(link(item.source, item.target, Boolean(item.strong), Boolean(item.cross), item.label || "补充文献"));
+        linkKeys.add(key);
+      });
+
+      Object.entries(data.assignments || {}).forEach(([nodeId, refIds]) => {
+        const target = nodes.find(item => item.id === nodeId);
+        if (!target) return;
+        target.refs = [...new Set(refIds)];
+      });
+    }
+
+    mergeFullLiteratureData();
+    allReferences = Object.entries(references).map(([id, item]) => ({ id, ...item }));
+
+    const nodeById = Object.fromEntries(nodes.map(item => [item.id, item]));
+    const CENTER = { x: 750, y: 410 };
+    const baseTargets = Object.fromEntries(nodes.map(item => [item.id, { x: item.x, y: item.y }]));
+    const typeOrder = ["核心", "重大项目", "煤气化", "煤焦化", "煤液化", "共性支撑"];
+    const adjacency = new Map(nodes.map(item => [item.id, new Set()]));
+    let layoutAnimation = null;
+    links.forEach(item => {
+      adjacency.get(item.source).add(item.target);
+      adjacency.get(item.target).add(item.source);
+    });
+
+    const linkLayer = document.querySelector("#links");
+    const nodeLayer = document.querySelector("#nodes");
+    const detail = document.querySelector("#detail");
+    const legend = document.querySelector(".legend");
+    const collectionList = document.querySelector("#collectionList");
+    const collectionHint = document.querySelector("#collectionHint");
+    const pdfFrame = document.querySelector("#pdfFrame");
+    const viewerTitle = document.querySelector("#viewerTitle");
+    const viewerOpen = document.querySelector("#viewerOpen");
+    const refFilters = document.querySelectorAll("[data-ref-filter]");
+    let currentCollectionRefs = [];
+    let currentCollectionTitle = "煤化工";
+
+    const linkLabelOverrides = {
+      "煤化工->煤化工重大项目": "总体包含",
+      "煤化工->煤气化": "工艺分支",
+      "煤化工->煤焦化": "工艺分支",
+      "煤化工->煤液化": "工艺分支",
+      "煤化工->原煤接收与储运": "原料入口",
+      "原煤接收与储运->煤质分析/在线采样": "采样评价",
+      "煤质分析/在线采样->破碎筛分": "粒度预处理",
+      "破碎筛分->干燥脱水": "水分调控",
+      "干燥脱水->磨煤制粉": "干粉制备",
+      "破碎筛分->水煤浆制备": "浆料制备",
+      "磨煤制粉->煤气化进料系统": "粉煤输送",
+      "水煤浆制备->煤气化进料系统": "浆体泵送",
+      "氧气/蒸汽供应->煤气化进料系统": "气化剂供给",
+      "煤气化进料系统->气化炉反应区": "入炉反应",
+      "气化炉反应区->激冷/废锅回收": "热量回收",
+      "激冷/废锅回收->合成气洗涤除尘": "粗气冷却",
+      "合成气洗涤除尘->变换冷却": "净化后变换",
+      "变换冷却->酸性气体脱除": "酸气净化",
+      "酸性气体脱除->COS水解/脱硫": "深度脱硫",
+      "COS水解/脱硫->硫回收/尾气处理": "硫资源回收",
+      "酸性气体脱除->CO2捕集与利用": "碳分离",
+      "合成气/变换->甲醇合成": "碳氢比调节",
+      "甲醇合成->甲醇精馏/MTO": "产品精制",
+      "合成气/变换->氢气/合成氨": "氢氮路线",
+      "备煤与配煤槽->配煤炼焦": "配煤优化",
+      "配煤炼焦->粉碎/装煤": "装炉准备",
+      "粉碎/装煤->焦炉炭化室": "装煤炭化",
+      "焦炉炭化室->胶质体/塑性层": "热解软化",
+      "胶质体/塑性层->焦炭强度/微结构": "结构演化",
+      "焦炉炭化室->荒煤气导出": "荒煤气收集",
+      "焦炉炭化室->推焦/熄焦": "焦炭出炉",
+      "推焦/熄焦->干熄焦/CDQ": "干法熄焦",
+      "干熄焦/CDQ->筛焦/焦炭分级": "余热回收后分级",
+      "焦油氨水分离->脱硫脱氰/硫泡沫": "脱硫脱氰",
+      "焦油氨水分离->脱氨/硫铵": "氨回收",
+      "脱氨/硫铵->粗苯回收/苯加氢": "苯系回收",
+      "焦油氨水分离->焦油深加工": "副产回收",
+      "焦油深加工->焦油/沥青": "沥青组分",
+      "液化煤浆制备->预热/升压": "煤浆升温升压",
+      "预热/升压->液化反应器": "高压进料",
+      "液化反应器->高压分离": "反应产物分离",
+      "高压分离->固液分离": "液固分离",
+      "固液分离->油浆萃取/分馏": "油相分离",
+      "油浆萃取/分馏->溶剂回收循环": "溶剂循环",
+      "溶剂回收循环->供氢溶剂": "供氢能力恢复",
+      "油浆萃取/分馏->液化油加氢改质": "馏分改质",
+      "液化油加氢改质->液化油品调和": "产品调和",
+      "煤液化残渣->残渣萃取/脱灰": "残渣脱灰",
+      "残渣萃取/脱灰->液化沥青/碳材料": "高值碳材",
+      "黑水灰水->废水预处理": "气化水处理",
+      "焦油氨水分离->废水预处理": "焦化水处理",
+      "高压分离->废水预处理": "液化水处理",
+      "废水预处理->生化处理/SBR": "预处理后生化",
+      "生化处理/SBR->臭氧/催化氧化": "深度氧化",
+      "臭氧/催化氧化->膜分离/纳滤反渗透": "膜浓缩",
+      "膜分离/纳滤反渗透->蒸发结晶/产品盐": "末端结晶",
+      "ESD/SIS联锁->气化炉反应区": "紧急停车保护",
+      "ESD/SIS联锁->液化反应器": "高压联锁保护",
+      "在线分析/APC优化->气化炉反应区": "先进控制",
+      "在线分析/APC优化->甲醇合成": "质量闭环控制",
+      "在线分析/APC优化->配煤炼焦": "配煤反馈控制"
+    };
+
+    function pairKey(source, target) {
+      return `${source}->${target}`;
+    }
+
+    function inferLinkLabel(item) {
+      const direct = linkLabelOverrides[pairKey(item.source, item.target)];
+      const reverse = linkLabelOverrides[pairKey(item.target, item.source)];
+      if (direct || reverse) return direct || reverse;
+      if (item.label) return item.label;
+      if (item.strong && item.source === "煤化工") return "工艺归属";
+      if (item.strong) return "主工艺路径";
+      if (item.cross) return "跨流程耦合";
+      if (item.target.includes("综合文献")) return "补充文献";
+      if (item.source.includes("废水") || item.target.includes("废水") || item.source.includes("水") || item.target.includes("水")) return "水处理链";
+      if (item.source.includes("安全") || item.target.includes("安全") || item.source.includes("联锁") || item.target.includes("联锁")) return "安全保护层";
+      if (item.source.includes("低碳") || item.target.includes("低碳") || item.source.includes("CO2") || item.target.includes("CO2")) return "低碳耦合";
+      if (item.source.includes("净化") || item.target.includes("净化") || item.source.includes("脱") || item.target.includes("脱")) return "净化单元";
+      if (item.source.includes("合成") || item.target.includes("合成") || item.source.includes("甲醇") || item.target.includes("甲醇")) return "合成转化";
+      if (item.source.includes("分离") || item.target.includes("分离") || item.source.includes("分馏") || item.target.includes("分馏")) return "分离精制";
+      if (item.source.includes("残渣") || item.target.includes("残渣") || item.source.includes("灰渣") || item.target.includes("灰渣")) return "资源化";
+      return "工艺耦合";
+    }
+
+    links.forEach(item => {
+      const source = nodeById[item.source];
+      const target = nodeById[item.target];
+      const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+      line.setAttribute("x1", source.x);
+      line.setAttribute("y1", source.y);
+      line.setAttribute("x2", target.x);
+      line.setAttribute("y2", target.y);
+      line.setAttribute("class", `link${item.strong ? " strong" : ""}${item.cross ? " cross" : ""}`);
+      item.element = line;
+      linkLayer.appendChild(line);
+
+      const label = document.createElementNS("http://www.w3.org/2000/svg", "text");
+      label.textContent = inferLinkLabel(item);
+      label.setAttribute("x", (source.x + target.x) / 2);
+      label.setAttribute("y", (source.y + target.y) / 2);
+      label.setAttribute("class", `link-label${item.strong ? " strong" : ""}${item.cross ? " cross" : ""}`);
+      item.labelElement = label;
+      linkLayer.appendChild(label);
+    });
+
+    nodes.forEach(item => {
+      item.w = Math.min(220, Math.max(item.type === "核心" ? 126 : 86, item.id.length * 14 + 30));
+      item.h = item.type === "核心" ? 56 : item.id.length > 8 ? 44 : 38;
+      const group = document.createElementNS("http://www.w3.org/2000/svg", "g");
+      group.setAttribute("class", `node${item.type === "核心" ? " core active" : ""}${["煤化工重大项目","煤气化","煤焦化","煤液化"].includes(item.id) ? " branch" : ""}`);
+      group.setAttribute("data-id", item.id);
+      group.setAttribute("style", `--fill:${item.color}`);
+      group.setAttribute("transform", `translate(${item.x} ${item.y})`);
+      group.setAttribute("tabindex", "0");
+      group.setAttribute("role", "button");
+      group.setAttribute("aria-label", item.id);
+
+      const body = document.createElementNS("http://www.w3.org/2000/svg", "g");
+      body.setAttribute("class", "node-body");
+
+      const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+      rect.setAttribute("x", -item.w / 2);
+      rect.setAttribute("y", -item.h / 2);
+      rect.setAttribute("width", item.w);
+      rect.setAttribute("height", item.h);
+      rect.setAttribute("rx", 8);
+
+      const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
+      text.textContent = item.id;
+      if (item.id.length * 13 > item.w - 18) {
+        text.setAttribute("textLength", item.w - 18);
+        text.setAttribute("lengthAdjust", "spacingAndGlyphs");
+      }
+
+      body.append(rect, text);
+      group.appendChild(body);
+      group.addEventListener("click", () => focusNode(item.id));
+      group.addEventListener("keydown", event => {
+        if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault();
+          focusNode(item.id);
+        }
+      });
+      item.element = group;
+      nodeLayer.appendChild(group);
+    });
+
+    function sortNodesForLayout(a, b) {
+      return typeOrder.indexOf(a.type) - typeOrder.indexOf(b.type) || a.id.localeCompare(b.id, "zh-CN");
+    }
+
+    function setNodePosition(item, x, y) {
+      item.x = x;
+      item.y = y;
+      item.element.setAttribute("transform", `translate(${x} ${y})`);
+    }
+
+    function updateLines() {
+      links.forEach(item => {
+        const source = nodeById[item.source];
+        const target = nodeById[item.target];
+        item.element.setAttribute("x1", source.x);
+        item.element.setAttribute("y1", source.y);
+        item.element.setAttribute("x2", target.x);
+        item.element.setAttribute("y2", target.y);
+        item.labelElement.setAttribute("x", (source.x + target.x) / 2);
+        item.labelElement.setAttribute("y", (source.y + target.y) / 2);
+      });
+    }
+
+    function distributeByRings(list, rings, startAngle = -Math.PI / 2) {
+      const targets = {};
+      let offset = 0;
+      rings.forEach((ring, ringIndex) => {
+        const slice = list.slice(offset, offset + ring.count);
+        const total = Math.max(slice.length, 1);
+        slice.forEach((item, index) => {
+          const angle = startAngle + ring.shift + (Math.PI * 2 * index) / total;
+          targets[item.id] = {
+            x: CENTER.x + Math.cos(angle) * ring.rx,
+            y: CENTER.y + Math.sin(angle) * ring.ry
+          };
+        });
+        offset += ring.count;
+
+        if (ringIndex === rings.length - 1) {
+          const rest = list.slice(offset);
+          rest.forEach((item, index) => {
+            const angle = startAngle + ring.shift + .11 + (Math.PI * 2 * index) / Math.max(rest.length, 1);
+            targets[item.id] = {
+              x: CENTER.x + Math.cos(angle) * ring.rx,
+              y: CENTER.y + Math.sin(angle) * ring.ry
+            };
+          });
+        }
+      });
+      return targets;
+    }
+
+    function focusTargets(selected) {
+      const neighborIds = adjacency.get(selected.id);
+      const near = nodes
+        .filter(item => item.id !== selected.id && neighborIds.has(item.id))
+        .sort(sortNodesForLayout);
+      const far = nodes
+        .filter(item => item.id !== selected.id && !neighborIds.has(item.id))
+        .sort(sortNodesForLayout);
+      return {
+        [selected.id]: CENTER,
+        ...distributeByRings(near, [
+          { count: 14, rx: 285, ry: 205, shift: 0 },
+          { count: 18, rx: 430, ry: 300, shift: .13 },
+          { count: 999, rx: 555, ry: 360, shift: .24 }
+        ]),
+        ...distributeByRings(far, [
+          { count: 28, rx: 575, ry: 360, shift: .06 },
+          { count: 999, rx: 675, ry: 395, shift: .19 }
+        ], -Math.PI / 2 + .07)
+      };
+    }
+
+    function categoryTargets(categoryNodes, target) {
+      const categoryIds = new Set(categoryNodes.map(item => item.id));
+      const rest = nodes
+        .filter(item => !categoryIds.has(item.id) && item.id !== target.id)
+        .sort(sortNodesForLayout);
+      const categoryList = categoryNodes
+        .filter(item => item.id !== target.id)
+        .sort(sortNodesForLayout);
+      return {
+        [target.id]: CENTER,
+        ...distributeByRings(categoryList, [
+          { count: 18, rx: 310, ry: 215, shift: 0 },
+          { count: 999, rx: 455, ry: 315, shift: .16 }
+        ]),
+        ...distributeByRings(rest, [
+          { count: 32, rx: 590, ry: 360, shift: .07 },
+          { count: 999, rx: 680, ry: 395, shift: .2 }
+        ], -Math.PI / 2 + .08)
+      };
+    }
+
+    function animateLayout(targets, shouldAnimate = true) {
+      if (layoutAnimation) cancelAnimationFrame(layoutAnimation);
+
+      if (!shouldAnimate) {
+        nodes.forEach(item => {
+          const target = targets[item.id] || baseTargets[item.id];
+          setNodePosition(item, target.x, target.y);
+        });
+        updateLines();
+        return;
+      }
+
+      const starts = Object.fromEntries(nodes.map(item => [item.id, { x: item.x, y: item.y }]));
+      const duration = 620;
+      const startedAt = performance.now();
+      const ease = value => 1 - Math.pow(1 - value, 3);
+
+      function step(now) {
+        const progress = Math.min((now - startedAt) / duration, 1);
+        const eased = ease(progress);
+        nodes.forEach(item => {
+          const start = starts[item.id];
+          const target = targets[item.id] || baseTargets[item.id];
+          setNodePosition(
+            item,
+            start.x + (target.x - start.x) * eased,
+            start.y + (target.y - start.y) * eased
+          );
+        });
+        updateLines();
+        if (progress < 1) {
+          layoutAnimation = requestAnimationFrame(step);
+        } else {
+          layoutAnimation = null;
+        }
+      }
+
+      layoutAnimation = requestAnimationFrame(step);
+    }
+
+    function relationButtons(item) {
+      return [...adjacency.get(item.id)]
+        .sort((a, b) => nodeById[a].type.localeCompare(nodeById[b].type, "zh-CN") || a.localeCompare(b, "zh-CN"))
+        .map(id => `<button class="relation-chip" type="button" data-node="${id}">${id}</button>`)
+        .join("");
+    }
+
+    function refsForNode(item) {
+      const direct = item.refs || [];
+      const fallback = {
+        "重大项目": ["P01","P05","P07"],
+        "煤气化": ["G01","G02","G10"],
+        "煤焦化": ["C01","C08","C13"],
+        "煤液化": ["L01","L04","L10"],
+        "共性支撑": ["P08","G15","C13","L14"],
+        "核心": ["P01","G01","C03","L01"]
+      }[item.type] || [];
+      return [...new Set([...direct, ...fallback])]
+        .filter(id => references[id])
+        .map(id => ({ id, ...references[id] }));
+    }
+
+    function localPdfPath(refItem) {
+      if (refItem.url) return refItem.url;
+      if (refItem.localPath) return refItem.localPath;
+      const safeFile = refItem.file
+        .replaceAll(":", "：")
+        .replaceAll("?", "？")
+        .replaceAll("*", "＊")
+        .replaceAll("\"", "＂")
+        .replaceAll("<", "＜")
+        .replaceAll(">", "＞")
+        .replaceAll("|", "｜");
+      return `文献收录/${refItem.archive}/${refItem.id}_${safeFile}`;
+    }
+
+    function localPdfHref(refItem) {
+      return encodeURI(localPdfPath(refItem));
+    }
+
+    const givenNamePinyin = {
+      "一": "Yi", "丁": "Ding", "七": "Qi", "万": "Wan", "三": "San", "上": "Shang", "世": "Shi", "东": "Dong", "中": "Zhong", "丰": "Feng", "丹": "Dan", "丽": "Li", "义": "Yi", "之": "Zhi", "乐": "Le", "云": "Yun", "亚": "Ya", "京": "Jing", "亮": "Liang", "仁": "Ren", "伟": "Wei", "佳": "Jia", "俊": "Jun", "保": "Bao", "信": "Xin", "倩": "Qian", "元": "Yuan", "光": "Guang", "全": "Quan", "兰": "Lan", "军": "Jun", "冰": "Bing", "冉": "Ran", "凤": "Feng", "刚": "Gang", "利": "Li", "力": "Li", "功": "Gong", "勇": "Yong", "华": "Hua", "博": "Bo", "卫": "Wei", "厚": "Hou", "友": "You", "发": "Fa", "君": "Jun", "启": "Qi", "和": "He", "哲": "Zhe", "嘉": "Jia", "国": "Guo", "坤": "Kun", "培": "Pei", "城": "Cheng", "增": "Zeng", "士": "Shi", "壮": "Zhuang", "夏": "Xia", "大": "Da", "天": "Tian", "奇": "Qi", "奕": "Yi", "姣": "Jiao", "娜": "Na", "娟": "Juan", "婷": "Ting", "子": "Zi", "宁": "Ning", "宇": "Yu", "宏": "Hong", "宝": "Bao", "宪": "Xian", "家": "Jia", "富": "Fu", "寒": "Han", "峰": "Feng", "崇": "Chong", "川": "Chuan", "州": "Zhou", "帅": "Shuai", "常": "Chang", "平": "Ping", "庆": "Qing", "建": "Jian", "开": "Kai", "强": "Qiang", "彦": "Yan", "彬": "Bin", "影": "Ying", "德": "De", "忠": "Zhong", "恒": "Heng", "悦": "Yue", "慧": "Hui", "成": "Cheng", "振": "Zhen", "政": "Zheng", "敏": "Min", "文": "Wen", "斌": "Bin", "新": "Xin", "方": "Fang", "旭": "Xu", "昊": "Hao", "明": "Ming", "星": "Xing", "春": "Chun", "晓": "Xiao", "晶": "Jing", "智": "Zhi", "曜": "Yao", "月": "Yue", "朋": "Peng", "朝": "Chao", "木": "Mu", "来": "Lai", "杰": "Jie", "松": "Song", "林": "Lin", "栋": "Dong", "树": "Shu", "栓": "Shuan", "格": "Ge", "桂": "Gui", "梅": "Mei", "森": "Sen", "楠": "Nan", "欢": "Huan", "欣": "Xin", "正": "Zheng", "武": "Wu", "民": "Min", "水": "Shui", "永": "Yong", "江": "Jiang", "波": "Bo", "泽": "Ze", "洁": "Jie", "浩": "Hao", "海": "Hai", "涛": "Tao", "润": "Run", "涵": "Han", "淼": "Miao", "清": "Qing", "源": "Yuan", "然": "Ran", "燕": "Yan", "玉": "Yu", "玮": "Wei", "玲": "Ling", "琛": "Chen", "琴": "Qin", "瑞": "Rui", "瑶": "Yao", "生": "Sheng", "田": "Tian", "电": "Dian", "皓": "Hao", "益": "Yi", "睿": "Rui", "磊": "Lei", "祥": "Xiang", "福": "Fu", "秀": "Xiu", "秋": "Qiu", "秦": "Qin", "立": "Li", "红": "Hong", "绍": "Shao", "维": "Wei", "美": "Mei", "群": "Qun", "翔": "Xiang", "聪": "Cong", "育": "Yu", "胜": "Sheng", "良": "Liang", "艳": "Yan", "芳": "Fang", "若": "Ruo", "荣": "Rong", "莲": "Lian", "营": "Ying", "虎": "Hu", "衡": "Heng", "裕": "Yu", "贤": "Xian", "超": "Chao", "路": "Lu", "轩": "Xuan", "辉": "Hui", "远": "Yuan", "迪": "Di", "通": "Tong", "道": "Dao", "邓": "Deng", "郜": "Gao", "郭": "Guo", "金": "Jin", "鑫": "Xin", "钢": "Gang", "铭": "Ming", "锋": "Feng", "锦": "Jin", "阳": "Yang", "雅": "Ya", "雪": "Xue", "雯": "Wen", "青": "Qing", "静": "Jing", "韦": "Wei", "飞": "Fei", "骏": "Jun", "鹏": "Peng", "麒": "Qi", "龙": "Long"
+    };
+
+    const surnamePinyin = {
+      "赵": "Zhao", "钱": "Qian", "孙": "Sun", "李": "Li", "周": "Zhou", "吴": "Wu", "郑": "Zheng", "王": "Wang", "冯": "Feng", "陈": "Chen", "褚": "Chu", "卫": "Wei", "蒋": "Jiang", "沈": "Shen", "韩": "Han", "杨": "Yang", "朱": "Zhu", "秦": "Qin", "尤": "You", "许": "Xu", "何": "He", "吕": "Lv", "施": "Shi", "张": "Zhang", "孔": "Kong", "曹": "Cao", "严": "Yan", "华": "Hua", "金": "Jin", "魏": "Wei", "陶": "Tao", "姜": "Jiang", "戚": "Qi", "谢": "Xie", "邹": "Zou", "喻": "Yu", "柏": "Bai", "水": "Shui", "窦": "Dou", "章": "Zhang", "云": "Yun", "苏": "Su", "潘": "Pan", "葛": "Ge", "奚": "Xi", "范": "Fan", "彭": "Peng", "郎": "Lang", "鲁": "Lu", "韦": "Wei", "昌": "Chang", "马": "Ma", "苗": "Miao", "凤": "Feng", "花": "Hua", "方": "Fang", "俞": "Yu", "任": "Ren", "袁": "Yuan", "柳": "Liu", "鲍": "Bao", "史": "Shi", "唐": "Tang", "费": "Fei", "廉": "Lian", "岑": "Cen", "薛": "Xue", "雷": "Lei", "贺": "He", "倪": "Ni", "汤": "Tang", "滕": "Teng", "殷": "Yin", "罗": "Luo", "毕": "Bi", "郝": "Hao", "邬": "Wu", "安": "An", "常": "Chang", "乐": "Yue", "于": "Yu", "时": "Shi", "傅": "Fu", "皮": "Pi", "卞": "Bian", "齐": "Qi", "康": "Kang", "伍": "Wu", "余": "Yu", "元": "Yuan", "卜": "Bu", "顾": "Gu", "孟": "Meng", "平": "Ping", "黄": "Huang", "和": "He", "穆": "Mu", "萧": "Xiao", "尹": "Yin", "邵": "Shao", "湛": "Zhan", "汪": "Wang", "祁": "Qi", "毛": "Mao", "禹": "Yu", "狄": "Di", "米": "Mi", "贝": "Bei", "明": "Ming", "臧": "Zang", "计": "Ji", "伏": "Fu", "成": "Cheng", "戴": "Dai", "谈": "Tan", "宋": "Song", "庞": "Pang", "熊": "Xiong", "纪": "Ji", "舒": "Shu", "屈": "Qu", "项": "Xiang", "祝": "Zhu", "董": "Dong", "梁": "Liang", "杜": "Du", "阮": "Ruan", "蓝": "Lan", "闵": "Min", "席": "Xi", "季": "Ji", "麻": "Ma", "强": "Qiang", "贾": "Jia", "路": "Lu", "娄": "Lou", "危": "Wei", "江": "Jiang", "童": "Tong", "颜": "Yan", "郭": "Guo", "梅": "Mei", "盛": "Sheng", "林": "Lin", "刁": "Diao", "钟": "Zhong", "徐": "Xu", "邱": "Qiu", "骆": "Luo", "高": "Gao", "夏": "Xia", "蔡": "Cai", "田": "Tian", "胡": "Hu", "凌": "Ling", "霍": "Huo", "虞": "Yu", "万": "Wan", "支": "Zhi", "柯": "Ke", "昝": "Zan", "管": "Guan", "卢": "Lu", "莫": "Mo", "经": "Jing", "房": "Fang", "裘": "Qiu", "缪": "Miao", "干": "Gan", "解": "Xie", "应": "Ying", "宗": "Zong", "丁": "Ding", "宣": "Xuan", "邓": "Deng", "郁": "Yu", "单": "Shan", "杭": "Hang", "洪": "Hong", "包": "Bao", "诸": "Zhu", "左": "Zuo", "石": "Shi", "崔": "Cui", "吉": "Ji", "龚": "Gong", "程": "Cheng", "邢": "Xing", "裴": "Pei", "陆": "Lu", "荣": "Rong", "翁": "Weng", "荀": "Xun", "羊": "Yang", "甄": "Zhen", "家": "Jia", "封": "Feng", "芮": "Rui", "羿": "Yi", "储": "Chu", "靳": "Jin", "汲": "Ji", "邴": "Bing", "糜": "Mi", "松": "Song", "井": "Jing", "段": "Duan", "富": "Fu", "巫": "Wu", "乌": "Wu", "焦": "Jiao", "巴": "Ba", "弓": "Gong", "牧": "Mu", "隗": "Kui", "山": "Shan", "谷": "Gu", "车": "Che", "侯": "Hou", "宓": "Mi", "蓬": "Peng", "全": "Quan", "郗": "Xi", "班": "Ban", "仰": "Yang", "秋": "Qiu", "仲": "Zhong", "伊": "Yi", "宫": "Gong", "宁": "Ning", "仇": "Qiu", "栾": "Luan", "暴": "Bao", "甘": "Gan", "斜": "Xie", "厉": "Li", "戎": "Rong", "祖": "Zu", "武": "Wu", "符": "Fu", "刘": "Liu", "景": "Jing", "詹": "Zhan", "束": "Shu", "龙": "Long", "叶": "Ye", "幸": "Xing", "司": "Si", "韶": "Shao", "郜": "Gao", "黎": "Li", "蓟": "Ji", "薄": "Bo", "印": "Yin", "宿": "Su", "白": "Bai", "怀": "Huai", "蒲": "Pu", "邰": "Tai", "从": "Cong", "鄂": "E", "索": "Suo", "咸": "Xian", "籍": "Ji", "赖": "Lai", "卓": "Zhuo", "蔺": "Lin", "屠": "Tu", "蒙": "Meng", "池": "Chi", "乔": "Qiao", "阴": "Yin", "郁": "Yu", "胥": "Xu", "能": "Neng", "苍": "Cang", "双": "Shuang", "闻": "Wen", "莘": "Shen", "党": "Dang", "翟": "Zhai", "谭": "Tan", "贡": "Gong", "劳": "Lao", "逯": "Lu", "佘": "She", "农": "Nong", "温": "Wen", "别": "Bie", "庄": "Zhuang", "晏": "Yan", "柴": "Chai", "瞿": "Qu", "阎": "Yan", "充": "Chong", "慕": "Mu", "连": "Lian", "茹": "Ru", "习": "Xi", "宦": "Huan", "艾": "Ai", "鱼": "Yu", "容": "Rong", "向": "Xiang", "古": "Gu", "易": "Yi", "慎": "Shen", "戈": "Ge", "廖": "Liao", "庾": "Yu", "终": "Zhong", "暨": "Ji", "居": "Ju", "衡": "Heng", "步": "Bu", "都": "Du", "耿": "Geng", "满": "Man", "弘": "Hong", "匡": "Kuang", "文": "Wen", "寇": "Kou", "广": "Guang", "禄": "Lu", "阙": "Que", "东": "Dong", "欧": "Ou", "殳": "Shu", "沃": "Wo", "利": "Li", "蔚": "Wei", "越": "Yue", "夔": "Kui", "隆": "Long", "师": "Shi", "巩": "Gong", "厍": "She", "聂": "Nie", "晁": "Chao", "勾": "Gou", "敖": "Ao", "融": "Rong", "冷": "Leng", "辛": "Xin", "阚": "Kan", "那": "Na", "简": "Jian", "饶": "Rao", "空": "Kong", "曾": "Zeng", "毋": "Wu", "沙": "Sha", "养": "Yang", "鞠": "Ju", "须": "Xu", "丰": "Feng", "巢": "Chao", "关": "Guan", "蒯": "Kuai", "相": "Xiang", "查": "Zha", "后": "Hou", "荆": "Jing", "红": "Hong", "游": "You", "竺": "Zhu", "权": "Quan", "逯": "Lu", "盖": "Gai", "益": "Yi", "桓": "Huan", "公": "Gong", "欧阳": "Ouyang", "司马": "Sima", "诸葛": "Zhuge", "上官": "Shangguan", "夏侯": "Xiahou", "皇甫": "Huangfu", "尉迟": "Yuchi", "公孙": "Gongsun"
+    };
+
+    function hasChinese(text) {
+      return /[\u4e00-\u9fff]/.test(text);
+    }
+
+    function latinDominant(text) {
+      const latin = (text.match(/[A-Za-z]/g) || []).length;
+      const chinese = (text.match(/[\u4e00-\u9fff]/g) || []).length;
+      return latin > chinese * 2;
+    }
+
+    function toTitleCaseWord(value) {
+      return value ? value.charAt(0).toUpperCase() + value.slice(1).toLowerCase() : value;
+    }
+
+    function chineseNameToPinyin(name) {
+      const clean = name.replace(/[^\u4e00-\u9fff]/g, "");
+      if (!clean) return name;
+      const twoCharSurname = clean.slice(0, 2);
+      let surname = "";
+      let given = "";
+      if (surnamePinyin[twoCharSurname]) {
+        surname = surnamePinyin[twoCharSurname];
+        given = clean.slice(2);
+      } else {
+        surname = surnamePinyin[clean[0]] || toTitleCaseWord(clean[0]);
+        given = clean.slice(1);
+      }
+      const givenPinyin = [...given].map(char => givenNamePinyin[char] || toTitleCaseWord(char)).join("");
+      return givenPinyin ? `${givenPinyin} ${surname}` : surname;
+    }
+
+    function normalizeAuthors(authorText, usePinyin = false) {
+      return authorText
+        .replace(/[()（）]\d+[()（）]?$/g, "")
+        .split(/_+|、|，|,|;|；|和|及/)
+        .map(item => item.trim())
+        .filter(Boolean)
+        .filter(item => !/(记者|报道|整理|证券时报|新疆日报|石榴云|全国人大|讲述人|本报)/.test(item))
+        .map(item => usePinyin && /^[\u4e00-\u9fff·]{2,6}$/.test(item) ? chineseNameToPinyin(item) : item)
+        .join("，");
+    }
+
+    function splitChineseTitleAndAuthors(base) {
+      const cleaned = base.replace(/\s*[（(]\d+[）)]$/g, "").replace(/_+$/g, "");
+      const match = cleaned.match(/^(.*)(?:_+)([\u4e00-\u9fff（）()·\s]{2,14}(?:_+[\u4e00-\u9fff（）()·\s]{2,14})*)$/);
+      if (!match) return { title: cleaned, authors: "" };
+      const title = match[1]
+        .replace(/_+$/g, "")
+        .replace(/_*(本报记者|记者|整理|讲述人|证券时报记者|新疆日报记者)_*$/g, "");
+      const authorTail = match[2].replace(/\s*[（(]\d+[）)]$/g, "");
+      const authors = normalizeAuthors(authorTail, latinDominant(title));
+      return authors ? { title, authors } : { title: cleaned, authors: "" };
+    }
+
+    function cleanForeignTitle(base) {
+      return base
+        .replace(/[_-]?(19|20)\d{2}[_-].*$/i, "")
+        .replace(/[_-]main$/i, "")
+        .replace(/[_-]+/g, " ")
+        .replace(/\s+/g, " ")
+        .trim();
+    }
+
+    function trustedDisplayTitle(refItem) {
+      const text = String(refItem.displayTitle || "").replace(/\s+/g, " ").trim();
+      const badMeta = /(Microsoft\s+Word|DSI\s+Equation\s+Image|cite_this_logo|src\.eps|\.eps\b|\.docx\b|^tx\d*\b)/i;
+      const signal = (text.match(/[A-Za-z\u4e00-\u9fff]/g) || []).length;
+      if (!text || text.length < 10 || text.length > 260) return "";
+      if (/[\x00-\x08\x0B\x0C\x0E-\x1F]/.test(text) || badMeta.test(text)) return "";
+      return signal >= Math.max(8, Math.floor(text.length * 0.35)) ? text : "";
+    }
+
+    function formatReferenceTitle(refItem) {
+      const metadataTitle = trustedDisplayTitle(refItem);
+      if (metadataTitle) return metadataTitle;
+      const base = refItem.file
+        .replace(/\.(pdf|caj)$/i, "")
+        .replace(/\s*[（(]\d+[）)]$/g, "")
+        .trim();
+      const parsed = splitChineseTitleAndAuthors(base);
+      const title = hasChinese(parsed.title) ? parsed.title : cleanForeignTitle(parsed.title);
+      return parsed.authors ? `${title} ${parsed.authors}` : title;
+    }
+
+    function cleanTitle(file) {
+      return file.replace(/\.pdf$/i, "").replace(/\.caj$/i, "");
+    }
+
+    function referenceCards(item) {
+      return refsForNode(item).map(refItem => `
+        <article class="reference-card">
+          <p class="reference-title">${formatReferenceTitle(refItem)}</p>
+          <div class="reference-meta">${refItem.archive} · ${refItem.topic}</div>
+          <div class="reference-path">${refItem.path}</div>
+          <div class="reference-actions">
+            <button type="button" data-ref="${refItem.id}">页内查看</button>
+            <a href="${localPdfHref(refItem)}" target="_blank" rel="noopener">新窗口打开</a>
+          </div>
+        </article>
+      `).join("");
+    }
+
+    function focusNode(id, shouldAnimate = true) {
+      const selected = nodeById[id];
+      const neighbors = adjacency.get(id);
+      nodes.forEach(item => {
+        const focused = item.id === id;
+        const related = neighbors.has(item.id);
+        item.element.classList.toggle("active", focused);
+        item.element.classList.toggle("dim", !focused && !related);
+      });
+      links.forEach(item => {
+        const focused = item.source === id || item.target === id;
+        item.element.classList.toggle("focused", focused);
+        item.element.classList.toggle("muted", !focused);
+        item.labelElement.classList.toggle("focused", focused);
+        item.labelElement.classList.toggle("muted", !focused);
+      });
+      document.querySelectorAll("[data-filter]").forEach(button => button.classList.toggle("active", false));
+      renderDetail(selected);
+      setCollectionSource(selected);
+      animateLayout(focusTargets(selected), shouldAnimate);
+    }
+
+    function renderDetail(item) {
+      detail.innerHTML = `
+        <span class="type" style="--type-color:${item.color}">${item.type}</span>
+        <h2>${item.id}</h2>
+        <p>${item.desc}</p>
+        <h3>关联关键词 · ${adjacency.get(item.id).size} 个</h3>
+        <div class="relation-list">${relationButtons(item)}</div>
+        <h3>检索补入依据</h3>
+        <ul>${item.points.map(point => `<li>${point}</li>`).join("")}</ul>
+        <h3>压缩包文献引用</h3>
+        <div class="reference-list">${referenceCards(item)}</div>
+        <div class="notice">引用来自本地压缩包目录，并已抽取为页面旁的 PDF 预览文件。点击“页内查看”会跳转到下方收录区。</div>
+      `;
+    }
+
+    function setActiveRefFilter(value = "all") {
+      refFilters.forEach(item => item.classList.toggle("active", item.dataset.refFilter === value));
+    }
+
+    function setCollectionSource(item, filter = "all") {
+      currentCollectionTitle = item.id;
+      currentCollectionRefs = refsForNode(item);
+      setActiveRefFilter(filter);
+      renderCollection(filter);
+    }
+
+    function renderCollection(filter = "all") {
+      const list = filter === "all"
+        ? currentCollectionRefs
+        : currentCollectionRefs.filter(item => item.archive === filter);
+      collectionHint.textContent = `当前关键词：${currentCollectionTitle}。左侧仅显示该关键词相关文献，共 ${list.length} 篇。`;
+      if (!list.length) {
+        collectionList.innerHTML = `<div class="notice">当前关键词在该筛选条件下暂无相关文献。</div>`;
+        pdfFrame.removeAttribute("src");
+        viewerOpen.removeAttribute("href");
+        viewerTitle.textContent = "当前筛选下暂无可预览文献";
+        return;
+      }
+      collectionList.innerHTML = list.map(item => `
+        <button class="collection-card" type="button" data-ref="${item.id}">
+          <p class="collection-title">${formatReferenceTitle(item)}</p>
+          <div class="collection-meta">${item.archive} · ${item.topic}</div>
+        </button>
+      `).join("");
+      showReference(list[0].id, false);
+    }
+
+    function showReference(refId, shouldScroll = true) {
+      const refItem = allReferences.find(item => item.id === refId);
+      if (!refItem) return;
+      const href = localPdfHref(refItem);
+      viewerOpen.href = href;
+      if (refItem.ext && refItem.ext !== "pdf") {
+        pdfFrame.removeAttribute("src");
+        viewerTitle.textContent = `${refItem.archive} · ${formatReferenceTitle(refItem)}（${refItem.ext.toUpperCase()} 文件请新窗口打开）`;
+      } else {
+        pdfFrame.src = href;
+        viewerTitle.textContent = `${refItem.archive} · ${formatReferenceTitle(refItem)}`;
+      }
+      document.querySelectorAll("[data-ref]").forEach(item => {
+        item.classList.toggle("active", item.dataset.ref === refId);
+      });
+      if (shouldScroll) {
+        document.querySelector("#literature").scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+    }
+
+    function filterType(type) {
+      document.querySelectorAll("[data-filter]").forEach(button => {
+        button.classList.toggle("active", button.dataset.filter === type);
+      });
+      if (type === "all") {
+        focusNode("煤化工");
+        return;
+      }
+
+      const visible = new Set(nodes.filter(item => item.type === type || item.id === type).map(item => item.id));
+      const target = nodeById[type] || (type === "重大项目" ? nodeById["煤化工重大项目"] : nodes.find(item => item.type === type));
+      nodes.forEach(item => {
+        const keep = visible.has(item.id) || item.type === "核心";
+        item.element.classList.toggle("dim", !keep);
+        item.element.classList.toggle("active", item.id === target.id);
+      });
+      links.forEach(item => {
+        const keep = visible.has(item.source) || visible.has(item.target);
+        item.element.classList.toggle("muted", !keep);
+        item.element.classList.toggle("focused", visible.has(item.source) && visible.has(item.target));
+        item.labelElement.classList.toggle("muted", !keep);
+        item.labelElement.classList.toggle("focused", visible.has(item.source) && visible.has(item.target));
+      });
+      renderDetail(target);
+      setCollectionSource(target);
+      animateLayout(categoryTargets(nodes.filter(item => visible.has(item.id)), target));
+    }
+
+    detail.addEventListener("click", event => {
+      const refButton = event.target.closest("[data-ref]");
+      if (refButton) {
+        showReference(refButton.dataset.ref);
+        return;
+      }
+      const button = event.target.closest("[data-node]");
+      if (!button) return;
+      focusNode(button.dataset.node);
+    });
+
+    legend.addEventListener("click", event => {
+      const button = event.target.closest("[data-filter]");
+      if (!button) return;
+      filterType(button.dataset.filter);
+    });
+
+    collectionList.addEventListener("click", event => {
+      const button = event.target.closest("[data-ref]");
+      if (!button) return;
+      showReference(button.dataset.ref, false);
+    });
+
+    refFilters.forEach(button => {
+      button.addEventListener("click", () => {
+        setActiveRefFilter(button.dataset.refFilter);
+        renderCollection(button.dataset.refFilter);
+      });
+    });
+
+    const requestedNode = new URLSearchParams(window.location.search).get("node") || decodeURIComponent(window.location.hash.replace(/^#/, ""));
+    focusNode(nodeById[requestedNode] ? requestedNode : "煤化工", false);
+  </script>
+</body>
+</html>
