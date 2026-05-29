@@ -1,0 +1,2738 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>参考文献资料库｜煤化工知识图谱</title>
+  <style>
+    :root {
+      --primary:#1f4e79;
+      --primary-2:#2d73ad;
+      --bg:#f5f7fb;
+      --card:#ffffff;
+      --line:#d8e2ee;
+      --text:#1f2937;
+      --muted:#667085;
+      --green:#0a7c3f;
+      --orange:#b76b00;
+    }
+    * { box-sizing:border-box; }
+    body {
+      margin:0;
+      font-family:"Microsoft YaHei", "PingFang SC", Arial, sans-serif;
+      background:var(--bg);
+      color:var(--text);
+      line-height:1.65;
+    }
+    .ref-header {
+      background:linear-gradient(135deg, #153b62, #226ca8);
+      color:#fff;
+      padding:34px 22px;
+    }
+    .ref-header-inner {
+      max-width:1280px;
+      margin:0 auto;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:20px;
+      flex-wrap:wrap;
+    }
+    .ref-title h1 {
+      margin:0;
+      font-size:28px;
+      letter-spacing:1px;
+    }
+    .ref-title p {
+      margin:8px 0 0;
+      opacity:.9;
+      font-size:15px;
+    }
+    .back-link {
+      display:inline-block;
+      color:#fff;
+      text-decoration:none;
+      border:1px solid rgba(255,255,255,.6);
+      border-radius:999px;
+      padding:9px 16px;
+      background:rgba(255,255,255,.08);
+      white-space:nowrap;
+    }
+    .back-link:hover { background:rgba(255,255,255,.18); }
+    .wrap {
+      max-width:1280px;
+      margin:24px auto;
+      padding:0 18px;
+    }
+    .notice {
+      background:#fff8e6;
+      border:1px solid #f3d39a;
+      border-left:5px solid #f0ad4e;
+      color:#6b4b00;
+      padding:12px 16px;
+      border-radius:8px;
+      margin-bottom:18px;
+      font-size:14px;
+    }
+    .library {
+      display:grid;
+      grid-template-columns: 38% 62%;
+      gap:18px;
+      align-items:start;
+    }
+    .panel {
+      background:var(--card);
+      border:1px solid var(--line);
+      border-radius:14px;
+      box-shadow:0 6px 18px rgba(31,78,121,.07);
+      overflow:hidden;
+    }
+    .panel-head {
+      padding:16px 18px;
+      border-bottom:1px solid var(--line);
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:12px;
+    }
+    .panel-head h2, .panel-head h3 {
+      margin:0;
+      color:var(--primary);
+      font-size:18px;
+    }
+    .count {
+      color:var(--muted);
+      font-size:13px;
+      white-space:nowrap;
+    }
+    .controls {
+      padding:14px 16px;
+      border-bottom:1px solid var(--line);
+    }
+    .search {
+      width:100%;
+      padding:11px 12px;
+      border:1px solid #cbd5e1;
+      border-radius:9px;
+      font-size:14px;
+      outline:none;
+    }
+    .search:focus {
+      border-color:var(--primary-2);
+      box-shadow:0 0 0 3px rgba(45,115,173,.12);
+    }
+    .tabs {
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+      margin-top:12px;
+    }
+    .tab {
+      border:1px solid #cbd5e1;
+      background:#f8fafc;
+      color:var(--primary);
+      padding:7px 10px;
+      border-radius:999px;
+      cursor:pointer;
+      font-size:13px;
+    }
+    .tab.active {
+      background:var(--primary);
+      color:#fff;
+      border-color:var(--primary);
+    }
+    .list {
+      max-height:780px;
+      overflow:auto;
+      padding:6px 0;
+    }
+    .item {
+      padding:12px 16px;
+      border-bottom:1px solid #eef2f7;
+      cursor:pointer;
+    }
+    .item:hover {
+      background:#f6faff;
+    }
+    .item.active {
+      background:#eaf3fb;
+      border-left:4px solid var(--primary);
+      padding-left:12px;
+    }
+    .item-title {
+      font-weight:700;
+      color:#163b5c;
+      word-break:break-word;
+      font-size:14px;
+    }
+    .item-meta {
+      margin-top:6px;
+      color:var(--muted);
+      font-size:12px;
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+    }
+    .badge {
+      background:#eef6ff;
+      color:var(--primary);
+      border-radius:999px;
+      padding:2px 8px;
+    }
+    .viewer-body {
+      padding:16px;
+    }
+    #pdfTitle {
+      margin:0 0 10px;
+      color:var(--primary);
+      font-size:17px;
+      word-break:break-word;
+    }
+    .actions {
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-bottom:12px;
+    }
+    .btn {
+      display:inline-block;
+      text-decoration:none;
+      border:0;
+      border-radius:8px;
+      padding:8px 12px;
+      font-size:14px;
+      cursor:pointer;
+    }
+    .btn-preview {
+      background:var(--primary);
+      color:#fff;
+    }
+    .btn-download {
+      background:var(--green);
+      color:#fff;
+    }
+    .btn-plain {
+      background:#eef2f7;
+      color:#1f2937;
+    }
+    iframe {
+      width:100%;
+      height:760px;
+      border:1px solid #cbd5e1;
+      border-radius:10px;
+      background:#fff;
+    }
+    .empty {
+      padding:22px;
+      color:var(--muted);
+      text-align:center;
+    }
+    .footer {
+      text-align:center;
+      color:#7b8794;
+      font-size:13px;
+      padding:28px 18px 40px;
+    }
+    @media (max-width: 960px) {
+      .library { grid-template-columns:1fr; }
+      .list { max-height:420px; }
+      iframe { height:620px; }
+      .ref-title h1 { font-size:23px; }
+    }
+  </style>
+</head>
+<body>
+  <header class="ref-header">
+    <div class="ref-header-inner">
+      <div class="ref-title">
+        <h1>煤化工参考文献资料库</h1>
+        <p>支持文献检索、在线预览、单篇打开与 PDF 下载</p>
+      </div>
+      <a class="back-link" href="智慧图谱.html">返回煤化工知识图谱首页</a>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <div class="notice">
+      PDF 文件实际来自你的云服务器目录 <strong>http://154.198.42.63/papers_safe/</strong>。
+      若在 GitHub Pages 页面中无法内嵌预览，请点击“新标签打开”或“下载 PDF”。这是 HTTPS 页面加载 HTTP PDF 时浏览器的安全限制，不是文件路径错误。
+    </div>
+
+    <section class="library" aria-label="参考文献资料库">
+      <aside class="panel">
+        <div class="panel-head">
+          <h2>文献列表</h2>
+          <span id="pdfCount" class="count"></span>
+        </div>
+        <div class="controls">
+          <input id="pdfSearch" class="search" type="search" placeholder="搜索编号、标题、关键词，如 DOC001、gasification、煤化工">
+          <div id="categoryTabs" class="tabs"></div>
+        </div>
+        <div id="pdfList" class="list"></div>
+      </aside>
+
+      <section class="panel">
+        <div class="panel-head">
+          <h3>PDF 在线预览</h3>
+        </div>
+        <div class="viewer-body">
+          <h2 id="pdfTitle">请选择左侧文献</h2>
+          <div class="actions">
+            <a id="openBtn" class="btn btn-preview" href="#" target="_blank" rel="noopener">新标签打开</a>
+            <a id="downloadBtn" class="btn btn-download" href="#" target="_blank" rel="noopener" download>下载 PDF</a>
+            <button id="copyBtn" class="btn btn-plain" type="button">复制 PDF 地址</button>
+          </div>
+          <iframe id="pdfViewer" src="" title="PDF 预览窗口"></iframe>
+        </div>
+      </section>
+    </section>
+  </main>
+
+  <footer class="footer">
+    煤化工知识图谱及问答式智能体构建项目｜参考文献资料库
+  </footer>
+
+  <script>
+    const pdfBaseUrl = "http://154.198.42.63/papers_safe/";
+    const pdfData = [
+  {
+    "code": "DOC001",
+    "category": "现代煤化工",
+    "title": "1 Introduction",
+    "file": "DOC001.pdf"
+  },
+  {
+    "code": "DOC002",
+    "category": "现代煤化工",
+    "title": "1 s2.0 S0016236106000548",
+    "file": "DOC002.pdf"
+  },
+  {
+    "code": "DOC003",
+    "category": "现代煤化工",
+    "title": "1 s2.0 S0016236113007308",
+    "file": "DOC003.pdf"
+  },
+  {
+    "code": "DOC004",
+    "category": "现代煤化工",
+    "title": "1 s2.0 S0040603118304532",
+    "file": "DOC004.pdf"
+  },
+  {
+    "code": "DOC005",
+    "category": "现代煤化工",
+    "title": "1 s2.0 S0098135421002817",
+    "file": "DOC005.pdf"
+  },
+  {
+    "code": "DOC006",
+    "category": "现代煤化工",
+    "title": "1 s2.0 S0360319920346619",
+    "file": "DOC006.pdf"
+  },
+  {
+    "code": "DOC007",
+    "category": "现代煤化工",
+    "title": "1 s2.0 S0360544216307046",
+    "file": "DOC007.pdf"
+  },
+  {
+    "code": "DOC008",
+    "category": "现代煤化工",
+    "title": "1 s2.0 S0378382017316739",
+    "file": "DOC008.pdf"
+  },
+  {
+    "code": "DOC009",
+    "category": "现代煤化工",
+    "title": "1 s2.0 S0959652616312331",
+    "file": "DOC009.pdf"
+  },
+  {
+    "code": "DOC010",
+    "category": "现代煤化工",
+    "title": "1 s2.0 S1359431115014106",
+    "file": "DOC010.pdf"
+  },
+  {
+    "code": "DOC011",
+    "category": "现代煤化工",
+    "title": "1 s2.0 S1359431119318824",
+    "file": "DOC011.pdf"
+  },
+  {
+    "code": "DOC012",
+    "category": "现代煤化工",
+    "title": "1 s2.0 S1383586617307153",
+    "file": "DOC012.pdf"
+  },
+  {
+    "code": "DOC013",
+    "category": "现代煤化工",
+    "title": "1 s2.0 S1876107021006878",
+    "file": "DOC013.pdf"
+  },
+  {
+    "code": "DOC014",
+    "category": "现代煤化工",
+    "title": "35涓噒 a鐓ゆ恫鍖栨补娓ｈ悆鍙栬缃娆℃姇鏂欒瘯杞︽帰绌 闄堝簡",
+    "file": "DOC014.pdf"
+  },
+  {
+    "code": "DOC015",
+    "category": "煤气化",
+    "title": "A comprehensive review on hydrogen production from coal gasification? Challenges and Opportunities Adnan Midilli",
+    "file": "DOC015.pdf"
+  },
+  {
+    "code": "DOC016",
+    "category": "煤焦化",
+    "title": "A comprehensive study on the transformation of chemical structures in the plastic layers during coking of Australian coals Yunze Hui",
+    "file": "DOC016.pdf"
+  },
+  {
+    "code": "DOC017",
+    "category": "煤焦化",
+    "title": "A comprehensive study on the transformation of chemical structures in the plastic layers during coking of Australian coals",
+    "file": "DOC017.pdf"
+  },
+  {
+    "code": "DOC018",
+    "category": "煤液化",
+    "title": "A data-driven model for assessing the direct coal liquefaction performance and influencing factors Lin-Sheng Li",
+    "file": "DOC018.pdf"
+  },
+  {
+    "code": "DOC019",
+    "category": "煤焦化",
+    "title": "A novel dual way inference modeling method for coal coking Predicting H2 and CH4 concentrations in coke oven gas and inferring optimal reaction conditions",
+    "file": "DOC019.pdf"
+  },
+  {
+    "code": "DOC020",
+    "category": "现代煤化工",
+    "title": "AB绯诲垪PLC鍦ㄩ┈閽㈢叅鐒﹀寲鏂板尯鍑虹劍闄ゅ皹涓殑搴旂敤 浣欑礌钀",
+    "file": "DOC020.pdf"
+  },
+  {
+    "code": "DOC021",
+    "category": "现代煤化工",
+    "title": "ADPFFDC.tmp.pdf cpi",
+    "file": "DOC021.pdf"
+  },
+  {
+    "code": "DOC022",
+    "category": "煤气化",
+    "title": "Acoustic Treatment of a Coal Gasification Residue for Extraction of Selenium Baharak Sajjadi, Wei-Yin Chen, and Riya Chatterjee",
+    "file": "DOC022.pdf"
+  },
+  {
+    "code": "DOC023",
+    "category": "煤液化",
+    "title": "Advancement of Direct Coal Liquefaction Tan-Ping Chen",
+    "file": "DOC023.pdf"
+  },
+  {
+    "code": "DOC024",
+    "category": "煤焦化",
+    "title": "Anode coke from coal - A low cost approach John D. Craddock",
+    "file": "DOC024.pdf"
+  },
+  {
+    "code": "DOC025",
+    "category": "煤气化",
+    "title": "Applied mineralogical investigation on coal gasification ash Rakesh Saini",
+    "file": "DOC025.pdf"
+  },
+  {
+    "code": "DOC026",
+    "category": "煤气化",
+    "title": "Artificial neural network model of catalytic coal gasification in fixed bed Weiwei Li",
+    "file": "DOC026.pdf"
+  },
+  {
+    "code": "DOC027",
+    "category": "煤气化",
+    "title": "Biological treatment of refractory organic compounds in coal gasification wastewater? A review Weikang Kong",
+    "file": "DOC027.pdf"
+  },
+  {
+    "code": "DOC028",
+    "category": "煤气化",
+    "title": "CFD simulation for coal gasification in fluidized bed gasifier Ramakrishnan P",
+    "file": "DOC028.pdf"
+  },
+  {
+    "code": "DOC029",
+    "category": "现代煤化工",
+    "title": "CO 2-鐓ゆ皵鍖栬€﹀悎缁挎阿鍒跺鐢查唶绯荤粺闆嗘垚 閮戦泤鏂",
+    "file": "DOC029.pdf"
+  },
+  {
+    "code": "DOC030",
+    "category": "煤焦化",
+    "title": "Carbonization characteristics of biomass／coking coal blends for the application of bio-coke",
+    "file": "DOC030.pdf"
+  },
+  {
+    "code": "DOC031",
+    "category": "煤气化",
+    "title": "Catalytic application of coal gasification slag-based materials? A review",
+    "file": "DOC031.pdf"
+  },
+  {
+    "code": "DOC032",
+    "category": "煤液化",
+    "title": "Catalytic application of coal liquefaction bottom residue in co-hydrocracking with MRAR under catalyst-free conditions Zefeng Miao",
+    "file": "DOC032.pdf"
+  },
+  {
+    "code": "DOC033",
+    "category": "煤焦化",
+    "title": "Changes in the free radical concentration and carbon structure of coke during the coal coking process",
+    "file": "DOC033.pdf"
+  },
+  {
+    "code": "DOC034",
+    "category": "煤焦化",
+    "title": "Characterization of microstructure and strength of coke particles and their dependence on coal properties Sarangaya, Bryan Fel",
+    "file": "DOC034.pdf"
+  },
+  {
+    "code": "DOC035",
+    "category": "现代煤化工",
+    "title": "Chemical Looping Combustion of Coal Chars Using Iron Ore of Different Grades as Oxygen Carriers",
+    "file": "DOC035.pdf"
+  },
+  {
+    "code": "DOC036",
+    "category": "煤气化",
+    "title": "Chemical speciation and structure of lithium (Li) in coal gasification fine slag? Evolution mechanisms and implications for ? Biao Fu",
+    "file": "DOC036.pdf"
+  },
+  {
+    "code": "DOC037",
+    "category": "煤气化",
+    "title": "Chitosan-coal gasification slag-based umbrella-inspired interlocking microreactor for uranium-containing wastewater treatment Jiaqi Yu",
+    "file": "DOC037.pdf"
+  },
+  {
+    "code": "DOC038",
+    "category": "煤气化",
+    "title": "Coal gasification slag for preparation of environmentally friendly superabsorbent composites with rapid water absorption an ? Yan Liu",
+    "file": "DOC038.pdf"
+  },
+  {
+    "code": "DOC039",
+    "category": "煤液化",
+    "title": "Coking behavior and mechanism of direct coal liquefaction residue in coking of coal blending",
+    "file": "DOC039.pdf"
+  },
+  {
+    "code": "DOC040",
+    "category": "煤焦化",
+    "title": "Coking coal mining investment Boosting European Union s ra",
+    "file": "DOC040.pdf"
+  },
+  {
+    "code": "DOC041",
+    "category": "煤气化",
+    "title": "Combustibility analysis of high-carbon fine slags from an entrained flow gasifier",
+    "file": "DOC041.pdf"
+  },
+  {
+    "code": "DOC042",
+    "category": "煤焦化",
+    "title": "Construction of a Ni／Semi-coke catalyst via a NiCl2-Lactic acid deep eutectic solvent for upgrading coal pyrolysis tar Haozhao He",
+    "file": "DOC042.pdf"
+  },
+  {
+    "code": "DOC043",
+    "category": "煤液化",
+    "title": "Design and Installation of Soil Improvement against Liquefaction in Reclaimed Ground with Coal Ash Kazumi Ogura, Hiroshi Kawamura, Mitsuhiro Yoshida, Tomoya Harada, Hideo Tsuboi, Akito Sone, Nobuyuki Endo, Hiroaki Sato, Tamotsu Matsui",
+    "file": "DOC043.pdf"
+  },
+  {
+    "code": "DOC044",
+    "category": "煤气化",
+    "title": "Design and performance study of environmentally friendly coal gasification slagbased daytime radiative cooling coatings",
+    "file": "DOC044.pdf"
+  },
+  {
+    "code": "DOC045",
+    "category": "煤气化",
+    "title": "Design of coal gasification coarse slag based quinary cementitious material? Performance, microstructure and hydration mechanism Xiaotian Liu",
+    "file": "DOC045.pdf"
+  },
+  {
+    "code": "DOC046",
+    "category": "煤焦化",
+    "title": "Devolatilization behaviour and pyrolysis kinetics of coking coal based on the evolution of functional groups Zhiyuan Niu",
+    "file": "DOC046.pdf"
+  },
+  {
+    "code": "DOC047",
+    "category": "煤液化",
+    "title": "Different Effect of H2 and H-donating Solvent on Aromatic Formation during the Direct Coal Liquefaction of Naomaohu Coal Ning Zhen",
+    "file": "DOC047.pdf"
+  },
+  {
+    "code": "DOC048",
+    "category": "煤焦化",
+    "title": "Economic and environmental analysis of coking coal and solid recovered fuels supply to European steelmaking plants",
+    "file": "DOC048.pdf"
+  },
+  {
+    "code": "DOC049",
+    "category": "煤气化",
+    "title": "Effect of activator on the properties of paste backfill material of decarburized coal gasification slag based on optimizati ? Renlong Tang",
+    "file": "DOC049.pdf"
+  },
+  {
+    "code": "DOC050",
+    "category": "煤气化",
+    "title": "Effect of calcination temperature on the reactivity of coal gasification slag? phase evolution, dissolution behavior and en ? Ziyang Hu",
+    "file": "DOC050.pdf"
+  },
+  {
+    "code": "DOC051",
+    "category": "煤焦化",
+    "title": "Effect of different grinding media on the disintegration characteristics of coking coal",
+    "file": "DOC051.pdf"
+  },
+  {
+    "code": "DOC052",
+    "category": "煤焦化",
+    "title": "Effect of high-temperature pyrolysis on the structure and properties of coal and petroleum coke Jin Xiao",
+    "file": "DOC052.pdf"
+  },
+  {
+    "code": "DOC053",
+    "category": "煤液化",
+    "title": "Effect of liquefaction solvent, catalyst sulfidation method and H2S on mild liquefaction behaviors of Jiangna coal over Fe-based catalysts Jiaqi Yu",
+    "file": "DOC053.pdf"
+  },
+  {
+    "code": "DOC054",
+    "category": "煤焦化",
+    "title": "Effect of sawdust addition on coking pressure p",
+    "file": "DOC054.pdf"
+  },
+  {
+    "code": "DOC055",
+    "category": "煤焦化",
+    "title": "Effect of sawdust addition on coking pressure produced by two low vol bituminous coals",
+    "file": "DOC055.pdf"
+  },
+  {
+    "code": "DOC056",
+    "category": "煤焦化",
+    "title": "Effects of coal interactions during cokemaking on coke pr",
+    "file": "DOC056.pdf"
+  },
+  {
+    "code": "DOC057",
+    "category": "煤焦化",
+    "title": "Effects of coal tar pitch properties and processing parameters on the strength of formed coke prepared from coke breeze? an analysis using interpretive structural modeling and ridge regression Yinrui Dong",
+    "file": "DOC057.pdf"
+  },
+  {
+    "code": "DOC058",
+    "category": "煤气化",
+    "title": "Electrochemical catalytic coal gasification? A novel method Fan Yang",
+    "file": "DOC058.pdf"
+  },
+  {
+    "code": "DOC059",
+    "category": "煤液化",
+    "title": "Enhanced plateau capacity of coal liquefaction pitch-based hard carbon with polyvinylidene difluoride multifunctional synergistic effects Mingshuo Chi",
+    "file": "DOC059.pdf"
+  },
+  {
+    "code": "DOC060",
+    "category": "煤气化",
+    "title": "Enrichment and utilization of residual carbon from coal gasification slag：A review",
+    "file": "DOC060.pdf"
+  },
+  {
+    "code": "DOC061",
+    "category": "煤气化",
+    "title": "Environmental impact and carbon recovery in coal gasification slag after Separation-Oxidation-Acid washing (SOA) process",
+    "file": "DOC061.pdf"
+  },
+  {
+    "code": "DOC062",
+    "category": "现代煤化工",
+    "title": "Estimating the fusible content of individual coal",
+    "file": "DOC062.pdf"
+  },
+  {
+    "code": "DOC063",
+    "category": "煤焦化",
+    "title": "Evolution and molecular model construction of Shanxi coking coal metaplast using a Gieseler plastometer coupled with liquid nitrogen rapid cooling",
+    "file": "DOC063.pdf"
+  },
+  {
+    "code": "DOC064",
+    "category": "煤焦化",
+    "title": "Evolution of carbon structure and cross linking structure during coking process of coking coal",
+    "file": "DOC064.pdf"
+  },
+  {
+    "code": "DOC065",
+    "category": "煤气化",
+    "title": "Experimental Study on Coal Gasification in a Full-Scale Two-Stage Entrained-Flow Gasifier Guangyu Li, Luping Wang, Chaowei Wang, Chang’an Wang, Ping Wu and Defu Che",
+    "file": "DOC065.pdf"
+  },
+  {
+    "code": "DOC066",
+    "category": "煤气化",
+    "title": "Experimental study on the activation of coal gasification fly ash from industrial CFB gasifiers Qiyao Yang",
+    "file": "DOC066.pdf"
+  },
+  {
+    "code": "DOC067",
+    "category": "煤气化",
+    "title": "Flotation specificity of coal gasification fine slag based on release analysis Dinghua Liu",
+    "file": "DOC067.pdf"
+  },
+  {
+    "code": "DOC068",
+    "category": "煤气化",
+    "title": "Gasification of Indonesias Low-Rank Coal? A Comparative Review of Technology Options and Contextual Considerations",
+    "file": "DOC068.pdf"
+  },
+  {
+    "code": "DOC069",
+    "category": "煤气化",
+    "title": "Hierarchical carbon／zeolite composite derived from coal gasification slag for efficient oil removal from coking wastewater",
+    "file": "DOC069.pdf"
+  },
+  {
+    "code": "DOC070",
+    "category": "煤焦化",
+    "title": "How coke optical texture became a relevant tool for unde",
+    "file": "DOC070.pdf"
+  },
+  {
+    "code": "DOC071",
+    "category": "煤液化",
+    "title": "Hydrogenation of the primary product of direct coal liquefaction? Mainly by H2 or hydrogen donor solvent- Hongyuan Yang",
+    "file": "DOC071.pdf"
+  },
+  {
+    "code": "DOC072",
+    "category": "现代煤化工",
+    "title": "IHC鍐呯儹寮忔竻娲侀珮鏁堢叅鐒﹀寲鎶€鏈璇佷細鍦ㄥ寳浜彫寮€ 鍚磋开",
+    "file": "DOC072.pdf"
+  },
+  {
+    "code": "DOC073",
+    "category": "煤液化",
+    "title": "IS COAL LIQUEFACTION A VIABLE SYNFUEL OPTION IN ALBERTA- R.W. GREGORY W. KESEL J.M. RAISBECK",
+    "file": "DOC073.pdf"
+  },
+  {
+    "code": "DOC074",
+    "category": "现代煤化工",
+    "title": "Impact of weathering on coal properties and evolution",
+    "file": "DOC074.pdf"
+  },
+  {
+    "code": "DOC075",
+    "category": "煤焦化",
+    "title": "Improving the properties of high volatile coking coals by controlle",
+    "file": "DOC075.pdf"
+  },
+  {
+    "code": "DOC076",
+    "category": "煤焦化",
+    "title": "In-situ study of plastic layers during coking of six Australian coking coals using a lab-scale coke oven Soonho Lee",
+    "file": "DOC076.pdf"
+  },
+  {
+    "code": "DOC077",
+    "category": "煤焦化",
+    "title": "Influence of briquetting and coking parameters on the lump coke prod",
+    "file": "DOC077.pdf"
+  },
+  {
+    "code": "DOC078",
+    "category": "现代煤化工",
+    "title": "Influence of different state alkali and alkaline earth metal on chemical structure of Zhundong coal char pyrolyzed at elevated pressures",
+    "file": "DOC078.pdf"
+  },
+  {
+    "code": "DOC079",
+    "category": "煤焦化",
+    "title": "Insight into the relationship between carbon structure and coke performance during coal blending coking",
+    "file": "DOC079.pdf"
+  },
+  {
+    "code": "DOC080",
+    "category": "煤液化",
+    "title": "Insight of active phase transformation of α-Fe2O3 precursor in direct coal liquefaction? Experimental and DFT calculation",
+    "file": "DOC080.pdf"
+  },
+  {
+    "code": "DOC081",
+    "category": "煤液化",
+    "title": "Intelligent analysis of direct coal liquefaction diesel components by near-infrared spectroscopy Xiwu WANG",
+    "file": "DOC081.pdf"
+  },
+  {
+    "code": "DOC082",
+    "category": "煤液化",
+    "title": "Investigations on the hydrogenation behaviors and kinetics of heavy fraction from direct coal liquefaction process Haitao Chen",
+    "file": "DOC082.pdf"
+  },
+  {
+    "code": "DOC083",
+    "category": "煤气化",
+    "title": "Kinetic and thermodynamic evolution driven by oxygen gradients in underground coal gasification Maifan Dong",
+    "file": "DOC083.pdf"
+  },
+  {
+    "code": "DOC084",
+    "category": "环保低碳",
+    "title": "LDAR鍦ㄧ叅鍖栧伐浼佷笟VOCs绠℃帶涓殑搴旂敤 鐜嬫枌",
+    "file": "DOC084.pdf"
+  },
+  {
+    "code": "DOC085",
+    "category": "现代煤化工",
+    "title": "LIQUID TRANSPORTATION FUELS FROM NOVA SCOTIA COALS J.J. STARZOMSKI",
+    "file": "DOC085.pdf"
+  },
+  {
+    "code": "DOC086",
+    "category": "现代煤化工",
+    "title": "Low temperature pyrolysis properties and kinetics of",
+    "file": "DOC086.pdf"
+  },
+  {
+    "code": "DOC087",
+    "category": "煤焦化",
+    "title": "MH-induced co-carbonization of mediumlow temperature coal tar pitch for fine-grained mosaic coke and its supercapacitor application Shuaichao Song",
+    "file": "DOC087.pdf"
+  },
+  {
+    "code": "DOC088",
+    "category": "煤气化",
+    "title": "Mathematical Modeling of the Underground Coal Gasification Process in One Gasification Cycle Hongtao Liu, Shuqin Liu, Feng Chen, Juan Zhao, Kaili Qi, and Hong Yao",
+    "file": "DOC088.pdf"
+  },
+  {
+    "code": "DOC089",
+    "category": "煤焦化",
+    "title": "Mechanism of microstructural evolution in coke durin",
+    "file": "DOC089.pdf"
+  },
+  {
+    "code": "DOC090",
+    "category": "煤焦化",
+    "title": "Mechanistic study of plastic layer permeability during coking of Australian metallurgical coals",
+    "file": "DOC090.pdf"
+  },
+  {
+    "code": "DOC091",
+    "category": "煤气化",
+    "title": "Methods for enhancing resource recovery efficiency in underground coal gasification to promote its large-scale utilization",
+    "file": "DOC091.pdf"
+  },
+  {
+    "code": "DOC092",
+    "category": "煤焦化",
+    "title": "Migration of inert materials during coking of molded coal",
+    "file": "DOC092.pdf"
+  },
+  {
+    "code": "DOC093",
+    "category": "煤气化",
+    "title": "Modeling and simulation of coal gasification on an entrained flow",
+    "file": "DOC093.pdf"
+  },
+  {
+    "code": "DOC094",
+    "category": "煤液化",
+    "title": "Molecular-level reaction kinetics simulation and analysis of direct coal liquefaction process for oil production Xinglong Qin",
+    "file": "DOC094.pdf"
+  },
+  {
+    "code": "DOC095",
+    "category": "现代煤化工",
+    "title": "M鍏徃鐓ゅ寲宸ラ」鐩豢鑹蹭綆纰冲彂灞曞奖鍝嶅洜绱犵爺绌 搴风Е瀹",
+    "file": "DOC095.pdf"
+  },
+  {
+    "code": "DOC096",
+    "category": "煤液化",
+    "title": "Nitrogen-embedded conductive carbon black from coal liquefaction residue? self-activating hierarchical porosity via synergistic doping and templating Peng Huang",
+    "file": "DOC096.pdf"
+  },
+  {
+    "code": "DOC097",
+    "category": "煤气化",
+    "title": "Numerical analysis-based evaluation of combustion and gasification characteristics of pulverized coal and coke in the racew",
+    "file": "DOC097.pdf"
+  },
+  {
+    "code": "DOC098",
+    "category": "煤气化",
+    "title": "Numerical simulation of the influence of injection structure on pulverized coal gasification in the dome zone of COREX melt ? Wenchao Zhang",
+    "file": "DOC098.pdf"
+  },
+  {
+    "code": "DOC099",
+    "category": "煤焦化",
+    "title": "Numerical study on coal pyrolysis behavior during carbonization in a coke oven Selvakumar Kumaresh",
+    "file": "DOC099.pdf"
+  },
+  {
+    "code": "DOC100",
+    "category": "环保低碳",
+    "title": "ON 'UNCONVENTIONAL' SOURCES OF PETROLEUM HYDROCARBONS N. BERKOWITZ S.K. CHAKRABARTTY",
+    "file": "DOC100.pdf"
+  },
+  {
+    "code": "DOC101",
+    "category": "煤液化",
+    "title": "ORBIT轨道球阀在煤直接液化工艺的应用及失效分析 韩云?",
+    "file": "DOC101.pdf"
+  },
+  {
+    "code": "DOC102",
+    "category": "现代煤化工",
+    "title": "PTFE涓┖绾ょ淮瓒呭井婊よ啘瀵圭叅姘斿寲搴熸按闄ょ‖鐨勫伐绋嬪簲鐢 瀹嬫案鏂",
+    "file": "DOC102.pdf"
+  },
+  {
+    "code": "DOC103",
+    "category": "煤气化",
+    "title": "Pilot-scale experiment and numerical simulation of deep flotation of coal gasification fine slag Ruifeng Chen",
+    "file": "DOC103.pdf"
+  },
+  {
+    "code": "DOC104",
+    "category": "煤气化",
+    "title": "Pilot-scale fluidized melting combustion of coal gasification slag with a novel combustion organization",
+    "file": "DOC104.pdf"
+  },
+  {
+    "code": "DOC105",
+    "category": "煤液化",
+    "title": "Pore structure fabricated porous carbon from coal liquefaction residue via synergistic template-activation strategy for high-performance supercapacitor Yiyang Rong",
+    "file": "DOC105.pdf"
+  },
+  {
+    "code": "DOC106",
+    "category": "现代煤化工",
+    "title": "Precise regulation of weak intermolecular interaction forces and their application to high-purity aromatic monomer separati",
+    "file": "DOC106.pdf"
+  },
+  {
+    "code": "DOC107",
+    "category": "现代煤化工",
+    "title": "Preparation and structure evolution of coal based needl",
+    "file": "DOC107.pdf"
+  },
+  {
+    "code": "DOC108",
+    "category": "煤液化",
+    "title": "Preparation of enhanced spinnable mesophase pitch and split-free carbon fibers via copolymerization of coal liquefaction pi",
+    "file": "DOC108.pdf"
+  },
+  {
+    "code": "DOC109",
+    "category": "煤液化",
+    "title": "Preparation of mesophase carbon fibers from coal liquefaction pitch via synergistic pyrolysis and synchronous hydrogenation Wenshuai Xi",
+    "file": "DOC109.pdf"
+  },
+  {
+    "code": "DOC110",
+    "category": "煤气化",
+    "title": "Properties and hydration mechanism of eco-friendly cementitious material prepared using coal gasification slag and circulating fluidized bed fly ash Zhibin Ma",
+    "file": "DOC110.pdf"
+  },
+  {
+    "code": "DOC111",
+    "category": "煤焦化",
+    "title": "Pyrolysis behavior of solvent-extracted group components from coking coal? Insights into volatile release and source contributions to coke formation Tingting Zhang",
+    "file": "DOC111.pdf"
+  },
+  {
+    "code": "DOC112",
+    "category": "现代煤化工",
+    "title": "Radial distribution function assisted small angle X-ray scattering analyses towards decoding nano-macromolecular structure",
+    "file": "DOC112.pdf"
+  },
+  {
+    "code": "DOC113",
+    "category": "煤气化",
+    "title": "Recent Progress on Hydrogen-Rich Syngas Production from Coal Gasification Fei Dai, Shengping Zhang, Yuanpei Luo, Ke Wang, Yanrong Liu and Xiaoyan Ji",
+    "file": "DOC113.pdf"
+  },
+  {
+    "code": "DOC114",
+    "category": "煤气化",
+    "title": "Recycling coal gasification slag to produce eco-friendly ultra-high performance Concrete? working properties, mechanical pr ? Tianshuai Yao",
+    "file": "DOC114.pdf"
+  },
+  {
+    "code": "DOC115",
+    "category": "煤气化",
+    "title": "Regasification feasibility of carbon-rich coal gasification fine slag? A pilot scale study Shuai Guo",
+    "file": "DOC115.pdf"
+  },
+  {
+    "code": "DOC116",
+    "category": "煤气化",
+    "title": "Research on evaluation technology system of mid-deep underground coal gasification based on researchers from China xinjun Chen",
+    "file": "DOC116.pdf"
+  },
+  {
+    "code": "DOC117",
+    "category": "煤气化",
+    "title": "Research review of underground coal gasification? principles, challenges and prospects Daxing Wang",
+    "file": "DOC117.pdf"
+  },
+  {
+    "code": "DOC118",
+    "category": "现代煤化工",
+    "title": "SM绯荤粺鍦ㄩ┈閽㈢叅鐒﹀寲鍏徃鑻姞姘㈢郴缁熶笂鐨勫簲鐢 鏂硅秴",
+    "file": "DOC118.pdf"
+  },
+  {
+    "code": "DOC119",
+    "category": "现代煤化工",
+    "title": "SPE International Symposium & Exhibition on Formation Damage Control akin",
+    "file": "DOC119.pdf"
+  },
+  {
+    "code": "DOC120",
+    "category": "现代煤化工",
+    "title": "Shell鐐夌叅姘斿寲椋炵伆瀵圭敓鐗╄川娴佸寲搴婃皵鍖栫倝澹佸唴 澶栧眰绉伆鐨勬姂鍒舵満鍒 钖涚殦澶",
+    "file": "DOC120.pdf"
+  },
+  {
+    "code": "DOC121",
+    "category": "现代煤化工",
+    "title": "Shell鐓ゆ皵鍖栬缃吀鍨嬩簨鏁呮渚嬪垎鏋愪笌瀵圭瓥 鏉ㄩ潚鍝",
+    "file": "DOC121.pdf"
+  },
+  {
+    "code": "DOC122",
+    "category": "现代煤化工",
+    "title": "Shell鐓ゆ皵鍖栬缃奖鍝嶅師鐓よ浆鍖栨晥鐜囩殑鍥犵礌鍙婃帾鏂 鏉ㄥ崼绁",
+    "file": "DOC122.pdf"
+  },
+  {
+    "code": "DOC123",
+    "category": "现代煤化工",
+    "title": "Shell绮夌叅姘斿寲瑁呯疆姘斿姏杈撻€佺郴缁熻繍琛岄棶棰樺強浼樺寲鏀硅繘 鍒橀緳鍒",
+    "file": "DOC123.pdf"
+  },
+  {
+    "code": "DOC124",
+    "category": "煤气化",
+    "title": "Simulation of Underground Coal-Gasification ProcessUsing Aspen Plus Shuxia Yuan, Wanwan Jiao, Chuangye Wang, Song Wu and Qibin Jiang",
+    "file": "DOC124.pdf"
+  },
+  {
+    "code": "DOC125",
+    "category": "煤焦化",
+    "title": "Structural characterization of coking component of an Indian coking coal",
+    "file": "DOC125.pdf"
+  },
+  {
+    "code": "DOC126",
+    "category": "煤焦化",
+    "title": "Structural characterization of coking component of an Indian coking",
+    "file": "DOC126.pdf"
+  },
+  {
+    "code": "DOC127",
+    "category": "煤液化",
+    "title": "Structural evolution of high and low-organic-sulfur coals during direct liquefaction? insights from FTIR, XPS, XRD, and HRTEM Liping Xue",
+    "file": "DOC127.pdf"
+  },
+  {
+    "code": "DOC128",
+    "category": "煤气化",
+    "title": "Studies of catalytic coal gasification with steam",
+    "file": "DOC128.pdf"
+  },
+  {
+    "code": "DOC129",
+    "category": "煤气化",
+    "title": "Study of Electrochemical Catalytic Coal Gasification? Gasification Characteristics and Char Structure Evolution Fan Yang, Qingbo Yu, Wenjun Duan, Zhenfei Qi, and Qin Qin",
+    "file": "DOC129.pdf"
+  },
+  {
+    "code": "DOC130",
+    "category": "煤液化",
+    "title": "Study on the flotation separation efficiency of surfactants on the coal direct liquefaction residue raffinate Jiali Guo",
+    "file": "DOC130.pdf"
+  },
+  {
+    "code": "DOC131",
+    "category": "煤焦化",
+    "title": "Study on the mechanism evolution of carbon structure during blending coal coking Hanwen Zhu",
+    "file": "DOC131.pdf"
+  },
+  {
+    "code": "DOC132",
+    "category": "煤焦化",
+    "title": "Study on the mechanism evolution of carbon structure during blending coal coking",
+    "file": "DOC132.pdf"
+  },
+  {
+    "code": "DOC133",
+    "category": "煤焦化",
+    "title": "Surrogate model integrated deep reinforcement learning for temperature and pyrolysis behavior control in the coal coking process",
+    "file": "DOC133.pdf"
+  },
+  {
+    "code": "DOC134",
+    "category": "煤焦化",
+    "title": "Sustainable N doped carbon anodes directly derived from fat coking coal without ash removal for high performance gel electrolyte lithium ion batteries",
+    "file": "DOC134.pdf"
+  },
+  {
+    "code": "DOC135",
+    "category": "煤焦化",
+    "title": "Synergistic effect of H2 and coal thermal dissolution solubles on the microstructure and dissolution loss performance of coke Shumin Shan",
+    "file": "DOC135.pdf"
+  },
+  {
+    "code": "DOC136",
+    "category": "煤气化",
+    "title": "Synthesis of zeolites from coal gasification coarse slag with insights into crystal growth mechanisms and adsorption perfor ? Weiwei Xuan",
+    "file": "DOC136.pdf"
+  },
+  {
+    "code": "DOC137",
+    "category": "现代煤化工",
+    "title": "Synthesis, characterization, and catalytic performance of a novel and efficient iron-based catalyst NaFeS2 for direct coal ? Rui Zhang",
+    "file": "DOC137.pdf"
+  },
+  {
+    "code": "DOC138",
+    "category": "煤液化",
+    "title": "THE ECONOMICS OF COAL LIQUEFACTION IN ALBERTA BY LOW-TEMPERATURE FLASH PYROLYSIS AS A PRECURSOR TO THERMAL ELECTRIC POWER GENERATION I.W. HERRING E.L. TOLLEFSON",
+    "file": "DOC138.pdf"
+  },
+  {
+    "code": "DOC139",
+    "category": "现代煤化工",
+    "title": "Temperature dependent combustion synergy of co pyro",
+    "file": "DOC139.pdf"
+  },
+  {
+    "code": "DOC140",
+    "category": "环保低碳",
+    "title": "The Effect of Plastic Addition on Coal Caking Properties during Carbonization Seiji Nomura",
+    "file": "DOC140.pdf"
+  },
+  {
+    "code": "DOC141",
+    "category": "煤焦化",
+    "title": "The microscopic mechanism of nitrogen migration and transformation in coking coal regulated by methane? based on Reaxff-MD ? Jinzhang Jia",
+    "file": "DOC141.pdf"
+  },
+  {
+    "code": "DOC142",
+    "category": "煤气化",
+    "title": "The synthesis of coal gasification fine slag-derived catalysts and its application? A review Zhishang Wu",
+    "file": "DOC142.pdf"
+  },
+  {
+    "code": "DOC143",
+    "category": "煤焦化",
+    "title": "The yield of coke oven gas from hard and semi",
+    "file": "DOC143.pdf"
+  },
+  {
+    "code": "DOC144",
+    "category": "现代煤化工",
+    "title": "Thermochemical Conversion of Microalgae? Challenges and Prospective of HTL Pathway for Algae Biorefinery",
+    "file": "DOC144.pdf"
+  },
+  {
+    "code": "DOC145",
+    "category": "现代煤化工",
+    "title": "Unconventional Resources? The Next Generation. Assessing Coal to Liquids, Oil Shale, Underground",
+    "file": "DOC145.pdf"
+  },
+  {
+    "code": "DOC146",
+    "category": "煤焦化",
+    "title": "Upgrading deashed Huadian oil shale using low-temperature pyrolysis treatment and its application in coal-blending coking",
+    "file": "DOC146.pdf"
+  },
+  {
+    "code": "DOC147",
+    "category": "煤气化",
+    "title": "Using waste to treat waste? elemental mercury removal from flue gas by coal gasification slag",
+    "file": "DOC147.pdf"
+  },
+  {
+    "code": "DOC148",
+    "category": "现代煤化工",
+    "title": "ampp",
+    "file": "DOC148.pdf"
+  },
+  {
+    "code": "DOC149",
+    "category": "现代煤化工",
+    "title": "energies 19 00199 v2",
+    "file": "DOC149.pdf"
+  },
+  {
+    "code": "DOC150",
+    "category": "现代煤化工",
+    "title": "main",
+    "file": "DOC150.pdf"
+  },
+  {
+    "code": "DOC151",
+    "category": "现代煤化工",
+    "title": "main13",
+    "file": "DOC151.pdf"
+  },
+  {
+    "code": "DOC152",
+    "category": "现代煤化工",
+    "title": "main7",
+    "file": "DOC152.pdf"
+  },
+  {
+    "code": "DOC153",
+    "category": "现代煤化工",
+    "title": "spe 18213 ms",
+    "file": "DOC153.pdf"
+  },
+  {
+    "code": "DOC154",
+    "category": "现代煤化工",
+    "title": "spe 4709 ms",
+    "file": "DOC154.pdf"
+  },
+  {
+    "code": "DOC155",
+    "category": "现代煤化工",
+    "title": "spe 5747 pa",
+    "file": "DOC155.pdf"
+  },
+  {
+    "code": "DOC156",
+    "category": "现代煤化工",
+    "title": "wpc 14305",
+    "file": "DOC156.pdf"
+  },
+  {
+    "code": "DOC157",
+    "category": "现代煤化工",
+    "title": "wpc 14307",
+    "file": "DOC157.pdf"
+  },
+  {
+    "code": "DOC158",
+    "category": "现代煤化工",
+    "title": "wpc 16407",
+    "file": "DOC158.pdf"
+  },
+  {
+    "code": "DOC159",
+    "category": "现代煤化工",
+    "title": "wpc 16408",
+    "file": "DOC159.pdf"
+  },
+  {
+    "code": "DOC160",
+    "category": "现代煤化工",
+    "title": "wpc 20324",
+    "file": "DOC160.pdf"
+  },
+  {
+    "code": "DOC161",
+    "category": "现代煤化工",
+    "title": "wpc 20326",
+    "file": "DOC161.pdf"
+  },
+  {
+    "code": "DOC162",
+    "category": "现代煤化工",
+    "title": "wpc 20327",
+    "file": "DOC162.pdf"
+  },
+  {
+    "code": "DOC163",
+    "category": "现代煤化工",
+    "title": "“十五五”我国煤化工产业发展趋势 朱彬?",
+    "file": "DOC163.pdf"
+  },
+  {
+    "code": "DOC164",
+    "category": "现代煤化工",
+    "title": "鈥滃弻纰斥€濊儗鏅笅鏂扮枂鐓ゆ皵鍖栧簲鐢ㄥ墠鏅垎鏋 钁ｅ浜",
+    "file": "DOC164.pdf"
+  },
+  {
+    "code": "DOC165",
+    "category": "现代煤化工",
+    "title": "銆婄叅鐐姞宸ヤ笌缁煎悎鍒╃敤銆嬫潅蹇",
+    "file": "DOC165.pdf"
+  },
+  {
+    "code": "DOC166",
+    "category": "煤液化",
+    "title": "不同氢源作用下煤直接液化过程的自由基反应行为研究 田佳?",
+    "file": "DOC166.pdf"
+  },
+  {
+    "code": "DOC167",
+    "category": "现代煤化工",
+    "title": "涓嶅悓鐓ゆ皵鍖栫粏娓ｇ殑鍩虹鎬ц川鐮旂┒鈥斾互鍐呰挋鍙や腑瑗块儴鍦板尯涓轰緥 鏉庨",
+    "file": "DOC167.pdf"
+  },
+  {
+    "code": "DOC168",
+    "category": "现代煤化工",
+    "title": "涓嶅悓棣忓垎娈垫憾鍓傚绁炰笢琛ヨ繛濉旂叅鐩存帴娑插寲鎬ц兘鐨勫奖鍝 璧垫鼎娉",
+    "file": "DOC168.pdf"
+  },
+  {
+    "code": "DOC169",
+    "category": "现代煤化工",
+    "title": "涓浗鐜颁唬鐓ゅ寲宸ヤ骇涓氬彂灞曠爺绌跺強瀵圭瓥寤鸿 璁告旦",
+    "file": "DOC169.pdf"
+  },
+  {
+    "code": "DOC170",
+    "category": "现代煤化工",
+    "title": "涓浗鐜颁唬鐓ゅ寲宸ヤ骇涓氬彂灞曠爺绌跺強瀵圭瓥寤鸿 璁告旦锛2锛",
+    "file": "DOC170.pdf"
+  },
+  {
+    "code": "DOC171",
+    "category": "现代煤化工",
+    "title": "涓浗棣栧缁挎阿鐓ゅ寲宸ラ」鐩叏闈㈡姇杩",
+    "file": "DOC171.pdf"
+  },
+  {
+    "code": "DOC172",
+    "category": "现代煤化工",
+    "title": "涓ぉ鍚堝垱锛氫簲姝ュ伐浣滄硶璧嬭兘鐓ゅ寲宸ヤ紒涓氱粡钀ユ彁璐ㄥ崌绾 鍒樺啗閿",
+    "file": "DOC172.pdf"
+  },
+  {
+    "code": "DOC173",
+    "category": "现代煤化工",
+    "title": "浠嬭川寰€氶亾寮哄寲鐓ゅ寲宸ュ簾姘存补鍥哄崗鍚屽垎绂 闊﹀",
+    "file": "DOC173.pdf"
+  },
+  {
+    "code": "DOC174",
+    "category": "现代煤化工",
+    "title": "浠モ€滃叚椤硅兘鍔涒€濇縺娲诲彂灞曞姩鑳  璧板ソ鐓ゅ寲宸ヤ紒涓氶珮璐ㄩ噺鍙戝睍涔嬭矾 鍒樺啗閿",
+    "file": "DOC174.pdf"
+  },
+  {
+    "code": "DOC175",
+    "category": "煤焦化",
+    "title": "众泰煤焦化地面除尘站爆鸣原因分析及防控措? 张志?",
+    "file": "DOC175.pdf"
+  },
+  {
+    "code": "DOC176",
+    "category": "现代煤化工",
+    "title": "浼楁嘲鐓ょ劍鍖栭€夌叅鍘傝劚姘寸郴缁熶紭鍖栨帰绱笌瀹炶返 钂嬪杽鍕",
+    "file": "DOC176.pdf"
+  },
+  {
+    "code": "DOC177",
+    "category": "现代煤化工",
+    "title": "鍌寲鍓傞吀鎬ц川瀵圭叅鐩存帴娑插寲娌瑰姞姘㈡敼璐ㄥ弽搴旀€ц兘鐨勭爺绌 鑻忕泭姘",
+    "file": "DOC177.pdf"
+  },
+  {
+    "code": "DOC178",
+    "category": "煤气化",
+    "title": "先进过程控制在煤气化配煤和磨煤中的应? 李伯?",
+    "file": "DOC178.pdf"
+  },
+  {
+    "code": "DOC179",
+    "category": "现代煤化工",
+    "title": "鍏ㄨ啘娉曟妧鏈湪鐓ゅ寲宸ュ簾姘撮浂鎺掓斁宸ョ▼涓殑搴旂敤涓庡垎鏋 寮犺檸",
+    "file": "DOC179.pdf"
+  },
+  {
+    "code": "DOC180",
+    "category": "现代煤化工",
+    "title": "鍏充簬鍦ㄨタ閮ㄥ湴鍖哄彂灞曠叅鍒舵皵绛夋柊鍨嬬叅鍖栧伐椤圭洰鐨勫彲琛屾€х爺绌 寮犵瓥",
+    "file": "DOC180.pdf"
+  },
+  {
+    "code": "DOC181",
+    "category": "现代煤化工",
+    "title": "鍐呰挋鍙ょ叅鐒﹀寲鍏徃绉瀬鎺ㄨ繘鎺掓薄璁稿彲鍙栬瘉宸ヤ綔 鏉庝附濞",
+    "file": "DOC181.pdf"
+  },
+  {
+    "code": "DOC182",
+    "category": "现代煤化工",
+    "title": "鍑濆績鑱氬姏璋嬪彂灞  鏀诲潥鍏嬮毦寮€鏂板眬鈥斺€斿唴钂欏彜鍑嗘牸灏旀棗鑽ｇゥ鐓ょ劍鍖栧叕鍙稿北涓嶆媺鐓ょ熆 闄堢孩鍐",
+    "file": "DOC182.pdf"
+  },
+  {
+    "code": "DOC183",
+    "category": "现代煤化工",
+    "title": "分布式控制系统在大型煤化工工厂中的应用与实践 方彪",
+    "file": "DOC183.pdf"
+  },
+  {
+    "code": "DOC184",
+    "category": "现代煤化工",
+    "title": "鍔犲揩鎺ㄥ姩鐓ょ劍鍖栦紒涓氱豢鑹茶浆鍨 璧甸粠鏄€",
+    "file": "DOC184.pdf"
+  },
+  {
+    "code": "DOC185",
+    "category": "现代煤化工",
+    "title": "鍔╁姏鐓ょ劍鍖栦紒涓氱壕鍥  璧嬭兘璧勬簮鍨嬪煄甯傝浆鍨 闄舵瀹",
+    "file": "DOC185.pdf"
+  },
+  {
+    "code": "DOC186",
+    "category": "现代煤化工",
+    "title": "鍖栧伐鍥尯鎴愮幇浠ｇ叅鍖栧伐浜т笟闆嗚仛鍦 鍙朵紵",
+    "file": "DOC186.pdf"
+  },
+  {
+    "code": "DOC187",
+    "category": "现代煤化工",
+    "title": "鍙岀⒈娉曢櫎纭妧鏈湪鐓ゆ皵鍖栫伆姘翠腑鐨勫簲鐢ㄦ帰璁 鍒橀噾鏉",
+    "file": "DOC187.pdf"
+  },
+  {
+    "code": "DOC188",
+    "category": "现代煤化工",
+    "title": "鍠瑰晧瀵瑰ソ姘ч绮掓薄娉ュ鐞嗙叅鍖栧伐搴熸按鐨勫奖鍝 閮煿寮",
+    "file": "DOC188.pdf"
+  },
+  {
+    "code": "DOC189",
+    "category": "现代煤化工",
+    "title": "鍥藉鍙戝睍鏀归潻濮旓細鐓ょ偔娑堣垂娓呮磥鏇夸唬椤圭洰鏀寔鐓ょ數鏈虹粍鍜岀叅鍖栧伐椤圭洰浣庣⒊鍖栨敼閫",
+    "file": "DOC189.pdf"
+  },
+  {
+    "code": "DOC190",
+    "category": "现代煤化工",
+    "title": "鍩轰簬CO (2)娲诲寲鐓ゆ恫鍖栨播闈掑熀娲绘€х⒊绾ょ淮鍒跺鍙婂叾鍌ㄨ兘鎬ц兘 鍚戞煚",
+    "file": "DOC190.pdf"
+  },
+  {
+    "code": "DOC191",
+    "category": "现代煤化工",
+    "title": "鍩轰簬GC脳GC-TOF MS鐨勭叅娑插寲浜х墿娌瑰垎瀛愮粍鎴愮粨鏋勮〃寰 鏉庡鑿",
+    "file": "DOC191.pdf"
+  },
+  {
+    "code": "DOC192",
+    "category": "现代煤化工",
+    "title": "鍩轰簬Shell姘斿寲宸ヨ壓鐨勯珮鏁堢叅姘斿寲鎶€鏈紭鍖栦笌纰虫帓鏀惧崗鍚屾帶鍒剁爺绌 鐜嬫槦",
+    "file": "DOC192.pdf"
+  },
+  {
+    "code": "DOC193",
+    "category": "现代煤化工",
+    "title": "鍩轰簬鍥哄畾搴婂偓鍖栬浆鍖栧伐鑹虹殑鐓ゆ皵鍖栨妧鏈帰绌 榛勬枃褰",
+    "file": "DOC193.pdf"
+  },
+  {
+    "code": "DOC194",
+    "category": "现代煤化工",
+    "title": "鍩轰簬瀵屾哀鐕冪儳浜屾哀鍖栫⒊寰幆鐨勭叅姘斿寲闆剁⒊鍙戠數绯荤粺鐑姏瀛﹀垎鏋愬強娴佺▼浼樺寲 璁稿畯瀹",
+    "file": "DOC194.pdf"
+  },
+  {
+    "code": "DOC195",
+    "category": "现代煤化工",
+    "title": "鍩轰簬鏁板瓧瀛敓鎸囧鐓ゆ皵鍖栫倝鏂扮叅閫夎喘鐨勬柟娉 鏉庢尟",
+    "file": "DOC195.pdf"
+  },
+  {
+    "code": "DOC196",
+    "category": "现代煤化工",
+    "title": "鍩轰簬鏅鸿兘鍖栨帶鍒剁殑鐓ゅ寲宸ュ簾姘村鐞嗕笌寰幆鍒╃敤鎶€鏈祬鏋 鐜嬫棴涓",
+    "file": "DOC196.pdf"
+  },
+  {
+    "code": "DOC197",
+    "category": "现代煤化工",
+    "title": "鍩轰簬鏈哄櫒瀛︿範鐨勭叅鐩存帴娑插寲鐭宠剳娌瑰強鍏堕噸鏁翠骇鐗╂€ц兘璇勪环 鏉ㄦ辰鍗",
+    "file": "DOC197.pdf"
+  },
+  {
+    "code": "DOC198",
+    "category": "现代煤化工",
+    "title": "鍩轰簬鐓ゆ皵鍖栫粏娓ｆ瀯寤虹⒊鍩烘哀杩樺師鍌寲鍓傚強鍏跺偓鍖栨€ц兘鐮旂┒ 鐜嬫€濇晱",
+    "file": "DOC198.pdf"
+  },
+  {
+    "code": "DOC199",
+    "category": "现代煤化工",
+    "title": "澹崇墝涓嬭姘存縺鍐风叅姘斿寲瑁呯疆娓ｆ睜绉福鍙婅В鍐虫柟妗堟帰璁 鍚戞椽",
+    "file": "DOC199.pdf"
+  },
+  {
+    "code": "DOC200",
+    "category": "现代煤化工",
+    "title": "澶氬弬鏁板垎鏋愪华娴嬪畾鐓ゅ寲宸ュ簾姘存€绘爱鏂规硶 鏉庡垰",
+    "file": "DOC200.pdf"
+  },
+  {
+    "code": "DOC201",
+    "category": "煤液化",
+    "title": "大型化煤直接液化装置膜分离系统方案研? 顾湘",
+    "file": "DOC201.pdf"
+  },
+  {
+    "code": "DOC202",
+    "category": "现代煤化工",
+    "title": "澶у瓟鏍戣剛瀵圭叅鍖栧伐搴熸按涓补銆侀厷鍚搁檮鍒嗙鏁堟灉鍙婂啀鐢熸柟娉曠爺绌 鐜嬫爲鍥",
+    "file": "DOC202.pdf"
+  },
+  {
+    "code": "DOC203",
+    "category": "现代煤化工",
+    "title": "澶╃劧鐧戒簯鐭冲偓鍖栬嚟姘ф哀鍖栧鐞嗙叅鍖栧伐搴熸按鐨勯暱鍛ㄦ湡鐮旂┒ 鑳¤嫢鏅",
+    "file": "DOC203.pdf"
+  },
+  {
+    "code": "DOC204",
+    "category": "现代煤化工",
+    "title": "瀹夊叏璇婃柇鍦ㄧ叅鐒﹀寲瀹夊叏绠＄悊涓殑搴旂敤 鍒樻櫒",
+    "file": "DOC204.pdf"
+  },
+  {
+    "code": "DOC205",
+    "category": "现代煤化工",
+    "title": "瀹氶噺椋庨櫓璇勪环鍦ㄧ叅鍖栧伐浼佷笟鐨勫簲鐢ㄧ爺绌 鐜嬬悰",
+    "file": "DOC205.pdf"
+  },
+  {
+    "code": "DOC206",
+    "category": "现代煤化工",
+    "title": "瀵屾补鐓ゆ憾鍓傝悆鍙栧拰鐩存帴娑插寲鎶€鏈爺绌惰繘灞 鍒橀亾鐕",
+    "file": "DOC206.pdf"
+  },
+  {
+    "code": "DOC207",
+    "category": "现代煤化工",
+    "title": "灞辫タ鐒︾叅闆嗗洟鍏徃绮剧粏鐓ょ劍鍖栧伐璁哄潧 鍚曠伒鑺",
+    "file": "DOC207.pdf"
+  },
+  {
+    "code": "DOC208",
+    "category": "现代煤化工",
+    "title": "灞辫タ閲戞櫀鐓ょ劍鍖栧伐鍏徃鑱屽伐琚侀噾鐢熷懠鍚 鑰侀粍鐗涘拰鎶€鏈骞蹭笉鑳戒竴鍒版彁鎷斿氨闈犺竟绔",
+    "file": "DOC208.pdf"
+  },
+  {
+    "code": "DOC209",
+    "category": "现代煤化工",
+    "title": "宄扮叅鐒﹀寲姘存簮缃崲宸ョ▼鍙栨按鍙鎬у垎鏋 闈虫．",
+    "file": "DOC209.pdf"
+  },
+  {
+    "code": "DOC210",
+    "category": "现代煤化工",
+    "title": "寰尝杈呭姪鍌寲婀垮紡杩囨哀鍖栨阿姘у寲娣卞害澶勭悊鐓ゅ寲宸ュ簾姘 寰愮劧",
+    "file": "DOC210.pdf"
+  },
+  {
+    "code": "DOC211",
+    "category": "现代煤化工",
+    "title": "鎴愬瀷鏈哄湪鐓ゆ恫鍖栧伐鑹轰腑鐨勫簲鐢ㄤ笌鏀硅繘 閮鑹",
+    "file": "DOC211.pdf"
+  },
+  {
+    "code": "DOC212",
+    "category": "现代煤化工",
+    "title": "鎴戝浗鐓ゅ寲宸ヤ骇涓氱幇鐘跺強杞瀷鍙戝睍鐮旂┒ 寮犲畯",
+    "file": "DOC212.pdf"
+  },
+  {
+    "code": "DOC213",
+    "category": "现代煤化工",
+    "title": "战略基石：煤化工高质量发? 刘雅?",
+    "file": "DOC213.pdf"
+  },
+  {
+    "code": "DOC214",
+    "category": "现代煤化工",
+    "title": "鎺у埗绯荤粺鐢靛瓙甯冪嚎鎶€鏈湪鐓ゅ寲宸ラ」鐩腑鐨勫簲鐢 鐜嬩簹鏂",
+    "file": "DOC214.pdf"
+  },
+  {
+    "code": "DOC215",
+    "category": "现代煤化工",
+    "title": "鎺ㄥ姩鐓ゅ寲宸ヤ骇涓氬悜鈥滅簿鈥濃€滄繁鈥濊繄杩",
+    "file": "DOC215.pdf"
+  },
+  {
+    "code": "DOC216",
+    "category": "现代煤化工",
+    "title": "鏀诲潥鍏嬮毦  绮剧泭鍒堕€  鍒氭€т繚浜р€斺€旇皥鐓ょ劍鍖栨柊鍖轰繚涓ゅ骇4000m~3楂樼倝鐢ㄧ劍 寰愬畨涓",
+    "file": "DOC216.pdf"
+  },
+  {
+    "code": "DOC217",
+    "category": "现代煤化工",
+    "title": "鏂扮枂鍔犻€熸墦閫犵幇浠ｇ叅鍖栧伐鍩哄湴 鏉庣幉",
+    "file": "DOC217.pdf"
+  },
+  {
+    "code": "DOC218",
+    "category": "现代煤化工",
+    "title": "鏂扮枂鐓ゅ寲宸ヤ骇涓氭槬椋庢鍔 鐭虫Υ浜 浜庢睙鑹",
+    "file": "DOC218.pdf"
+  },
+  {
+    "code": "DOC219",
+    "category": "现代煤化工",
+    "title": "鏅嬪崕鐐夌叅姘斿寲鎶€鏈殑鍒涙柊鍙戝睍鍙婁骇涓氬寲搴旂敤鎬濊€ 鏉庡箍姘",
+    "file": "DOC219.pdf"
+  },
+  {
+    "code": "DOC220",
+    "category": "现代煤化工",
+    "title": "鏅鸿兘鎶曞姞绯荤粺鍦ㄧ叅鍖栧伐搴熸按娣卞害闄ゆ盁涓殑鐮旂┒涓庡簲鐢 钂嬪箍鏁",
+    "file": "DOC220.pdf"
+  },
+  {
+    "code": "DOC221",
+    "category": "现代煤化工",
+    "title": "鏈夋満鍏冪礌鍒嗘瀽浠祴瀹氱叅鐩存帴娑插寲娌圭⒊姘㈠惈閲忚宸帶鍒 鑻忓",
+    "file": "DOC221.pdf"
+  },
+  {
+    "code": "DOC222",
+    "category": "现代煤化工",
+    "title": "鏈虹劍鍘傜叅鐒﹀寲楠屽楂樻晥绠＄悊鐮旂┒ 鍙叉檽浜",
+    "file": "DOC222.pdf"
+  },
+  {
+    "code": "DOC223",
+    "category": "现代煤化工",
+    "title": "构建新疆煤炭煤电煤化工产业集群高质量发展新模式的思?? 高金?",
+    "file": "DOC223.pdf"
+  },
+  {
+    "code": "DOC224",
+    "category": "现代煤化工",
+    "title": "鏌愮叅鍖栧伐搴熸按杩戦浂鎺掓斁澶勭悊宸ョ▼瀹炰緥 鏈辫姍钃",
+    "file": "DOC224.pdf"
+  },
+  {
+    "code": "DOC225",
+    "category": "现代煤化工",
+    "title": "姣曡妭璇曢獙鍖烘柊鍨嬬叅鍖栧伐浜т笟鍙戝睍涓庡竷灞€灞曟湜 榛勬枃",
+    "file": "DOC225.pdf"
+  },
+  {
+    "code": "DOC226",
+    "category": "煤气化",
+    "title": "气化炉机理模?+APC+RTO优化控制系统在煤气化和合成氨装置上的应用 袁伦?",
+    "file": "DOC226.pdf"
+  },
+  {
+    "code": "DOC227",
+    "category": "煤气化",
+    "title": "气流床煤气化烧嘴关键材料对比研究 成富?",
+    "file": "DOC227.pdf"
+  },
+  {
+    "code": "DOC228",
+    "category": "现代煤化工",
+    "title": "姘寸叅娴嗘皵鍖栨妧鏈爺绌惰繘灞曚笌灞曟湜 绐︾澘鐒",
+    "file": "DOC228.pdf"
+  },
+  {
+    "code": "DOC229",
+    "category": "煤气化",
+    "title": "水煤浆气化烘炉系统故障及处理 刘晓?",
+    "file": "DOC229.pdf"
+  },
+  {
+    "code": "DOC230",
+    "category": "现代煤化工",
+    "title": "姘磋捀姘 姘ф祦鍖栧簥涓ゆ鐓ゆ皵鍖栧埗澶囦綆鐒︽补鍚堟垚姘斿伐鑹哄疄楠 鏈辫幉宄",
+    "file": "DOC230.pdf"
+  },
+  {
+    "code": "DOC231",
+    "category": "现代煤化工",
+    "title": "娌规憾鎬у惈Fe銆丆o鎴朜i杩囨浮閲戝睘鍌寲鍓傚涓婃咕鐓ょ洿鎺ユ恫鍖栬涓哄奖鍝 鏉庢櫤",
+    "file": "DOC231.pdf"
+  },
+  {
+    "code": "DOC232",
+    "category": "煤气化",
+    "title": "浅析粉煤气化装置磨煤机常见故障及处理方法 张开",
+    "file": "DOC232.pdf"
+  },
+  {
+    "code": "DOC233",
+    "category": "现代煤化工",
+    "title": "娴呰皥鎷滃煄鍘夸紬娉扮叅鐒﹀寲鏈夐檺鍏徃瀹夊叏寤鸿 姊佸嚖",
+    "file": "DOC233.pdf"
+  },
+  {
+    "code": "DOC234",
+    "category": "现代煤化工",
+    "title": "娴呰皥姝ｅ帇鏀归€犲湪鐓ょ劍鍖栨満鏌滈棿闃茬垎涓殑搴旂敤 瑭瑰浗鍐",
+    "file": "DOC234.pdf"
+  },
+  {
+    "code": "DOC235",
+    "category": "现代煤化工",
+    "title": "娴呰皥鐢靛瓙閾舵壙鍦ㄧ叅鐒﹀寲浼佷笟缁撶畻涓殑搴旂敤鍙婃敞鎰忎簨椤 璧靛浗浼",
+    "file": "DOC235.pdf"
+  },
+  {
+    "code": "DOC236",
+    "category": "现代煤化工",
+    "title": "鐐寲鏉′欢瀵圭叅娑插寲娌ラ潚鍩烘场娌偔鍒跺鍙婄數鍖栧鎬ц兘鐨勫奖鍝 鑳¤开",
+    "file": "DOC236.pdf"
+  },
+  {
+    "code": "DOC237",
+    "category": "现代煤化工",
+    "title": "鐓ゅ寲宸ヤ骇涓氬弻鎺ц浆鍨嬫斂绛栭€傚簲鎬ф祴搴︾爺绌 鍒樺姏鐜",
+    "file": "DOC237.pdf"
+  },
+  {
+    "code": "DOC238",
+    "category": "现代煤化工",
+    "title": "煤化工产业发展路在何方？ 陶冉",
+    "file": "DOC238.pdf"
+  },
+  {
+    "code": "DOC239",
+    "category": "现代煤化工",
+    "title": "鐓ゅ寲宸ヤ骇涓氱伀鐏鹃闄╃壒鐐瑰強浜嬫晠棰勯槻瀵圭瓥鍒嗘瀽 鏉庢芳鍩",
+    "file": "DOC239.pdf"
+  },
+  {
+    "code": "DOC240",
+    "category": "现代煤化工",
+    "title": "鐓ゅ寲宸ヤ骇涓氱殑楂樿川閲忓彂灞曡 榄忚搐鍕",
+    "file": "DOC240.pdf"
+  },
+  {
+    "code": "DOC241",
+    "category": "现代煤化工",
+    "title": "鐓ゅ寲宸ヤ紒涓歁ES寤鸿瀹炶返 鍚存捣楣",
+    "file": "DOC241.pdf"
+  },
+  {
+    "code": "DOC242",
+    "category": "现代煤化工",
+    "title": "鐓ゅ寲宸ヤ紒涓歏OCs鍑忔帓闅鹃鍙婂绛栨帾鏂 鐢伴檰宄",
+    "file": "DOC242.pdf"
+  },
+  {
+    "code": "DOC243",
+    "category": "现代煤化工",
+    "title": "鐓ゅ寲宸ヤ紒涓氫綆娓㏒NCR鑴辩鎶€鏈殑搴旂敤鍒嗘瀽 寮犺檸",
+    "file": "DOC243.pdf"
+  },
+  {
+    "code": "DOC244",
+    "category": "现代煤化工",
+    "title": "鐓ゅ寲宸ヤ紒涓氭薄姘村鐞哠BR宸ヨ壓鑺傝兘鍑忔帓璺緞鐮旂┒ 璧电編涓",
+    "file": "DOC244.pdf"
+  },
+  {
+    "code": "DOC245",
+    "category": "现代煤化工",
+    "title": "鐓ゅ寲宸ヤ紒涓氭薄姘村鐞哣OCs姹℃煋鐗瑰緛鍙婄幆澧冨奖鍝 楂樻尟",
+    "file": "DOC245.pdf"
+  },
+  {
+    "code": "DOC246",
+    "category": "现代煤化工",
+    "title": "鐓ゅ寲宸ヤ紒涓氱壒娈婁綔涓氬畨鍏ㄧ鐞嗕綋绯荤殑鏋勫缓涓庡疄璺 涔斿崼閿",
+    "file": "DOC246.pdf"
+  },
+  {
+    "code": "DOC247",
+    "category": "现代煤化工",
+    "title": "鐓ゅ寲宸ヤ紒涓氱敓浜ц皟搴﹀鐜妭鍗忓悓鏈哄埗鍙婂崗璋冪鐞嗕綋绯讳紭鍖栫爺绌 甯稿痉榫",
+    "file": "DOC247.pdf"
+  },
+  {
+    "code": "DOC248",
+    "category": "现代煤化工",
+    "title": "鐓ゅ寲宸ヤ紒涓氱敳閱囩綈鍖篤OCs娌荤悊鎶€鏈敼閫犲疄璺 鐜嬪垰",
+    "file": "DOC248.pdf"
+  },
+  {
+    "code": "DOC249",
+    "category": "现代煤化工",
+    "title": "鐓ゅ寲宸ュ簾姘碈OD涓庢皑姘悓姝ユ娴嬫柊鏂规硶鐮旂┒ 闂啺",
+    "file": "DOC249.pdf"
+  },
+  {
+    "code": "DOC250",
+    "category": "环保低碳",
+    "title": "煤化工废水中典型污染物喹啉催化臭氧氧化研? 夏立?",
+    "file": "DOC250.pdf"
+  },
+  {
+    "code": "DOC251",
+    "category": "环保低碳",
+    "title": "煤化工废水中酚类污染物的去除方法及机理分? 程会?",
+    "file": "DOC251.pdf"
+  },
+  {
+    "code": "DOC252",
+    "category": "环保低碳",
+    "title": "煤化工废水催化氧化降解工艺优? 车远",
+    "file": "DOC252.pdf"
+  },
+  {
+    "code": "DOC253",
+    "category": "现代煤化工",
+    "title": "鐓ゅ寲宸ュ簾姘村壇浜х～閰搁挔鐗规€у垎鏋愬強纭吀閽犵洂鍙屾瀬鑶滃埗閰哥⒈鐮旂┒ 寮犲繝缈",
+    "file": "DOC253.pdf"
+  },
+  {
+    "code": "DOC254",
+    "category": "现代煤化工",
+    "title": "鐓ゅ寲宸ュ簾姘村鐞嗕骇鍝佺洂姘寲閽犵函搴﹀奖鍝嶅洜绱犵爺绌 鏇规櫠",
+    "file": "DOC254.pdf"
+  },
+  {
+    "code": "DOC255",
+    "category": "现代煤化工",
+    "title": "鐓ゅ寲宸ュ簾姘存繁搴﹂櫎姘熸妧鏈瘯楠岀爺绌 鏉庝腹鏉",
+    "file": "DOC255.pdf"
+  },
+  {
+    "code": "DOC256",
+    "category": "现代煤化工",
+    "title": "鐓ゅ寲宸ュ簾姘寸殑鍌寲鑷哀鍖栨硶澶勭悊宸ヨ壓鎶€鏈殑杩涘睍 鐕曟檽鎱",
+    "file": "DOC256.pdf"
+  },
+  {
+    "code": "DOC257",
+    "category": "环保低碳",
+    "title": "煤化工废水纳滤分盐零排放工艺分析与改? 王培?",
+    "file": "DOC257.pdf"
+  },
+  {
+    "code": "DOC258",
+    "category": "环保低碳",
+    "title": "煤化工废水零排放系统碳足迹特征分? 吴迪",
+    "file": "DOC258.pdf"
+  },
+  {
+    "code": "DOC259",
+    "category": "现代煤化工",
+    "title": "鐓ゅ寲宸ユ牳蹇冭澶囨櫤鑳借繍缁撮檷鏈鏁堣矾寰勭爺绌 浣曢€",
+    "file": "DOC259.pdf"
+  },
+  {
+    "code": "DOC260",
+    "category": "现代煤化工",
+    "title": "鐓ゅ寲宸ョ┖鍒嗘繁鍐疯缃檷鏈鏁堝叧閿妧鏈強缁忔祹鏁堢泭鍒嗘瀽 棰滃环蹇",
+    "file": "DOC260.pdf"
+  },
+  {
+    "code": "DOC261",
+    "category": "现代煤化工",
+    "title": "鐓ゅ寲宸ヨ缃哀姘旂悆闃€缁撴瀯浼樺寲鍙婂簲鐢 鍒樺啗",
+    "file": "DOC261.pdf"
+  },
+  {
+    "code": "DOC262",
+    "category": "现代煤化工",
+    "title": "鐓ゅ寲宸ラ」鐩腑姘㈡皵绠￠亾鐨勯€夋潗鐮旂┒ 閮滄簮",
+    "file": "DOC262.pdf"
+  },
+  {
+    "code": "DOC263",
+    "category": "现代煤化工",
+    "title": "鐓ゅ寲宸ラ」鐩腑婀跨～鍖栨阿宸ュ喌涓嬬閬撻€夋潗鐮旂┒ 閮滄簮",
+    "file": "DOC263.pdf"
+  },
+  {
+    "code": "DOC264",
+    "category": "现代煤化工",
+    "title": "鐓ゅ寲宸ラ」鐩簩姘у寲纰虫帓鏀惧垎鏋愪笌缁煎悎鍒╃敤璺緞鎺㈣ 渚附鍗",
+    "file": "DOC264.pdf"
+  },
+  {
+    "code": "DOC265",
+    "category": "现代煤化工",
+    "title": "鐓ゅ寲宸ラ」鐩敳閱囧悎鎴愯缃┖鍐峰櫒鐨勫竷缃強绠＄嚎浼樺寲璁捐 鏈卞溅鍎",
+    "file": "DOC265.pdf"
+  },
+  {
+    "code": "DOC266",
+    "category": "现代煤化工",
+    "title": "鐓ゅ寲宸ラ」鐩敳閱囧悎鎴愯缃┖鍐峰櫒鐨勫竷缃強绠＄嚎浼樺寲璁捐 鏈卞溅鍎掞紙2锛",
+    "file": "DOC266.pdf"
+  },
+  {
+    "code": "DOC267",
+    "category": "现代煤化工",
+    "title": "鐓ゅ寲宸ラ」鐩┖鍒嗚缃缓璁炬柟妗堢爺绌 寮犱簹鐢",
+    "file": "DOC267.pdf"
+  },
+  {
+    "code": "DOC268",
+    "category": "现代煤化工",
+    "title": "鐓ゅ熀鍥哄簾缁胯壊浣庣⒊鍒╃敤鐨勮矾寰勬帰绱笌鐮旂┒灞曟湜 寮犲悏闆",
+    "file": "DOC268.pdf"
+  },
+  {
+    "code": "DOC269",
+    "category": "环保低碳",
+    "title": "煤基绿色发展战略下的现代煤化工发? 张洪?",
+    "file": "DOC269.pdf"
+  },
+  {
+    "code": "DOC270",
+    "category": "环保低碳",
+    "title": "煤基绿色发展战略下的现代煤化工发? 张洪涛（2?",
+    "file": "DOC270.pdf"
+  },
+  {
+    "code": "DOC271",
+    "category": "环保低碳",
+    "title": "煤基绿色发展战略下的现代煤化工发? 张洪涛（3?",
+    "file": "DOC271.pdf"
+  },
+  {
+    "code": "DOC272",
+    "category": "煤气化",
+    "title": "煤气化制甲醇多联产系统工艺优化研? 史骏?",
+    "file": "DOC272.pdf"
+  },
+  {
+    "code": "DOC273",
+    "category": "现代煤化工",
+    "title": "鐓ゆ皵鍖栧埗鐢查唶鐨勭⒊鎺掓斁鐗瑰緛涓庝綆纰冲寲璺緞鐮旂┒ 鍙插崥鍎",
+    "file": "DOC273.pdf"
+  },
+  {
+    "code": "DOC274",
+    "category": "现代煤化工",
+    "title": "鐓ゆ皵鍖栧惈姘ㄥ簾姘存彁娴撶患鍚堝埄鐢ㄨ缃繍琛屼粙缁 寰愯惀",
+    "file": "DOC274.pdf"
+  },
+  {
+    "code": "DOC275",
+    "category": "现代煤化工",
+    "title": "鐓ゆ皵鍖栧伐鑹哄帇鍔涘鍣ㄧ幆褰㈢剨缂濈己闄风殑鍘熷洜鍒嗘瀽鍙婂鐞嗘帾鏂 瀛熷簡娑",
+    "file": "DOC275.pdf"
+  },
+  {
+    "code": "DOC276",
+    "category": "现代煤化工",
+    "title": "鐓ゆ皵鍖栨妧鏈笌浜哄伐鏅鸿兘铻嶅悎鍙戝睍鐜扮姸涓庡睍鏈 鏉庣帀娲",
+    "file": "DOC276.pdf"
+  },
+  {
+    "code": "DOC277",
+    "category": "现代煤化工",
+    "title": "鐓ゆ皵鍖栨妧鏈湪涓浗 鍥為【涓庡睍鏈 鐜嬭緟鑷",
+    "file": "DOC277.pdf"
+  },
+  {
+    "code": "DOC278",
+    "category": "煤气化",
+    "title": "煤气化掺烧有机废物工艺优化与安全防控策略探究 耿兴?",
+    "file": "DOC278.pdf"
+  },
+  {
+    "code": "DOC279",
+    "category": "煤气化",
+    "title": "煤气化渣全资源化利用工艺研究 耿涛",
+    "file": "DOC279.pdf"
+  },
+  {
+    "code": "DOC280",
+    "category": "煤气化",
+    "title": "煤气化渣合成ZSM-5分子筛及其甲醇制芳烃性能 陈治?",
+    "file": "DOC280.pdf"
+  },
+  {
+    "code": "DOC281",
+    "category": "现代煤化工",
+    "title": "鐓ゆ皵鍖栨福鍦ㄥ叞鐐簾姘翠腑鍘熶綅鍚搁檮 閰氶啗鑱氬悎澧炵⒊鏂规硶鐮旂┒ 鐜嬪椋",
+    "file": "DOC281.pdf"
+  },
+  {
+    "code": "DOC282",
+    "category": "现代煤化工",
+    "title": "鐓ゆ皵鍖栨福鐗规€у強鍏跺埗澶囪緟鍔╄兌鍑濇潗鏂欑殑鐮旂┒杩涘睍 鍚曞嚖鍦",
+    "file": "DOC282.pdf"
+  },
+  {
+    "code": "DOC283",
+    "category": "现代煤化工",
+    "title": "鐓ゆ皵鍖栨福閲嶆瀯鍦熷￥鍚按灞備腑姘村垎杩愮Щ鐨勫姩鎬佸钩琛℃満鍒 搴峰織浼",
+    "file": "DOC283.pdf"
+  },
+  {
+    "code": "DOC284",
+    "category": "现代煤化工",
+    "title": "鐓ゆ皵鍖栫伆娓ｇ殑楂樻晥璧勬簮鍖栧埄鐢 绉︾",
+    "file": "DOC284.pdf"
+  },
+  {
+    "code": "DOC285",
+    "category": "现代煤化工",
+    "title": "鐓ゆ皵鍖栫殑涓昏鍒剁害鍥犵礌鍙婂悇绉嶆皵鍖栧伐鑹虹殑鍓嶆櫙鎺㈡瀽 璧垫棴鑰€",
+    "file": "DOC285.pdf"
+  },
+  {
+    "code": "DOC286",
+    "category": "现代煤化工",
+    "title": "鐓ゆ皵鍖栫粏娓ｇ倝鍓嶇矑鍖栫洿鎺哄惊鐜祦鍖栧簥閿呯倝宸ヤ笟璇曢獙涓庣噧鐑ф満鐞嗙爺绌 宕旀槦婧",
+    "file": "DOC286.pdf"
+  },
+  {
+    "code": "DOC287",
+    "category": "现代煤化工",
+    "title": "鐓ゆ皵鍖栫粨娓ｆ€ц兘鐨勬祴瀹氬垎鏋愪笌缁忔祹浠峰€煎垵鎺 濮滈槼闃",
+    "file": "DOC287.pdf"
+  },
+  {
+    "code": "DOC288",
+    "category": "现代煤化工",
+    "title": "鐓ゆ皵鍖栬缃厫铓€鍒嗘瀽涓庨槻鑵愬绛 鍒樿尮",
+    "file": "DOC288.pdf"
+  },
+  {
+    "code": "DOC289",
+    "category": "现代煤化工",
+    "title": "鐓ゆ皵鍖栬缃珮娓╅珮鍘嬪伐鍐典笅鐨勫畨鍏ㄩ闄╁垎绾х鎺х爺绌 甯冩媺鏍",
+    "file": "DOC289.pdf"
+  },
+  {
+    "code": "DOC290",
+    "category": "现代煤化工",
+    "title": "鐓ゆ皵鍖栬缃珮娓╅珮鍘嬪伐鍐典笅鐨勫畨鍏ㄩ闄╁垎绾х鎺х爺绌 甯冩媺鏍硷紙2锛",
+    "file": "DOC290.pdf"
+  },
+  {
+    "code": "DOC291",
+    "category": "现代煤化工",
+    "title": "鐓ゆ皵鍖栬缃粦姘寸閬撶垎绠″け鏁堝垎鏋愬強棰勯槻 濮滆緣",
+    "file": "DOC291.pdf"
+  },
+  {
+    "code": "DOC292",
+    "category": "煤气化",
+    "title": "煤气化过程中炉温对产物分布的影响规律 丁海?",
+    "file": "DOC292.pdf"
+  },
+  {
+    "code": "DOC293",
+    "category": "现代煤化工",
+    "title": "鐓ゆ播闈掍笌鐓ゆ恫鍖栨播闈掑叡缂╄仛鍒跺纰崇氦缁寸爺绌 寮犳捣姘",
+    "file": "DOC293.pdf"
+  },
+  {
+    "code": "DOC294",
+    "category": "现代煤化工",
+    "title": "鐓ゆ恫鍖栧噺涓夌嚎娌规祮瓒呬复鐣岃悆鍙栫粍鍒嗙殑鎬ц兘鍙婂垎甯冭寰嬬爺绌 瀛欓箯椋",
+    "file": "DOC294.pdf"
+  },
+  {
+    "code": "DOC295",
+    "category": "现代煤化工",
+    "title": "鐓ゆ恫鍖栧噺鍘嬪杩愯娉㈠姩鍒嗘瀽 閭㈡尝",
+    "file": "DOC295.pdf"
+  },
+  {
+    "code": "DOC296",
+    "category": "现代煤化工",
+    "title": "鐓ゆ恫鍖栧噺鍘嬮鍒嗘补娴嗗埗澶囦腑闂寸浉娌ラ潚鐨勭爺绌 濮滄旦寮",
+    "file": "DOC296.pdf"
+  },
+  {
+    "code": "DOC297",
+    "category": "现代煤化工",
+    "title": "鐓ゆ恫鍖栧噺鍘嬮鍒嗘补娴嗗埗澶囦腑闂寸浉娌ラ潚鐨勭爺绌 濮滄旦寮猴紙2锛",
+    "file": "DOC297.pdf"
+  },
+  {
+    "code": "DOC298",
+    "category": "现代煤化工",
+    "title": "鐓ゆ恫鍖栧簾姘村惊鐜啀鍒╃敤鍒舵按鐓ゆ祮鎴愭祮鎬ц兘鐮旂┒ 鐗涙檽宄",
+    "file": "DOC298.pdf"
+  },
+  {
+    "code": "DOC299",
+    "category": "现代煤化工",
+    "title": "鐓ゆ恫鍖栨畫娓ｄ笌鐭虫补娌ラ潚鐩稿鎬х殑褰卞搷鍥犵礌鐮旂┒ 鏉ㄦ辰鍗",
+    "file": "DOC299.pdf"
+  },
+  {
+    "code": "DOC300",
+    "category": "现代煤化工",
+    "title": "鐓ゆ恫鍖栨畫娓ｅ湪娌ラ潚璺潰淇鍏绘姢宸ョ▼涓殑搴旂敤鎶€鏈爺绌 寮犳婧",
+    "file": "DOC300.pdf"
+  },
+  {
+    "code": "DOC301",
+    "category": "现代煤化工",
+    "title": "鐓ゆ恫鍖栨畫娓ｅ熀鐐氦缁寸殑鍒跺鍙婂叾鐢靛寲瀛︽€ц兘鐮旂┒ 榛勯洴鏄",
+    "file": "DOC301.pdf"
+  },
+  {
+    "code": "DOC302",
+    "category": "现代煤化工",
+    "title": "鐓ゆ恫鍖栨畫娓ｆ播闈掔爞娴嗗強娣峰悎鏂欐€ц兘鐩稿叧鎬х爺绌 瀛ｈ妭",
+    "file": "DOC302.pdf"
+  },
+  {
+    "code": "DOC303",
+    "category": "现代煤化工",
+    "title": "鐓ゆ恫鍖栨播闈掑埗澶囬鐒欓槼鏋佸疄楠屽垎鏋愬強褰卞搷鍥犵礌鐮旂┒ 瀛欓箯椋",
+    "file": "DOC303.pdf"
+  },
+  {
+    "code": "DOC304",
+    "category": "现代煤化工",
+    "title": "鐓ゆ恫鍖栨播闈掑埗澶囬珮绔⒊鏉愭枡鐨勭爺绌朵笌鎶€鏈矾寰勪紭鍖栧簲鐢ㄤ环鍊 鍒樼孩",
+    "file": "DOC304.pdf"
+  },
+  {
+    "code": "DOC305",
+    "category": "现代煤化工",
+    "title": "鐓ゆ恫鍖栨播闈掑熀鍙汉涓棿鐩告播闈掔殑鍒跺鍙婃€ц兘鐮旂┒ 鍐檽鎱",
+    "file": "DOC305.pdf"
+  },
+  {
+    "code": "DOC306",
+    "category": "现代煤化工",
+    "title": "鐓ゆ恫鍖栨播闈掑熀娉℃搏鐐殑鍒跺鍙婂叾鐢靛寲瀛︽€ц兘鐮旂┒ 鑳¤开",
+    "file": "DOC306.pdf"
+  },
+  {
+    "code": "DOC307",
+    "category": "现代煤化工",
+    "title": "鐓ゆ恫鍖栨播闈掑熀纰抽噺瀛愮偣鐨勫埗澶囥€佸鍚堝強鍏夊偓鍖栭檷瑙ｆ€ц兘 鍒橀噾鏄",
+    "file": "DOC307.pdf"
+  },
+  {
+    "code": "DOC308",
+    "category": "现代煤化工",
+    "title": "鐓ゆ恫鍖栨播闈掓棌缁勫垎鐨勭粨鏋勫強鐑В鐗规€х爺绌 绁佺礌闇",
+    "file": "DOC308.pdf"
+  },
+  {
+    "code": "DOC309",
+    "category": "现代煤化工",
+    "title": "鐓ゆ恫鍖栨播闈掔敳鑻笉婧剁墿娴嬪畾浼樺寲鏂规硶 鏉庡濞",
+    "file": "DOC309.pdf"
+  },
+  {
+    "code": "DOC310",
+    "category": "煤液化",
+    "title": "煤液化沥青精制组分的研究分析 余萍",
+    "file": "DOC310.pdf"
+  },
+  {
+    "code": "DOC311",
+    "category": "现代煤化工",
+    "title": "鐓ゆ恫鍖栨播闈掕浆鍖栬繃绋嬩腑寰幆婧跺墏鍏稿瀷渚涙阿缁勫垎鐨勭浉浜掍綔鐢ㄨ寰嬬爺绌 闄堜繆娼",
+    "file": "DOC311.pdf"
+  },
+  {
+    "code": "DOC312",
+    "category": "现代煤化工",
+    "title": "鐓ゆ恫鍖栨播闈掗拡鐘剁劍鐨勫埗澶囧強鍏剁數鍖栧鎬ц兘璇勪环 鍚存案鏉",
+    "file": "DOC312.pdf"
+  },
+  {
+    "code": "DOC313",
+    "category": "现代煤化工",
+    "title": "鐓ゆ恫鍖栨补娓ｈ悆浣欑墿鍩哄瀛旂偔鐨勫埗澶囧強鍏跺簾姘村噣鍖栨€ц兘 鏉庢槙",
+    "file": "DOC313.pdf"
+  },
+  {
+    "code": "DOC314",
+    "category": "现代煤化工",
+    "title": "鐓ゆ恫鍖栫矖娌瑰強鍏惰交閲嶉鍒嗙殑婧舵阿瑙勫緥 涔斿厓",
+    "file": "DOC314.pdf"
+  },
+  {
+    "code": "DOC315",
+    "category": "煤液化",
+    "title": "煤液化粗油及其轻重?分的溶氢规律 乔元?2?",
+    "file": "DOC315.pdf"
+  },
+  {
+    "code": "DOC316",
+    "category": "现代煤化工",
+    "title": "鐓ょ劍鍖栦紒涓氱劍鐐夌叅姘斿噣鍖栦笌鍒嗙宸ヨ壓鏀硅繘鐮旂┒ 瀹佸皻鍎",
+    "file": "DOC316.pdf"
+  },
+  {
+    "code": "DOC317",
+    "category": "现代煤化工",
+    "title": "鐓ょ劍鍖栦綔涓氳溅杈嗙洰鏍囨娴嬩笌璺熻釜绯荤粺鐮旂┒ 鏄撻緳鑵",
+    "file": "DOC317.pdf"
+  },
+  {
+    "code": "DOC318",
+    "category": "现代煤化工",
+    "title": "鐓ょ劍鍖栧偍缃愬懠鍚搁€告暎搴熸皵鍑忛噺鏀堕泦鍙婂叾鍑€鍖栨妧鏈爺绌 閮稕",
+    "file": "DOC318.pdf"
+  },
+  {
+    "code": "DOC319",
+    "category": "现代煤化工",
+    "title": "鐓ょ劍鍖栧巶鏈烘瀵嗗皝鐨勬硠婕忓垎鏋愪笌瑙ｅ喅鎺柦 钂嬪叴鍗",
+    "file": "DOC319.pdf"
+  },
+  {
+    "code": "DOC320",
+    "category": "现代煤化工",
+    "title": "鐓ょ劍鍖栧伐浜у搧涓潅璐ㄦ垚鍒嗗垎鏋愪笌璐ㄩ噺鎻愬崌鍏抽敭鎶€鏈爺绌 楂樿秴",
+    "file": "DOC320.pdf"
+  },
+  {
+    "code": "DOC321",
+    "category": "现代煤化工",
+    "title": "鐓ょ劍鍖栫叅姘斿噣鍖栫郴缁熺～娉℃搏鍒剁矇寰瓟杩囨护宸ヨ壓鎶€鏈敼閫 璁稿潳",
+    "file": "DOC321.pdf"
+  },
+  {
+    "code": "DOC322",
+    "category": "现代煤化工",
+    "title": "鐓ょ劍鍖栫牬纰庢満瀹夎璐ㄩ噺鎺у埗瑕佺偣 榛勪笢椋",
+    "file": "DOC322.pdf"
+  },
+  {
+    "code": "DOC323",
+    "category": "煤焦化",
+    "title": "煤焦化系统硫泡沫制粉尾气吸收工艺改?? 许坤",
+    "file": "DOC323.pdf"
+  },
+  {
+    "code": "DOC324",
+    "category": "煤焦化",
+    "title": "煤焦化过程中胶质体阶段自由基与碳结构变化的实验研? 许恒?",
+    "file": "DOC324.pdf"
+  },
+  {
+    "code": "DOC325",
+    "category": "现代煤化工",
+    "title": "鐓ょ劍鍖栭櫎娌规睜娓楁紡鍘熷洜鍒嗘瀽鍙婂鐞嗙爺绌 杩炲嘲",
+    "file": "DOC325.pdf"
+  },
+  {
+    "code": "DOC326",
+    "category": "现代煤化工",
+    "title": "鐓ょ劍鍖栭」鐩澶囬噰璐殑鏍囧噯鍖栫鐞嗗疄璺靛強鏁堢泭 寮犲潳鏈",
+    "file": "DOC326.pdf"
+  },
+  {
+    "code": "DOC327",
+    "category": "煤液化",
+    "title": "煤直接液化中供氢溶剂脱氢行为的研? 林霖",
+    "file": "DOC327.pdf"
+  },
+  {
+    "code": "DOC328",
+    "category": "现代煤化工",
+    "title": "鐓ょ洿鎺ユ恫鍖栧閫氶亾鐗╂枡鍒嗛厤浜旈€氶榾澶辨晥鍒嗘瀽涓庝紭鍖栧缓璁 涔斿厓",
+    "file": "DOC328.pdf"
+  },
+  {
+    "code": "DOC329",
+    "category": "现代煤化工",
+    "title": "鐓ょ洿鎺ユ恫鍖栨妧鏈彂灞曟柟鍚戝強寤鸿 鏉庢枃鍗",
+    "file": "DOC329.pdf"
+  },
+  {
+    "code": "DOC330",
+    "category": "现代煤化工",
+    "title": "鐓ょ洿鎺ユ恫鍖栨妧鏈崲浠ｇ殑鍖栧鍙嶅簲闂 鐜嬪厓鍝",
+    "file": "DOC330.pdf"
+  },
+  {
+    "code": "DOC331",
+    "category": "现代煤化工",
+    "title": "鐓ょ洿鎺ユ恫鍖栨煷娌规€ц川褰卞搷鍥犵礌鍒嗘瀽 榻愭尟涓",
+    "file": "DOC331.pdf"
+  },
+  {
+    "code": "DOC332",
+    "category": "现代煤化工",
+    "title": "鐓ょ洿鎺ユ恫鍖栨煷娌硅皟鍜岃瘯楠岀爺绌 寮犻",
+    "file": "DOC332.pdf"
+  },
+  {
+    "code": "DOC333",
+    "category": "现代煤化工",
+    "title": "鐓ょ洿鎺ユ恫鍖栨畫娓ｅ埗澶囬珮瀵肩數鐐粦鍙婂叾鐢靛寲瀛︽€ц兘鐮旂┒ 瀛熷€",
+    "file": "DOC333.pdf"
+  },
+  {
+    "code": "DOC334",
+    "category": "煤液化",
+    "title": "煤直接液化沥青制备碳材料的研究进? 郝国?",
+    "file": "DOC334.pdf"
+  },
+  {
+    "code": "DOC335",
+    "category": "现代煤化工",
+    "title": "鐓ょ洿鎺ユ恫鍖栨补鍒嗛浜х墿涓惈姘у寲鍚堢墿鍒嗗瓙缁勬垚 鍚戞槬鍏",
+    "file": "DOC335.pdf"
+  },
+  {
+    "code": "DOC336",
+    "category": "现代煤化工",
+    "title": "鐓ょ洿鎺ユ恫鍖栨补鍔犳阿绮惧埗鍌寲鍓傜粨鏋勮皟鎺х爺绌惰繘灞 閭撳紑閼",
+    "file": "DOC336.pdf"
+  },
+  {
+    "code": "DOC337",
+    "category": "现代煤化工",
+    "title": "鐓ょ洿鎺ユ恫鍖栫敓浜ч珮鍘嬪睆钄芥车瀵嗗皝娌圭殑鎺㈢储涓庡伐涓氬疄璺 閫尝",
+    "file": "DOC337.pdf"
+  },
+  {
+    "code": "DOC338",
+    "category": "现代煤化工",
+    "title": "鐓ょ洿鎺ユ恫鍖栬缃隘骞宠　鍒嗘瀽 寤夐噾瓒",
+    "file": "DOC338.pdf"
+  },
+  {
+    "code": "DOC339",
+    "category": "现代煤化工",
+    "title": "鐓ょ洿鎺ユ恫鍖栬缃敞纭郴缁熶紭鍖栧垎鏋 寤夐噾瓒",
+    "file": "DOC339.pdf"
+  },
+  {
+    "code": "DOC340",
+    "category": "现代煤化工",
+    "title": "鐓ょ洿鎺ユ恫鍖栬繃绋嬩腑寰幆婧跺墏鑷韩鍙嶅簲瀵逛緵姘㈢殑褰卞搷 鍒樻矏閼",
+    "file": "DOC340.pdf"
+  },
+  {
+    "code": "DOC341",
+    "category": "煤液化",
+    "title": "煤直接液化过程结焦机理及影响因素研究进展 刘萌?",
+    "file": "DOC341.pdf"
+  },
+  {
+    "code": "DOC342",
+    "category": "现代煤化工",
+    "title": "鐓ょ洿鎺ユ恫鍖栭」鐩姞姘㈣缃妭鑳戒紭鍖栨帾鏂芥帰璁 鏉ㄥ痉瀹",
+    "file": "DOC342.pdf"
+  },
+  {
+    "code": "DOC343",
+    "category": "现代煤化工",
+    "title": "鐓ょ洿鎺ユ恫鍖栭珮娓╅珮鍘嬬墿鏂欏垎閰嶆煴濉為榾缁撴瀯璁捐涓庤瘯楠 骞茬憺褰",
+    "file": "DOC343.pdf"
+  },
+  {
+    "code": "DOC344",
+    "category": "环保低碳",
+    "title": "物化-生化组合工艺处理高浓度含酚煤化工废水研究 高佳?",
+    "file": "DOC344.pdf"
+  },
+  {
+    "code": "DOC345",
+    "category": "现代煤化工",
+    "title": "鐜颁唬鍖栧璁￠噺鍦ㄧ叅鍖栧伐浜т笟鍙戝睍涓殑搴旂敤涓庡缓璁 鑹捐搐宓",
+    "file": "DOC345.pdf"
+  },
+  {
+    "code": "DOC346",
+    "category": "现代煤化工",
+    "title": "鐜颁唬鐓ゅ寲宸ュ弽娓楅€忔祿鐩愭按鐨勬不鐞嗙爺绌讹細闆嗕腑澶勭悊浼樺娍鍙婃妧鏈寫鎴 寮犱紵鏄",
+    "file": "DOC346.pdf"
+  },
+  {
+    "code": "DOC347",
+    "category": "现代煤化工",
+    "title": "鐜颁唬鐓ゅ寲宸ュ弽娓楅€忔祿鐩愭按鐨勬不鐞嗙爺绌讹細闆嗕腑澶勭悊浼樺娍鍙婃妧鏈寫鎴 寮犱紵鏄燂紙2锛",
+    "file": "DOC347.pdf"
+  },
+  {
+    "code": "DOC348",
+    "category": "现代煤化工",
+    "title": "鐜颁唬鐓ゅ寲宸ュ弽娓楅€忔祿鐩愭按鐨勬不鐞嗙爺绌讹細闆嗕腑澶勭悊浼樺娍鍙婃妧鏈寫鎴 寮犱紵鏄燂紙3锛",
+    "file": "DOC348.pdf"
+  },
+  {
+    "code": "DOC349",
+    "category": "现代煤化工",
+    "title": "现代煤化工发力中部崛? 杨晓?",
+    "file": "DOC349.pdf"
+  },
+  {
+    "code": "DOC350",
+    "category": "现代煤化工",
+    "title": "鐜颁唬鐓ゅ寲宸ユ皵鍖栬兘鑰楄瘎浠峰強鑺傝兘娼滃姏鐮旂┒ 浠樻鑺",
+    "file": "DOC350.pdf"
+  },
+  {
+    "code": "DOC351",
+    "category": "煤气化",
+    "title": "现代煤化工气化能耗评价及节能潜力研究 李生?",
+    "file": "DOC351.pdf"
+  },
+  {
+    "code": "DOC352",
+    "category": "现代煤化工",
+    "title": "鐜颁唬鐓ゅ寲宸ユ按绯荤粺寤鸿鐨勬€濊€冨拰寤鸿 鐒︽垚鍗",
+    "file": "DOC352.pdf"
+  },
+  {
+    "code": "DOC353",
+    "category": "现代煤化工",
+    "title": "鐜颁唬鐓ゅ寲宸ヨ妭鑳芥妧鏈璁轰笌鎺㈢储 闊╁浗寮",
+    "file": "DOC353.pdf"
+  },
+  {
+    "code": "DOC354",
+    "category": "现代煤化工",
+    "title": "鐜颁唬鐓ゆ皵鍖栨妧鏈彂灞曡秼鍔垮強搴旂敤缁艰堪 姹寤",
+    "file": "DOC354.pdf"
+  },
+  {
+    "code": "DOC355",
+    "category": "现代煤化工",
+    "title": "鐧戒簯鐭宠嚟姘у偓鍖栨哀鍖栧拰姹℃偿 鑶滃鐞嗕袱闃舵娣卞害澶勭悊鐓ゅ寲宸ュ簾姘磋瘯楠 鐜嬫潵褰",
+    "file": "DOC355.pdf"
+  },
+  {
+    "code": "DOC356",
+    "category": "现代煤化工",
+    "title": "鐩樺窞鐓ょ劍鍖栫患鍚堣兘婧愬惊鐜粡娴庨」鐩  309浜垮厓鍚姩缁胯壊鍙戝睍寮曟搸 榛勮吹浜",
+    "file": "DOC356.pdf"
+  },
+  {
+    "code": "DOC357",
+    "category": "现代煤化工",
+    "title": "鐩撮潰鐓ょ劍鍖栬浆鍨嬮毦棰  寤鸿寮曞彂澶氶儴濮斿洖搴 璁茶堪浜  鍚磋嫳  鍏ㄥ浗浜哄ぇ鈥︽暣鐞 娌堥潤鑺",
+    "file": "DOC357.pdf"
+  },
+  {
+    "code": "DOC358",
+    "category": "煤液化",
+    "title": "神华煤液化沥青脱灰精制体系流变特性的研究 赵鹏",
+    "file": "DOC358.pdf"
+  },
+  {
+    "code": "DOC359",
+    "category": "现代煤化工",
+    "title": "绂诲瓙鑹茶氨娉曟祴瀹氱叅鐩存帴娑插寲閰告€ф按涓隘绂诲瓙鍚噺 闄堣穬鍗",
+    "file": "DOC359.pdf"
+  },
+  {
+    "code": "DOC360",
+    "category": "现代煤化工",
+    "title": "绋€鍦熸敼鎬у偓鍖-寰皵娉″己鍖栬嚟姘ц€﹀悎澶勭悊鐓ゅ寲宸ュ簾姘翠紭鍖栫爺绌 鐜嬪啗",
+    "file": "DOC360.pdf"
+  },
+  {
+    "code": "DOC361",
+    "category": "现代煤化工",
+    "title": "绗簲灞婂叏鍥界叅鐒﹀寲浜т笟缁胯壊鍗囩骇鍙戝睍鐮旇浼氬皢浜7鏈堝湪灞辫タ娌虫触鍙紑",
+    "file": "DOC361.pdf"
+  },
+  {
+    "code": "DOC362",
+    "category": "现代煤化工",
+    "title": "绮夌叅姘斿寲瑁呯疆榛戞按闂捀绯荤粺璁惧甯冪疆鎺㈣ 搴疯帀",
+    "file": "DOC362.pdf"
+  },
+  {
+    "code": "DOC363",
+    "category": "现代煤化工",
+    "title": "绮捐€曠粏浣  浠峰€奸噸鏋  鐜颁唬鐓ゅ寲宸ヤ骇涓氶泦缇ゅ悜涓栫晫绾ц吘鈥︾鍥涘眾锛変腑鍥借兘婧愨€滈噾涓夎鈥濆寲宸ュ洯鍖哄崗鍚屽彂灞曞ぇ浼氱殑鎶ラ亾 绱㈣崳",
+    "file": "DOC363.pdf"
+  },
+  {
+    "code": "DOC364",
+    "category": "现代煤化工",
+    "title": "绮捐€曠粏浣  浠峰€奸噸鏋  鐜颁唬鐓ゅ寲宸ヤ骇涓氶泦缇ゅ悜涓栫晫绾ц吘鈥︾鍥涘眾锛変腑鍥借兘婧愨€滈噾涓夎鈥濆寲宸ュ洯鍖哄崗鍚屽彂灞曞ぇ浼氱殑鎶ラ亾 绱㈣崳锛2锛",
+    "file": "DOC364.pdf"
+  },
+  {
+    "code": "DOC365",
+    "category": "现代煤化工",
+    "title": "缁挎阿鑰﹀悎鐓ゅ寲宸ヨ矾寰勫強鍏抽敭鎶€鏈垎鏋 闊╁啺",
+    "file": "DOC365.pdf"
+  },
+  {
+    "code": "DOC366",
+    "category": "现代煤化工",
+    "title": "绿氢耦合现代煤化工发展路径分? 王海?",
+    "file": "DOC366.pdf"
+  },
+  {
+    "code": "DOC367",
+    "category": "现代煤化工",
+    "title": "绿能时代下的煤化工产业变? 豆文?",
+    "file": "DOC367.pdf"
+  },
+  {
+    "code": "DOC368",
+    "category": "现代煤化工",
+    "title": "鑰愮（鐞冮榾鍦ㄧ叅鐩存帴娑插寲宸ュ喌搴旂敤涓殑澶辨晥鍒嗘瀽鍙婃敼杩 鏉庡椤",
+    "file": "DOC368.pdf"
+  },
+  {
+    "code": "DOC369",
+    "category": "现代煤化工",
+    "title": "鑰﹀悎鏂拌兘婧愪负鐜颁唬鐓ゅ寲宸ュ缁 寮犻",
+    "file": "DOC369.pdf"
+  },
+  {
+    "code": "DOC370",
+    "category": "现代煤化工",
+    "title": "鑶滃垎绂绘妧鏈湪鐓ゅ寲宸ュ簾姘村閲嶆薄鏌撶墿鍘婚櫎涓殑搴旂敤鐮旂┒ 鐢版柊",
+    "file": "DOC370.pdf"
+  },
+  {
+    "code": "DOC371",
+    "category": "现代煤化工",
+    "title": "鑷富璁捐DCS绯荤粺鐢婚潰鍦ㄩ┈閽㈢叅鐒﹀寲鍏徃鐢熷寲绯荤粺涓婄殑棣栨搴旂敤 鏇圭",
+    "file": "DOC371.pdf"
+  },
+  {
+    "code": "DOC372",
+    "category": "现代煤化工",
+    "title": "鑸ぉ鐐夌叅姘斿寲缁嗘福閮ㄥ垎鏇夸唬鐐粦鍦ㄥぉ鐒舵鑳朵腑鐨勫簲鐢ㄧ爺绌 鑹句紵涓",
+    "file": "DOC372.pdf"
+  },
+  {
+    "code": "DOC373",
+    "category": "现代煤化工",
+    "title": "鑸ぉ鐐夌叅姘斿寲缁嗘福閮ㄥ垎鏇夸唬鐐粦鍦ㄥぉ鐒舵鑳朵腑鐨勫簲鐢ㄧ爺绌 鑹句紵涓滐紙2锛",
+    "file": "DOC373.pdf"
+  },
+  {
+    "code": "DOC374",
+    "category": "现代煤化工",
+    "title": "瓒呬氦鑱旀爲鑴傜殑鍒跺鍙婂叾瀵圭叅鍖栧伐搴熸按涓姵鐑冪被鏈夋満鐗╃殑鍚搁檮鐗规€х爺绌 璐哄眳鍏",
+    "file": "DOC374.pdf"
+  },
+  {
+    "code": "DOC375",
+    "category": "煤液化",
+    "title": "近红外光谱智能分析煤直接液化柴油组分（英文） 王喜?",
+    "file": "DOC375.pdf"
+  },
+  {
+    "code": "DOC376",
+    "category": "现代煤化工",
+    "title": "杩欎綅鈥滃噣鍖栭珮鎵嬧€濓紝浠庝笁鍗冨鍏噷澶栫殑鏂扮枂鏉 宕斿叴姣",
+    "file": "DOC376.pdf"
+  },
+  {
+    "code": "DOC377",
+    "category": "现代煤化工",
+    "title": "杩涗竴姝ユ敮鎸佸北瑗垮彂灞曠幇浠ｇ叅鍖栧伐浜т笟 鏈姤璁拌€  鐜嬪畤 璐捐檸鐟",
+    "file": "DOC377.pdf"
+  },
+  {
+    "code": "DOC378",
+    "category": "现代煤化工",
+    "title": "閯傚皵澶氭柉鐜颁唬鐓ゅ寲宸ヨ涓氬噺姹￠檷纰冲崗鍚屽垱鏂板疄璺佃繘灞曞強鍚ず寤鸿 鏌撮簰鏁",
+    "file": "DOC378.pdf"
+  },
+  {
+    "code": "DOC379",
+    "category": "现代煤化工",
+    "title": "閽煎熀鍌寲鍓傜殑鍒跺鍙婂叾鐓ゆ恫鍖栧偓鍖栧姞姘㈡€ц兘鐮旂┒ 鏉庡織杈",
+    "file": "DOC379.pdf"
+  },
+  {
+    "code": "DOC380",
+    "category": "现代煤化工",
+    "title": "闈㈠悜鐓ょ劍鍖栬涓氬簾姘旂粍鍒嗙殑楂樻€ц兘浼犳劅鍣ㄧ爺鍒跺強鍏舵晱鎰熺壒鎬х爺绌 鑳￠泤鏅",
+    "file": "DOC380.pdf"
+  },
+  {
+    "code": "DOC381",
+    "category": "环保低碳",
+    "title": "面向碳减排的绿氢耦合煤化工制甲醇工艺研究 吴云?",
+    "file": "DOC381.pdf"
+  },
+  {
+    "code": "DOC382",
+    "category": "现代煤化工",
+    "title": "楂樻晥鎺ф俯鍙樻崲鐐夊湪鈥滃畨寰芥硥鐩涒€濆ぇ鍨嬬叅鍖栧伐瑁呯疆涓殑搴旂敤 缃楁澗",
+    "file": "DOC382.pdf"
+  },
+  {
+    "code": "DOC383",
+    "category": "现代煤化工",
+    "title": "楂樼洂鐓ゅ寲宸ュ簾姘翠腑姘瀛愪笌閰氱被姹℃煋鐗╃幆淇濆幓闄ゅ伐鑹虹爺绌 娼樻棴",
+    "file": "DOC383.pdf"
+  },
+  {
+    "code": "DOC384",
+    "category": "现代煤化工",
+    "title": "楂樼洂楂樻瘨鐓ゅ寲宸ュ簾姘村ソ姘ч绮掓薄娉ュ鐞嗗垎鏋 鏉庝笢",
+    "file": "DOC384.pdf"
+  },
+  {
+    "code": "DOC385",
+    "category": "现代煤化工",
+    "title": "榛勬渤鍑犲瓧寮尯鐜颁唬鐓ゅ寲宸ヤ骇涓氶€傛按鍙戝睍璺緞鐮旂┒ 鏉ㄧ帀宄",
+    "file": "DOC385.pdf"
+  },
+  {
+    "code": "DOC386",
+    "category": "现代煤化工",
+    "title": "榛勬渤鍑犲瓧寮尯鐜颁唬鐓ゅ寲宸ヤ骇涓氶€傛按鍙戝睍璺緞鐮旂┒ 鏉ㄧ帀宄帮紙2锛",
+    "file": "DOC386.pdf"
+  },
+  {
+    "code": "DOC387",
+    "category": "现代煤化工",
+    "title": "榛戝北鐓ゆ俯鍜屾恫鍖栧強娑插寲閲嶈川浜х墿鍒跺纰抽噺瀛愮偣 鍞愰洴闆",
+    "file": "DOC387.pdf"
+  },
+  {
+    "code": "DOC388",
+    "category": "煤液化",
+    "title": "黑山煤温和液化重质产物制备碳量子点的研究 唐雯?",
+    "file": "DOC388.pdf"
+  }
+];
+
+    let currentCategory = "全部";
+    let currentList = [...pdfData];
+    let currentItem = null;
+
+    const pdfList = document.getElementById("pdfList");
+    const pdfViewer = document.getElementById("pdfViewer");
+    const pdfTitle = document.getElementById("pdfTitle");
+    const pdfSearch = document.getElementById("pdfSearch");
+    const pdfCount = document.getElementById("pdfCount");
+    const openBtn = document.getElementById("openBtn");
+    const downloadBtn = document.getElementById("downloadBtn");
+    const copyBtn = document.getElementById("copyBtn");
+    const categoryTabs = document.getElementById("categoryTabs");
+
+    function pdfUrl(item) {
+      return pdfBaseUrl + item.file;
+    }
+
+    function escapeText(value) {
+      return String(value ?? "");
+    }
+
+    function categories() {
+      const set = new Set(pdfData.map(item => item.category || "其他"));
+      return ["全部", ...Array.from(set).sort()];
+    }
+
+    function renderTabs() {
+      categoryTabs.innerHTML = "";
+      categories().forEach(cat => {
+        const btn = document.createElement("button");
+        btn.className = "tab" + (cat === currentCategory ? " active" : "");
+        btn.type = "button";
+        btn.textContent = cat;
+        btn.onclick = () => {
+          currentCategory = cat;
+          renderTabs();
+          applyFilter();
+        };
+        categoryTabs.appendChild(btn);
+      });
+    }
+
+    function applyFilter() {
+      const kw = pdfSearch.value.trim().toLowerCase();
+      currentList = pdfData.filter(item => {
+        const inCat = currentCategory === "全部" || item.category === currentCategory;
+        const text = [item.code, item.category, item.title, item.file].join(" ").toLowerCase();
+        return inCat && text.includes(kw);
+      });
+      renderList(currentList);
+    }
+
+    function renderList(list) {
+      pdfList.innerHTML = "";
+      pdfCount.textContent = list.length + " 篇";
+
+      if (!list.length) {
+        pdfList.innerHTML = '<div class="empty">没有找到匹配的文献。</div>';
+        return;
+      }
+
+      list.forEach((item, index) => {
+        const row = document.createElement("div");
+        row.className = "item" + (currentItem && currentItem.file === item.file ? " active" : "");
+        row.innerHTML = `
+          <div class="item-title">${escapeText(item.code)}｜${escapeText(item.title)}</div>
+          <div class="item-meta">
+            <span class="badge">${escapeText(item.category || "其他")}</span>
+            <span>${escapeText(item.file)}</span>
+          </div>
+        `;
+        row.onclick = () => selectPdf(item);
+        pdfList.appendChild(row);
+
+        if (!currentItem && index === 0) {
+          selectPdf(item, false);
+        }
+      });
+    }
+
+    function selectPdf(item, rerender = true) {
+      currentItem = item;
+      const url = pdfUrl(item);
+      pdfTitle.textContent = item.code + "｜" + item.title;
+      pdfViewer.src = url;
+      openBtn.href = url;
+      downloadBtn.href = url;
+      downloadBtn.setAttribute("download", item.file);
+      if (rerender) renderList(currentList);
+    }
+
+    copyBtn.addEventListener("click", async () => {
+      if (!currentItem) return;
+      const url = pdfUrl(currentItem);
+      try {
+        await navigator.clipboard.writeText(url);
+        copyBtn.textContent = "已复制";
+        setTimeout(() => copyBtn.textContent = "复制 PDF 地址", 1200);
+      } catch (e) {
+        prompt("复制这个 PDF 地址：", url);
+      }
+    });
+
+    pdfSearch.addEventListener("input", applyFilter);
+
+    renderTabs();
+    applyFilter();
+  </script>
+</body>
+</html>
