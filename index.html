@@ -1,16 +1,851 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>煤化工知识图谱</title>
-  <meta http-equiv="refresh" content="0; url=智慧图谱.html">
-  <script>
-    const target = "智慧图谱.html" + window.location.search + window.location.hash;
-    window.location.replace(target);
-  </script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>煤化工知识图谱及问答式智能体构建</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: "Microsoft YaHei", Arial, sans-serif;
+      background: #f4f7fb;
+      color: #222;
+      line-height: 1.6;
+    }
+
+    header {
+      background: linear-gradient(135deg, #0b3d66, #1769aa);
+      color: white;
+      padding: 60px 30px;
+      text-align: center;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 34px;
+      letter-spacing: 2px;
+    }
+
+    header p {
+      margin-top: 16px;
+      font-size: 18px;
+      opacity: 0.95;
+    }
+
+    nav {
+      background: white;
+      padding: 14px 30px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      text-align: center;
+    }
+
+    nav a {
+      margin: 0 18px;
+      color: #1769aa;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    nav a:hover {
+      color: #0b3d66;
+    }
+
+    section {
+      max-width: 1250px;
+      margin: 40px auto;
+      padding: 30px;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
+    }
+
+    h2 {
+      color: #0b3d66;
+      border-left: 6px solid #1769aa;
+      padding-left: 12px;
+      margin-top: 0;
+    }
+
+    .intro-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 20px;
+      margin-top: 25px;
+    }
+
+    .card {
+      background: #f7faff;
+      border: 1px solid #dce9f7;
+      padding: 20px;
+      border-radius: 10px;
+    }
+
+    .card h3 {
+      margin-top: 0;
+      color: #1769aa;
+    }
+
+    .library-container {
+      display: grid;
+      grid-template-columns: 38% 62%;
+      gap: 22px;
+      margin-top: 25px;
+    }
+
+    .pdf-list-box {
+      background: #f8fbff;
+      border: 1px solid #dce9f7;
+      border-radius: 10px;
+      padding: 18px;
+      max-height: 850px;
+      overflow-y: auto;
+    }
+
+    .viewer-box {
+      background: #f8fbff;
+      border: 1px solid #dce9f7;
+      border-radius: 10px;
+      padding: 18px;
+    }
+
+    .search-box {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #bdd2e8;
+      border-radius: 8px;
+      margin-bottom: 15px;
+      font-size: 15px;
+    }
+
+    .category-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 15px;
+    }
+
+    .category-buttons button {
+      border: none;
+      background: #e7f1fb;
+      color: #1769aa;
+      padding: 8px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .category-buttons button:hover,
+    .category-buttons button.active {
+      background: #1769aa;
+      color: white;
+    }
+
+    .pdf-item {
+      padding: 12px 8px;
+      border-bottom: 1px solid #e4edf7;
+    }
+
+    .pdf-item-title {
+      display: block;
+      color: #0b3d66;
+      text-decoration: none;
+      font-weight: bold;
+      margin-bottom: 8px;
+      word-break: break-all;
+    }
+
+    .pdf-item-title:hover {
+      color: #1769aa;
+      text-decoration: underline;
+    }
+
+    .pdf-actions a {
+      display: inline-block;
+      margin-right: 10px;
+      padding: 5px 10px;
+      font-size: 13px;
+      border-radius: 5px;
+      text-decoration: none;
+    }
+
+    .preview-btn {
+      background: #1769aa;
+      color: white;
+    }
+
+    .download-btn {
+      background: #0a7c3f;
+      color: white;
+    }
+
+    #pdfViewer {
+      width: 100%;
+      height: 780px;
+      border: 1px solid #bdd2e8;
+      border-radius: 8px;
+      background: white;
+    }
+
+    #pdfTitle {
+      color: #0b3d66;
+      margin-top: 0;
+      word-break: break-all;
+    }
+
+    .tip {
+      background: #fff8e6;
+      border-left: 5px solid #f0ad4e;
+      padding: 12px 16px;
+      margin-top: 15px;
+      color: #6b4b00;
+      border-radius: 6px;
+    }
+
+    footer {
+      text-align: center;
+      color: #666;
+      padding: 30px;
+      font-size: 14px;
+    }
+
+    @media (max-width: 900px) {
+      .library-container {
+        grid-template-columns: 1fr;
+      }
+
+      #pdfViewer {
+        height: 600px;
+      }
+
+      header h1 {
+        font-size: 26px;
+      }
+    }
+  </style>
 </head>
+
 <body>
-  <a href="智慧图谱.html">进入煤化工知识图谱</a>
+
+  <header>
+    <h1>智慧蓝图：煤化工知识图谱及问答式智能体构建</h1>
+    <p>面向煤化工领域的知识整合、文献管理、智能检索与辅助问答平台</p>
+  </header>
+
+  <nav>
+    <a href="#overview">项目概述</a>
+    <a href="#features">功能模块</a>
+    <a href="#pdf-library">文献资料库</a>
+  </nav>
+
+  <section id="overview">
+    <h2>项目概述</h2>
+    <p>
+      本项目围绕煤化工知识图谱与问答式智能体构建，整合煤气化、煤液化、煤焦化、
+      现代煤化工产业发展、废水处理、安全环保、智能控制等方向的文献资料，形成可检索、
+      可预览、可下载的煤化工领域知识资源库。
+    </p>
+  </section>
+
+  <section id="features">
+    <h2>功能模块</h2>
+
+    <div class="intro-grid">
+      <div class="card">
+        <h3>文献资料整合</h3>
+        <p>集中展示煤化工相关 PDF 文献，支持在线预览与下载。</p>
+      </div>
+
+      <div class="card">
+        <h3>知识图谱支撑</h3>
+        <p>围绕“原料—工艺—设备—产品—安全环保”构建知识体系。</p>
+      </div>
+
+      <div class="card">
+        <h3>智能问答基础</h3>
+        <p>为后续构建煤化工问答式智能体提供知识库来源。</p>
+      </div>
+
+      <div class="card">
+        <h3>项目展示应用</h3>
+        <p>适用于大创、竞赛、答辩和项目成果展示。</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="pdf-library">
+    <h2>煤化工文献资料库</h2>
+    <p>
+      点击文献名称或“在线预览”按钮，可在右侧窗口中查看 PDF；点击“下载 PDF”可打开或保存原文文件。
+    </p>
+
+    <div class="tip">
+      如果 PDF 无法在页面中显示，可能是浏览器拦截了 HTTP 文件。此时可点击“下载 PDF”单独打开。
+    </div>
+
+    <div class="library-container">
+
+      <div class="pdf-list-box">
+        <h3>文献列表</h3>
+
+        <input
+          id="pdfSearch"
+          class="search-box"
+          type="text"
+          placeholder="搜索文献名称、编号或作者..."
+        />
+
+        <div class="category-buttons">
+          <button onclick="filterCategory('ALL')" class="active">全部</button>
+          <button onclick="filterCategory('CCP')">现代煤化工</button>
+          <button onclick="filterCategory('COK')">煤焦化</button>
+          <button onclick="filterCategory('GAS')">煤气化</button>
+          <button onclick="filterCategory('LIQ')">煤液化</button>
+        </div>
+
+        <p id="pdfCount"></p>
+
+        <div id="pdfList"></div>
+      </div>
+
+      <div class="viewer-box">
+        <h3 id="pdfTitle">PDF 在线预览</h3>
+
+        <iframe
+          id="pdfViewer"
+          src=""
+        >
+          当前浏览器无法预览 PDF，请点击下载。
+        </iframe>
+      </div>
+
+    </div>
+  </section>
+
+  <footer>
+    © 2026 煤化工知识图谱及问答式智能体构建项目
+  </footer>
+
+  <script>
+    const baseUrl = "http://154.198.42.63/papers/";
+
+    const pdfText = `
+CCP001_“十五五”我国煤化工产业发展趋势_朱彬彬.pdf
+CCP002_LDAR在煤化工企业VOCs管控中的应用_王斌.pdf
+CCP003_M公司煤化工项目绿色低碳发展影响因素研究_康秦宝.pdf
+CCP004_白云石臭氧催化氧化和污泥_膜处理两阶段深度处理煤化工废水试验_王来彬.pdf
+CCP005_毕节试验区新型煤化工产业发展与布局展望_黄文.pdf
+CCP006_超交联树脂的制备及其对煤化工废水中芳烃类有机物的吸附特性研究_贺居元.pdf
+CCP007_大孔树脂对煤化工废水中油、酚吸附分离效果及再生方法研究_王树国.pdf
+CCP008_定量风险评价在煤化工企业的应用研究_王琛.pdf
+CCP009_多参数分析仪测定煤化工废水总氮方法_李刚.pdf
+CCP010_鄂尔多斯现代煤化工行业减污降碳协同创新实践进展及启示建议_柴麒敏.pdf
+CCP011_分布式控制系统在大型煤化工工厂中的应用与实践_方彪.pdf
+CCP012_高效控温变换炉在“安徽泉盛”大型煤化工装置中的应用_罗松.pdf
+CCP013_高盐高毒煤化工废水好氧颗粒污泥处理分析_李东.pdf
+CCP014_高盐煤化工废水中氯离子与酚类污染物环保去除工艺研究_潘旭.pdf
+CCP015_构建新疆煤炭煤电煤化工产业集群高质量发展新模式的思考_高金晶.pdf
+CCP016_国家发展改革委：煤炭消费清洁替代项目支持煤电机组和煤化工项目低碳化改造.pdf
+CCP017_化工园区成现代煤化工产业集聚地_本报记者__叶伟.pdf
+CCP018_黄河几字弯区现代煤化工产业适水发展路径研究_杨玉峰 (1).pdf
+CCP019_黄河几字弯区现代煤化工产业适水发展路径研究_杨玉峰.pdf
+CCP020_基于智能化控制的煤化工废水处理与循环利用技术浅析_王旭东.pdf
+CCP021_介质微通道强化煤化工废水油固协同分离_韦奇.pdf
+CCP022_进一步支持山西发展现代煤化工产业_本报记者__王宇__贾虎瑞.pdf
+CCP023_精耕细作__价值重构__现代煤化工产业集群向世界级腾...第四届）中国能源“金三角”化工园区协同发展大会的报道_索荣_ (1).pdf
+CCP024_精耕细作__价值重构__现代煤化工产业集群向世界级腾...第四届）中国能源“金三角”化工园区协同发展大会的报道_索荣_.pdf
+CCP025_控制系统电子布线技术在煤化工项目中的应用_王亚斌.pdf
+CCP026_喹啉对好氧颗粒污泥处理煤化工废水的影响_郭培强.pdf
+CCP027_绿能时代下的煤化工产业变革_豆文娇.pdf
+CCP028_绿氢耦合现代煤化工发展路径分析_王海玲.pdf
+CCP029_煤化工产业的高质量发展观_魏贤勇.pdf
+CCP030_煤化工产业发展路在何方？_本报记者__陶冉.pdf
+CCP031_煤化工产业火灾风险特点及事故预防对策分析_李淼城.pdf
+CCP032_煤化工产业双控转型政策适应性测度研究_刘力玮.pdf
+CCP033_煤化工废水COD与氨氮同步检测新方法研究_闫冰.pdf
+CCP034_煤化工废水处理产品盐氯化钠纯度影响因素研究_曹晶.pdf
+CCP035_煤化工废水催化氧化降解工艺优化_车远.pdf
+CCP036_煤化工废水的催化臭氧化法处理工艺技术的进展_燕晓慧.pdf
+CCP037_煤化工废水副产硫酸钠特性分析及硫酸钠盐双极膜制酸碱研究_张忠翼.pdf
+CCP038_煤化工废水零排放系统碳足迹特征分析_吴迪.pdf
+CCP039_煤化工废水纳滤分盐零排放工艺分析与改进_王培功.pdf
+CCP040_煤化工废水深度除氟技术试验研究_李丹杰.pdf
+CCP041_煤化工废水中典型污染物喹啉催化臭氧氧化研究_夏立全.pdf
+CCP042_煤化工废水中酚类污染物的去除方法及机理分析_程会军.pdf
+CCP043_煤化工核心设备智能运维降本增效路径研究_何逍.pdf
+CCP044_煤化工空分深冷装置降本增效关键技术及经济效益分析_颜廷忠.pdf
+CCP045_煤化工企业MES建设实践_吴海鹏.pdf
+CCP046_煤化工企业VOCs减排难题及对策措施_田陆峰.pdf
+CCP047_煤化工企业低温SNCR脱硝技术的应用分析_张虎.pdf
+CCP048_煤化工企业甲醇罐区VOCs治理技术改造实践_王刚.pdf
+CCP049_煤化工企业生产调度多环节协同机制及协调管理体系优化研究_常德龙.pdf
+CCP050_煤化工企业特殊作业安全管理体系的构建与实践_乔卫锋.pdf
+CCP051_煤化工企业污水处理SBR工艺节能减排路径研究_赵美丽.pdf
+CCP052_煤化工企业污水处理VOCs污染特征及环境影响_高振.pdf
+CCP053_煤化工项目二氧化碳排放分析与综合利用路径探讨_侯丽华.pdf
+CCP054_煤化工项目甲醇合成装置空冷器的布置及管线优化设计_朱彦儒 (1).pdf
+CCP055_煤化工项目甲醇合成装置空冷器的布置及管线优化设计_朱彦儒.pdf
+CCP056_煤化工项目空分装置建设方案研究_张亚男.pdf
+CCP057_煤化工项目中氢气管道的选材研究_郜源.pdf
+CCP058_煤化工项目中湿硫化氢工况下管道选材研究_郜源.pdf
+CCP059_煤基绿色发展战略下的现代煤化工发展_张洪涛 (1).pdf
+CCP060_煤基绿色发展战略下的现代煤化工发展_张洪涛 (2).pdf
+CCP061_煤基绿色发展战略下的现代煤化工发展_张洪涛.pdf
+CCP062_膜分离技术在煤化工废水多重污染物去除中的应用研究_田新.pdf
+CCP063_某煤化工废水近零排放处理工程实例_朱芙蓉.pdf
+CCP064_耦合新能源为现代煤化工增绿_张飞.pdf
+CCP065_全膜法技术在煤化工废水零排放工程中的应用与分析_张虎.pdf
+CCP066_天然白云石催化臭氧氧化处理煤化工废水的长周期研究_胡若晖.pdf
+CCP067_推动煤化工产业向“精”“深”迈进.pdf
+CCP068_微波辅助催化湿式过氧化氢氧化深度处理煤化工废水_徐然.pdf
+CCP069_我国煤化工产业现状及转型发展研究_张宏.pdf
+CCP070_物化-生化组合工艺处理高浓度含酚煤化工废水研究_高佳佳.pdf
+CCP071_稀土改性催化-微气泡强化臭氧耦合处理煤化工废水优化研究_王军.pdf
+CCP072_现代化学计量在煤化工产业发展中的应用与建议_艾贤嵩.pdf
+CCP073_现代煤化工发力中部崛起_杨晓宇__.pdf
+CCP074_现代煤化工反渗透浓盐水的治理研究：集中处理优势及技术挑战_张伟星 (1).pdf
+CCP075_现代煤化工反渗透浓盐水的治理研究：集中处理优势及技术挑战_张伟星 (2).pdf
+CCP076_现代煤化工反渗透浓盐水的治理研究：集中处理优势及技术挑战_张伟星.pdf
+CCP077_现代煤化工节能技术讨论与探索_韩国强.pdf
+CCP078_现代煤化工气化能耗评价及节能潜力研究_付楚芮.pdf
+CCP079_现代煤化工气化能耗评价及节能潜力研究_李生文.pdf
+CCP080_现代煤化工水系统建设的思考和建议_焦成华.pdf
+COK001_《煤炭加工与综合利用》杂志.pdf
+CCP081_新疆加速打造现代煤化工基地_本报记者__李玲.pdf
+CCP082_新疆煤化工产业春风正劲_石榴云_新疆日报记者__于江艳.pdf
+CCP083_以“六项能力”激活发展动能__走好煤化工企业高质量发展之路_刘军锋.pdf
+CCP084_战略基石：煤化工高质量发展_刘雅文.pdf
+CCP085_这位“净化高手”，从三千多公里外的新疆来_本报记者__崔兴毅.pdf
+CCP086_智能投加系统在煤化工废水深度除氟中的研究与应用_蒋广敏.pdf
+CCP087_中国首套绿氢煤化工项目全面投运.pdf
+CCP088_中国现代煤化工产业发展研究及对策建议_许浩 (1).pdf
+CCP089_中国现代煤化工产业发展研究及对策建议_许浩.pdf
+CCP090_中天合创：五步工作法赋能煤化工企业经营提质升级_刘军锋.pdf
+COK002_1-s2.0-S0378382021002721-main.pdf
+COK003_A comprehensive study on the transformation of chemical structures in the plastic layers during coking of Australian coals.pdf
+COK004_A novel dual-way inference modeling method for coal coking_ Predicting H2 and CH4 concentrations in coke oven gas and inferring optimal reaction conditions.pdf
+COK005_AB系列PLC在马钢煤焦化新区出焦除尘中的应用_余素萍.pdf
+COK006_A-comprehensive-study-on-the-transformation-of-chemi_2020_Journal-of-Analyti.pdf
+COK007_Anode-coke-from-coal---A-low-cost-approach_2017_Fuel.pdf
+COK008_Carbonization-characteristics-of-biomass-coking-coal-b_2020_Chemical-Enginee.pdf
+COK009_Changes in the free radical concentration and carbon structure of coke during the coal coking process.pdf
+COK010_Characterization-of-microstructure-and-strength-of-coke-parti_2017_Powder-Te.pdf
+COK011_Chemical Looping Combustion of Coal Chars Using Iron Ore of Different Grades as Oxygen Carriers.pdf
+COK012_Coking behavior and mechanism of direct coal liquefaction residue in coking of coal blending.pdf
+COK013_Coking-coal-mining-investment--Boosting-European-Union-s-ra_2018_Resources-P.pdf
+COK014_Construction-of-a-Ni-Semi-coke-catalyst-via-a-NiCl2-Lactic-acid-deep_2026_Fu.pdf
+COK015_Devolatilization-behaviour-and-pyrolysis-kinetics-o_2018_Journal-of-Analytic.pdf
+COK016_Economic-and-environmental-analysis-of-coking-coal-and_2025_Journal-of-Envir.pdf
+COK017_Effect of sawdust addition on coking pressure produced by two low vol bituminous coals.pdf
+COK018_Effect-of-different-grinding-media-on-the-disintegration-ch_2026_Powder-Tech.pdf
+COK019_Effect-of-high-temperature-pyrolysis-on-the-struc_2016_Journal-of-Analytical.pdf
+COK020_Effect-of-sawdust-addition-on-coking-pressure-p_2017_Journal-of-Analytical-a.pdf
+COK021_Effects-of-coal-interactions-during-cokemaking-on-coke-pr_2020_Fuel-Processi.pdf
+COK022_Effects-of-coal-tar-pitch-properties-and-processing-parameters-on-the_2026_F.pdf
+COK023_Estimating-the-fusible-content-of-individual-coal-_2015_International-Journa.pdf
+COK024_Evolution and molecular model construction of Shanxi-coking-coal metaplast using a Gieseler plastometer coupled with liquid nitrogen rapid cooling.pdf
+COK025_Evolution of carbon structure and cross-linking structure during coking process of coking coal.pdf
+COK026_Hierarchical-carbon-zeolite-composite-derived-from-coal-gasification_2027_Fu.pdf
+COK027_How-coke-optical-texture-became-a-relevant-tool-for-unde_2017_Fuel-Processin.pdf
+COK028_IHC内热式清洁高效煤焦化技术论证会在北京召开_吴迪.pdf
+COK040_Migration of inert materials during coking of molded coal.pdf
+COK029_Impact-of-weathering-on-coal-properties-and-evolution-_2016_International-Jo.pdf
+COK030_Improving-the-properties-of-high-volatile-coking-coals-by-controlle_2017_Fue.pdf
+COK031_Influence of different state alkali and alkaline earth metal on chemical structure of Zhundong coal char pyrolyzed at elevated pressures.pdf
+COK032_Influence-of-briquetting-and-coking-parameters-on-the-lump-coke-prod_2017_Fu.pdf
+COK033_Insight into the relationship between carbon structure and coke performance during coal blending coking.pdf
+COK034_In-situ-study-of-plastic-layers-during-coking-of-six-Aust_2019_Fuel-Processi.pdf
+COK035_Low-temperature-pyrolysis-properties-and-kinetics-of-_2016_Journal-of-the-En.pdf
+COK036_Mechanism-of-microstructural-evolution-in-coke-durin_2026_Journal-of-Fuel-Ch.pdf
+COK037_Mechanistic study of plastic layer permeability during coking of Australian metallurgical coals.pdf
+COK038_MH-induced-co-carbonization-of-medium-low-temperature-coal-tar-pitch_2026_Fu.pdf
+COK041_Numerical-analysis-based-evaluation-of-combustion-and-gasif_2025_Fuel-Proces.pdf
+COK042_Numerical-study-on-coal-pyrolysis-behavior-du_2026_International-Journal-of-.pdf
+COK043_Preparation-and-structure-evolution-of-coal-based-needl_2026_Journal-of-Fuel.pdf
+COK044_Pyrolysis-behavior-of-solvent-extracted-group-components-from-coking-_2026_F.pdf
+COK045_Radial-distribution-function-assisted-small-angle-X-ray-sc_2026_Journal-of-M.pdf
+COK046_SM系统在马钢煤焦化公司苯加氢系统上的应用_方超.pdf
+COK047_Structural characterization of coking component of an Indian coking coal.pdf
+COK048_Structural-characterization-of-coking-component-of-an-Indian-coking_2019_Fue.pdf
+COK049_Study on the mechanism evolution of carbon structure during blending coal coking.pdf
+COK050_Study-on-the-mechanism-evolution-of-carbon-structure-during-blendin_2026_Fue.pdf
+COK051_Surrogate model-integrated deep reinforcement learning for temperature and pyrolysis behavior control in the coal coking process.pdf
+COK052_Sustainable N-doped carbon anodes directly derived from fat coking coal without ash removal for high-performance gel electrolyte lithium-ion batteries.pdf
+COK053_Synergistic-effect-of-H2-and-coal-thermal-dissolution-solu_2026_Chemical-Eng.pdf
+COK054_Temperature-dependent-combustion-synergy-of-co-pyro_2026_Journal-of-Analytic.pdf
+COK055_The-effect-of-binder--coal-tar-and-pitch--on-coking-pressure_2018_Fuel.pdf
+COK056_The-microscopic-mechanism-of-nitrogen-migration-and-transformation-i_2026_Fu.pdf
+COK057_The-yield-of-coke-oven-gas-from-hard-and-semi_2016_International-Journal-of-.pdf
+COK058_安全诊断在煤焦化安全管理中的应用_刘晨.pdf
+COK059_第五届全国煤焦化产业绿色升级发展研讨会将于7月在山西河津召开.pdf
+COK060_峰煤焦化水源置换工程取水可行性分析_靳森.pdf
+COK061_攻坚克难__精益制造__刚性保产——谈煤焦化新区保两座4000m~3高炉用焦_徐安东.pdf
+COK062_机焦厂煤焦化验室高效管理研究_史晓亮.pdf
+COK063_加快推动煤焦化企业绿色转型_证券时报记者__赵黎昀.pdf
+COK064_煤焦化厂机械密封的泄漏分析与解决措施_蒋兴华.pdf
+COK065_煤焦化除油池渗漏原因分析及处理研究_连峰.pdf
+COK066_煤焦化储罐呼吸逸散废气减量收集及其净化技术研究_郭涛.pdf
+COK067_煤焦化工产品中杂质成分分析与质量提升关键技术研究_高超.pdf
+GAS002_1-s2.0-S0016236106000548-main.pdf
+COK068_煤焦化过程中胶质体阶段自由基与碳结构变化的实验研究_许恒光.pdf
+COK069_煤焦化煤气净化系统硫泡沫制粉微孔过滤工艺技术改造_许坤.pdf
+COK070_煤焦化破碎机安装质量控制要点_黄东风.pdf
+COK071_煤焦化企业焦炉煤气净化与分离工艺改进研究_宁尚儒.pdf
+COK072_煤焦化系统硫泡沫制粉尾气吸收工艺改造_许坤.pdf
+COK073_煤焦化项目设备采购的标准化管理实践及效益_张坤有.pdf
+COK074_煤焦化作业车辆目标检测与跟踪系统研究_易龙腾.pdf
+COK075_面向煤焦化行业废气组分的高性能传感器研制及其敏感特性研究_胡雅晴.pdf
+COK076_内蒙古煤焦化公司积极推进排污许可取证工作_李丽娟.pdf
+COK077_凝心聚力谋发展__攻坚克难开新局——内蒙古准格尔旗荣祥煤焦化公司山不拉煤矿_陈红军.pdf
+COK078_盘州煤焦化综合能源循环经济项目__309亿元启动绿色发展引擎_黄贵云.pdf
+COK079_浅谈拜城县众泰煤焦化有限公司安全建设_梁凤.pdf
+COK080_浅谈电子银承在煤焦化企业结算中的应用及注意事项_赵国伟.pdf
+COK081_浅谈正压改造在煤焦化机柜间防爆中的应用_詹国军.pdf
+COK082_山西焦煤集团公司精细煤焦化工论坛_吕灵芝.pdf
+COK083_山西金晖煤焦化工公司职工袁金生呼吁_老黄牛和技术骨干不能一到提拔就靠边站.pdf
+COK084_直面煤焦化转型难题__建议引发多部委回应_讲述人__吴英__全国人大...整理__本报记者__沈静芳.pdf
+COK085_众泰煤焦化地面除尘站爆鸣原因分析及防控措施_张志杰.pdf
+COK086_众泰煤焦化选煤厂脱水系统优化探索与实践_蒋善勇.pdf
+COK087_助力煤焦化企业纾困__赋能资源型城市转型_陶正宇.pdf
+COK088_自主设计DCS系统画面在马钢煤焦化公司生化系统上的首次应用_曹磊.pdf
+GAS001_“双碳”背景下新疆煤气化应用前景分析_董学亮.pdf
+GAS003_1-s2.0-S0016236113007308-main.pdf
+GAS004_1-s2.0-S0016236125002248-main.pdf
+GAS005_1-s2.0-S0016236125025487-main.pdf
+GAS006_1-s2.0-S0016236126000335-main.pdf
+GAS007_1-s2.0-S0016236126002462-main.pdf
+GAS008_1-s2.0-S001623612601447X-main.pdf
+GAS009_1-s2.0-S0022459626001088-main.pdf
+GAS010_1-s2.0-S0040603118304532-main.pdf
+GAS011_1-s2.0-S0098135421002817-main.pdf
+GAS012_1-s2.0-S0301479720309373-main.pdf
+GAS013_1-s2.0-S0301479724039744-main.pdf
+GAS014_1-s2.0-S0360319920346619-main.pdf
+GAS015_1-s2.0-S0360319921018425-main.pdf
+GAS016_1-s2.0-S0360544216307046-main.pdf
+GAS017_1-s2.0-S0360544223016663-main.pdf
+GAS018_1-s2.0-S0378382017316739-main.pdf
+GAS019_1-s2.0-S0735193326001715-main.pdf
+GAS020_1-s2.0-S0925346725000448-main.pdf
+GAS021_1-s2.0-S0950061824007220-main.pdf
+GAS022_1-s2.0-S0956053X23003720-main.pdf
+GAS023_1-s2.0-S0957582023000903-main.pdf
+GAS024_1-s2.0-S0957582026006269-main.pdf
+GAS025_1-s2.0-S0958946525003427-main.pdf
+GAS026_1-s2.0-S0959652616312331-main.pdf
+GAS027_1-s2.0-S0959652622020273-main.pdf
+GAS028_1-s2.0-S1004954123002057-main.pdf
+GAS029_1-s2.0-S1359431115014106-main.pdf
+GAS030_1-s2.0-S1359431119318824-main.pdf
+GAS031_1-s2.0-S1383586617307153-main.pdf
+GAS032_1-s2.0-S1383586626005605-main.pdf
+GAS033_1-s2.0-S1385894725025355-main.pdf
+GAS034_1-s2.0-S156673672030337X-main.pdf
+GAS035_1-s2.0-S1743967122001519-main.pdf
+GAS036_1-s2.0-S1743967125003927-main.pdf
+GAS037_1-s2.0-S1876107021006878-main.pdf
+GAS038_1-s2.0-S2214714424004872-main.pdf
+GAS039_1-s2.0-S2352380825000164-main.pdf
+GAS040_1-s2.0-S2352710226010971-main.pdf
+GAS041_1-s2.0-S2352710226011174-main.pdf
+GAS042_1-s2.0-S240584402409279X-main.pdf
+GAS043_1-s2.0-S2589234724001957-main.pdf
+GAS044_acoustic-treatment-of-a-coal-gasification-residue-for-extraction-of-selenium.pdf
+GAS045_Applied Thermal Engineering.pdf
+GAS046_CO_2-煤气化耦合绿氢制备甲醇系统集成_郑雅文.pdf
+GAS047_energies-13-04937.pdf
+GAS048_energies-17-01619.pdf
+GAS049_energies-19-00199-v2.pdf
+GAS050_fmats-13-1778301.pdf
+GAS051_Journal of Environmental Chemical Engineering.pdf
+GAS052_mathematical-modeling-of-the-underground-coal-gasification-process-in-one-gasification-cycle.pdf
+GAS053_Modeling and simulation of coal gasification on an entrained flow.pdf
+GAS054_Process Safety and Environmental Protection.pdf
+GAS055_processes-11-01765-v2.pdf
+GAS056_PTFE中空纤维超微滤膜对煤气化废水除硬的工程应用_宋永斌.pdf
+GAS057_Shell粉煤气化装置气力输送系统运行问题及优化改进_刘龙刚.pdf
+GAS058_Shell炉煤气化飞灰对生物质流化床气化炉壁内_外层积灰的抑制机制_薛皓天.pdf
+GAS059_Shell煤气化装置典型事故案例分析与对策_杨青哲.pdf
+GAS060_Shell煤气化装置影响原煤转化效率的因素及措施_杨卫祖.pdf
+GAS061_Studies_of_catalytic_coal_gasification_with_steam.pdf
+GAS062_study-of-electrochemical-catalytic-coal-gasification-gasification-characteristics-and-char-structure-evolution.pdf
+GAS063_不同煤气化细渣的基础性质研究—以内蒙古中西部地区为例_李飞.pdf
+GAS064_粉煤气化装置黑水闪蒸系统设备布置探讨_康莉.pdf
+GAS065_关于在西部地区发展煤制气等新型煤化工项目的可行性研究_张策.pdf
+GAS066_航天炉煤气化细渣部分替代炭黑在天然橡胶中的应用研究_艾伟东 (1).pdf
+GAS067_航天炉煤气化细渣部分替代炭黑在天然橡胶中的应用研究_艾伟东.pdf
+GAS068_基于Shell气化工艺的高效煤气化技术优化与碳排放协同控制研究_王星.pdf
+GAS069_基于富氧燃烧二氧化碳循环的煤气化零碳发电系统热力学分析及流程优化_许宏宇.pdf
+GAS070_基于固定床催化转化工艺的煤气化技术探究_黄文彬.pdf
+GAS071_基于煤气化细渣构建碳基氧还原催化剂及其催化性能研究_王思敏.pdf
+GAS072_基于数字孪生指导煤气化炉新煤选购的方法_李振.pdf
+GAS073_晋华炉煤气化技术的创新发展及产业化应用思考_李广民.pdf
+GAS074_壳牌下行水激冷煤气化装置渣池积渣及解决方案探讨_向洪.pdf
+GAS075_绿氢耦合煤化工路径及关键技术分析_韩冰.pdf
+GAS076_煤化工装置氧气球阀结构优化及应用_刘军.pdf
+GAS077_煤基固废绿色低碳利用的路径探索与研究展望_张吉雄.pdf
+GAS078_煤气化掺烧有机废物工艺优化与安全防控策略探究_耿兴龙.pdf
+GAS079_煤气化的主要制约因素及各种气化工艺的前景探析_赵旭耀.pdf
+GAS080_煤气化工艺压力容器环形焊缝缺陷的原因分析及处理措施_孟庆涛.pdf
+GAS083_煤气化灰渣的高效资源化利用_秦硕.pdf
+GAS081_煤气化过程中炉温对产物分布的影响规律_丁海峰.pdf
+GAS082_煤气化含氨废水提浓综合利用装置运行介绍_徐营.pdf
+GAS084_煤气化技术与人工智能融合发展现状与展望_李玉洋.pdf
+GAS085_煤气化技术在中国_回顾与展望_王辅臣.pdf
+GAS086_煤气化结渣性能的测定分析与经济价值初探_姜阳阳.pdf
+GAS088_煤气化细渣炉前粒化直掺循环流化床锅炉工业试验与燃烧机理研究_崔星源.pdf
+GAS089_煤气化渣合成ZSM-5分子筛及其甲醇制芳烃性能_陈治平.pdf
+GAS090_煤气化渣全资源化利用工艺研究_耿涛.pdf
+GAS091_煤气化渣特性及其制备辅助胶凝材料的研究进展_吕凤圆.pdf
+GAS092_煤气化渣在兰炭废水中原位吸附_酚醛聚合增碳方法研究_王奕飞.pdf
+GAS093_煤气化渣重构土壤含水层中水分运移的动态平衡机制_康志伟.pdf
+GAS094_煤气化制甲醇的碳排放特征与低碳化路径研究_史博儒.pdf
+GAS095_煤气化制甲醇多联产系统工艺优化研究_史骏飞.pdf
+GAS096_煤气化装置腐蚀分析与防腐对策_刘茹.pdf
+GAS097_煤气化装置高温高压工况下的安全风险分级管控研究_布拉格 (1).pdf
+GAS098_煤气化装置高温高压工况下的安全风险分级管控研究_布拉格.pdf
+GAS099_煤气化装置黑水管道爆管失效分析及预防_姜辉.pdf
+GAS100_面向碳减排的绿氢耦合煤化工制甲醇工艺研究_吴云波.pdf
+GAS101_气化炉机理模型+APC+RTO优化控制系统在煤气化和合成氨装置上的应用_袁伦勇.pdf
+GAS102_气流床煤气化烧嘴关键材料对比研究_成富宁.pdf
+GAS103_浅析粉煤气化装置磨煤机常见故障及处理方法_张开.pdf
+GAS104_双碱法除硬技术在煤气化灰水中的应用探讨_刘金权.pdf
+GAS105_水煤浆气化烘炉系统故障及处理_刘晓兵.pdf
+GAS106_水煤浆气化技术研究进展与展望_窦睿然.pdf
+GAS107_水蒸气_氧流化床两段煤气化制备低焦油合成气工艺实验_朱莲峰.pdf
+GAS108_先进过程控制在煤气化配煤和磨煤中的应用_李伯钧.pdf
+GAS109_现代煤气化技术发展趋势及应用综述_汪寿建.pdf
+LIQ001_35万t_a煤液化油渣萃取装置首次投料试车探究_陈庆.pdf
+LIQ002_ampp-2025-00471.pdf
+LIQ003_iptc-12536-ms.pdf
+LIQ004_isope-i-10-602.pdf
+LIQ005_isope-i-12-231.pdf
+LIQ006_main.pdf
+LIQ007_main1.pdf
+LIQ008_main10.pdf
+LIQ009_main11.pdf
+LIQ010_main12.pdf
+LIQ011_main13.pdf
+LIQ012_main15.pdf
+LIQ013_main17.pdf
+LIQ014_main19.pdf
+LIQ015_main2.pdf
+LIQ016_main20.pdf
+LIQ017_main21.pdf
+LIQ018_main22.pdf
+LIQ019_main24.pdf
+LIQ020_main25.pdf
+LIQ021_main3.pdf
+LIQ022_main4.pdf
+LIQ023_main5.pdf
+LIQ024_main6.pdf
+LIQ025_main7.pdf
+LIQ026_main9.pdf
+LIQ027_ORBIT轨道球阀在煤直接液化工艺的应用及失效分析_韩云亮.pdf
+LIQ028_petsoc-74-03-05.pdf
+LIQ029_petsoc-80-02-07.pdf
+LIQ030_petsoc-80-31-13.pdf
+LIQ031_petsoc-82-01-06.pdf
+LIQ032_spe-176260-ms.pdf
+LIQ033_spe-18213-ms.pdf
+LIQ034_spe-221682-ms.pdf
+LIQ037_wpc-14305.pdf
+LIQ035_spe-4709-ms.pdf
+LIQ036_spe-5747-pa.pdf
+LIQ038_wpc-14307.pdf
+LIQ039_wpc-16407.pdf
+LIQ040_wpc-16408.pdf
+LIQ041_wpc-20324.pdf
+LIQ042_wpc-20326.pdf
+LIQ043_wpc-20327.pdf
+LIQ044_不同馏分段溶剂对神东补连塔煤直接液化性能的影响_赵润泽.pdf
+LIQ045_不同氢源作用下煤直接液化过程的自由基反应行为研究_田佳欣.pdf
+LIQ046_成型机在煤液化工艺中的应用与改进_郭正良.pdf
+LIQ047_催化剂酸性质对煤直接液化油加氢改质反应性能的研究_苏益民.pdf
+LIQ048_大型化煤直接液化装置膜分离系统方案研究_顾湘.pdf
+LIQ049_富油煤溶剂萃取和直接液化技术研究进展_刘道燃.pdf
+LIQ050_黑山煤温和液化及液化重质产物制备碳量子点_唐雯雯.pdf
+LIQ051_黑山煤温和液化重质产物制备碳量子点的研究_唐雯雯.pdf
+LIQ052_基于CO_(2)活化煤液化沥青基活性碳纤维制备及其储能性能_向柠.pdf
+LIQ053_基于GC×GC-TOF_MS的煤液化产物油分子组成结构表征_李奕菲.pdf
+LIQ054_基于机器学习的煤直接液化石脑油及其重整产物性能评价_杨泽华.pdf
+LIQ055_近红外光谱智能分析煤直接液化柴油组分（英文）_王喜武.pdf
+LIQ056_离子色谱法测定煤直接液化酸性水中氯离子含量_陈跃华.pdf
+LIQ057_煤沥青与煤液化沥青共缩聚制备碳纤维研究_张海永.pdf
+LIQ058_煤液化残渣基炭纤维的制备及其电化学性能研究_黄雯昱.pdf
+LIQ059_煤液化残渣沥青砂浆及混合料性能相关性研究_季节.pdf
+LIQ060_煤液化残渣与石油沥青相容性的影响因素研究_杨泽华.pdf
+LIQ061_煤液化残渣在沥青路面修复养护工程中的应用技术研究_张梓源.pdf
+LIQ062_煤液化粗油及其轻重馏分的溶氢规律_乔元(1).pdf
+LIQ063_煤液化粗油及其轻重馏分的溶氢规律_乔元.pdf
+LIQ064_煤液化废水循环再利用制水煤浆成浆性能研究_牛晓峰.pdf
+LIQ065_煤液化减三线油浆超临界萃取组分的性能及分布规律研究_孙鹏飞.pdf
+LIQ066_煤液化减压馏分油浆制备中间相沥青的研究_姜浩强(1).pdf
+LIQ067_煤液化减压馏分油浆制备中间相沥青的研究_姜浩强.pdf
+LIQ068_煤液化减压塔运行波动分析_邢波.pdf
+LIQ069_煤液化沥青基可纺中间相沥青的制备及性能研究_冯晓慧.pdf
+LIQ070_煤液化沥青基泡沫炭的制备及其电化学性能研究_胡迪 (1).pdf
+LIQ071_煤液化沥青基碳量子点的制备、复合及光催化降解性能_刘金昌.pdf
+LIQ072_煤液化沥青甲苯不溶物测定优化方法_李娜娜.pdf
+LIQ073_煤液化沥青精制组分的研究分析_余萍.pdf
+LIQ074_煤液化沥青针状焦的制备及其电化学性能评价_吴永杰.pdf
+LIQ075_煤液化沥青制备高端碳材料的研究与技术路径优化应用价值_刘红.pdf
+LIQ076_煤液化沥青制备预焙阳极实验分析及影响因素研究_孙鹏飞.pdf
+LIQ077_煤液化沥青转化过程中循环溶剂典型供氢组分的相互作用规律研究_陈俊潜.pdf
+LIQ078_煤液化沥青族组分的结构及热解特性研究_祁素霞.pdf
+LIQ079_煤液化油渣萃余物基多孔炭的制备及其废水净化性能_李昕.pdf
+LIQ080_煤直接液化残渣制备高导电炭黑及其电化学性能研究_孟倩.pdf
+LIQ081_煤直接液化柴油调和试验研究_张飞.pdf
+LIQ082_煤直接液化柴油性质影响因素分析_齐振东.pdf
+LIQ083_煤直接液化多通道物料分配五通阀失效分析与优化建议_乔元.pdf
+LIQ084_煤直接液化高温高压物料分配柱塞阀结构设计与试验_干瑞彬.pdf
+LIQ085_煤直接液化过程结焦机理及影响因素研究进展_刘萌萌.pdf
+LIQ086_煤直接液化过程中循环溶剂自身反应对供氢的影响_刘沐鑫.pdf
+LIQ087_煤直接液化技术发展方向及建议_李文博.pdf
+LIQ088_煤直接液化技术换代的化学反应问题_王元哲.pdf
+LIQ089_煤直接液化沥青制备碳材料的研究进展_郝国军.pdf
+LIQ090_煤直接液化生产高压屏蔽泵密封油的探索与工业实践_逯波.pdf
+LIQ091_煤直接液化项目加氢装置节能优化措施探讨_杨德宝.pdf
+LIQ092_煤直接液化油分馏产物中含氧化合物分子组成_向春兰.pdf
+LIQ093_煤直接液化油加氢精制催化剂结构调控研究进展_邓开鑫.pdf
+LIQ094_煤直接液化中供氢溶剂脱氢行为的研究_林霖.pdf
+LIQ095_煤直接液化装置氯平衡分析_廉金超.pdf
+LIQ096_煤直接液化装置注硫系统优化分析_廉金超.pdf
+LIQ097_钼基催化剂的制备及其煤液化催化加氢性能研究_李志辉.pdf
+LIQ098_耐磨球阀在煤直接液化工况应用中的失效分析及改进_李家顺.pdf
+LIQ099_神华煤液化沥青脱灰精制体系流变特性的研究_赵鹏.pdf
+LIQ100_炭化条件对煤液化沥青基泡沫炭制备及电化学性能的影响_胡迪.pdf
+LIQ101_油溶性含Fe、Co或Ni过渡金属催化剂对上湾煤直接液化行为影响_李智.pdf
+LIQ102_有机元素分析仪测定煤直接液化油碳氢含量误差控制_苏娟.pdf
+`;
+
+    let allFiles = pdfText
+      .split("\\n")
+      .map(name => name.trim())
+      .filter(name => name.endsWith(".pdf"));
+
+    let currentCategory = "ALL";
+
+    const pdfList = document.getElementById("pdfList");
+    const pdfViewer = document.getElementById("pdfViewer");
+    const pdfTitle = document.getElementById("pdfTitle");
+    const pdfSearch = document.getElementById("pdfSearch");
+    const pdfCount = document.getElementById("pdfCount");
+
+    function getPdfUrl(fileName) {
+      return baseUrl + encodeURIComponent(fileName);
+    }
+
+    function renderPdfList(files) {
+      pdfList.innerHTML = "";
+      pdfCount.textContent = "当前显示：" + files.length + " 篇文献";
+
+      if (files.length === 0) {
+        pdfList.innerHTML = "<p>没有找到匹配的文献。</p>";
+        pdfViewer.src = "";
+        pdfTitle.textContent = "PDF 在线预览";
+        return;
+      }
+
+      files.forEach((fileName, index) => {
+        const item = document.createElement("div");
+        item.className = "pdf-item";
+
+        const title = document.createElement("a");
+        title.href = "javascript:void(0)";
+        title.className = "pdf-item-title";
+        title.textContent = fileName;
+
+        title.onclick = function () {
+          previewPdf(fileName);
+        };
+
+        const actions = document.createElement("div");
+        actions.className = "pdf-actions";
+
+        const preview = document.createElement("a");
+        preview.href = "javascript:void(0)";
+        preview.className = "preview-btn";
+        preview.textContent = "在线预览";
+        preview.onclick = function () {
+          previewPdf(fileName);
+        };
+
+        const download = document.createElement("a");
+        download.href = getPdfUrl(fileName);
+        download.className = "download-btn";
+        download.textContent = "下载 PDF";
+        download.target = "_blank";
+        download.download = fileName;
+
+        actions.appendChild(preview);
+        actions.appendChild(download);
+
+        item.appendChild(title);
+        item.appendChild(actions);
+
+        pdfList.appendChild(item);
+
+        if (index === 0) {
+          previewPdf(fileName);
+        }
+      });
+    }
+
+    function previewPdf(fileName) {
+      const url = getPdfUrl(fileName);
+      pdfViewer.src = url;
+      pdfTitle.textContent = fileName;
+    }
+
+    function filterCategory(category) {
+      currentCategory = category;
+
+      const buttons = document.querySelectorAll(".category-buttons button");
+      buttons.forEach(btn => btn.classList.remove("active"));
+
+      if (category === "ALL") {
+        buttons[0].classList.add("active");
+      } else if (category === "CCP") {
+        buttons[1].classList.add("active");
+      } else if (category === "COK") {
+        buttons[2].classList.add("active");
+      } else if (category === "GAS") {
+        buttons[3].classList.add("active");
+      } else if (category === "LIQ") {
+        buttons[4].classList.add("active");
+      }
+
+      applyFilters();
+    }
+
+    function applyFilters() {
+      const keyword = pdfSearch.value.trim().toLowerCase();
+
+      let filtered = allFiles.filter(file => {
+        const matchCategory =
+          currentCategory === "ALL" || file.startsWith(currentCategory);
+
+        const matchKeyword =
+          file.toLowerCase().includes(keyword);
+
+        return matchCategory && matchKeyword;
+      });
+
+      renderPdfList(filtered);
+    }
+
+    pdfSearch.addEventListener("input", applyFilters);
+
+    renderPdfList(allFiles);
+  </script>
+
 </body>
 </html>
